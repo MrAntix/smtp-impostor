@@ -11,6 +11,7 @@ www/
 log.txt
 *.sublime-project
 *.sublime-workspace
+*.user
 
 .stencil/
 .idea/
