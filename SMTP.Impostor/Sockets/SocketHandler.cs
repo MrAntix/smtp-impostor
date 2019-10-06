@@ -132,7 +132,7 @@ namespace SMTP.Impostor.Sockets
                         _data.ToString(
                             0, _data.Length - _terminator.Length));
                 }
-                else if(!result.IsCompleted)
+                else if (!_disposed)
                 {
                     // read some more data
                     Read();
@@ -186,7 +186,7 @@ namespace SMTP.Impostor.Sockets
                     Status = SocketHandlerStates.Identified;
                     _to = null;
 
-                    // Dispose();
+                    Dispose();
 
                     return;
                 }
