@@ -5,6 +5,9 @@ using Microsoft.Extensions.Configuration;
 using SMTP.Impostor.Worker.Properties;
 using Microsoft.AspNetCore.Builder;
 using SMTP.Impostor.Store.File;
+using System;
+using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace SMTP.Impostor.Worker
 {
@@ -35,7 +38,9 @@ namespace SMTP.Impostor.Worker
                 .AddHostedService<SMTPImpostorService>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app, IWebHostEnvironment env,
+            ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
@@ -45,6 +50,7 @@ namespace SMTP.Impostor.Worker
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
             app.UseEndpoints(endpoints =>
@@ -55,6 +61,12 @@ namespace SMTP.Impostor.Worker
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "src";
+            });
+            app.Use(async (context, next) =>
+            {
+                logger.LogInformation($"request {context.Request.Path}");
+
+                await next();
             });
         }
     }

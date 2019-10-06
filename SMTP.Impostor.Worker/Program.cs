@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
 
 namespace SMTP.Impostor.Worker
 {
@@ -19,16 +18,19 @@ namespace SMTP.Impostor.Worker
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService()
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+                    config.SetBasePath(
+                        AppDomain.CurrentDomain.BaseDirectory);
+                    
+                })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<SMTPImpostorService>();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.ConfigureKestrel(serverOptions =>
-                    {
-
-                    });
                     webBuilder.UseStartup<Startup>();
                 });
     }

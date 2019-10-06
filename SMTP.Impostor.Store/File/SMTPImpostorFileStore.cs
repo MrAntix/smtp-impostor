@@ -20,12 +20,12 @@ namespace SMTP.Impostor.Store.File
             _path = Path.Combine(settings.Path ?? Path.GetTempPath(), "Impostor");
             Directory.CreateDirectory(_path);
 
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = _path,
-                UseShellExecute = true,
-                Verb = "open"
-            });
+            //Process.Start(new ProcessStartInfo
+            //{
+            //    FileName = _path,
+            //    UseShellExecute = true,
+            //    Verb = "open"
+            //});
             Console.WriteLine($"Impostor file store \"{_path}\"");
         }
 

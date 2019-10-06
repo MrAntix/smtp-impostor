@@ -30,19 +30,27 @@ const toIco = require('to-ico');
 
 async function convertToPNG(name, width, height, output) {
   height = height || width;
+  output = output || `./www/assets/${name}-${width}x${height}.png`;
+
   await convertFile(`./src/assets/${name}.svg`, {
     width,
     height,
-    outputFilePath: output || `./www/assets/${name}-${width}x${height}.png`
+    outputFilePath: output
   });
+
+  console.log(`created png ${output}`)
 }
 
 async function convertToICO(name, sizes) {
-  const files = sizes.map(size=>
+  const files = sizes.map(size =>
     fs.readFileSync(`./www/assets/${name}-${size}x${size}.png`),
   );
 
+  const output = `./www/assets/${name}.ico`;
+
   toIco(files).then(buf => {
-    fs.writeFileSync(`./www/assets/${name}.ico`, buf);
+    fs.writeFileSync(output, buf);
   });
+
+  console.log(`created icon ${output}`)
 }

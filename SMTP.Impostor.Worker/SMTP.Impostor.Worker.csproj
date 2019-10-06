@@ -1,9 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>src\assets\icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,11 +33,31 @@
     <Content Update="tsconfig.json">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </Content>
+    <Content Update="src\**">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="www\**.*">
+    <Content Update="www\**">
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </None>
+    </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <DataFiles Include="$(ProjectDir)www\**\*.*" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="@(DataFiles)" DestinationFiles="@(DataFiles->'$(TargetDir)www\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+
+  <!--<Target Name="PrePublish" BeforeTargets="Publish">
+    <Exec Command="npm install" />
+    <Exec Command="npm run build" />
+  </Target>-->
+
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <Copy SourceFiles="@(DataFiles)" DestinationFiles="@(DataFiles->'$(PublishDir)www\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
 </Project>
