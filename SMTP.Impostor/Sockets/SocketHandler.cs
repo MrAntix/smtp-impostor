@@ -132,7 +132,7 @@ namespace SMTP.Impostor.Sockets
                         _data.ToString(
                             0, _data.Length - _terminator.Length));
                 }
-                else
+                else if(!result.IsCompleted)
                 {
                     // read some more data
                     Read();
