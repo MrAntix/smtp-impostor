@@ -1,4 +1,7 @@
+<img src="/SMTP.Impostor.Worker/src/assets/icon-256x256.png?raw=true" align="right" alt="SMTP Impostor Icon"/>
+
 # smtp-impostor
+
 Fake SMTP server for developers - Catches emails sent via SMTP an puts them in a temp directory so you don't send people emails by accident
 
 ## v3 in development, but works now
