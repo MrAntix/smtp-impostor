@@ -1,44 +1,66 @@
-# https://github.com/philoushka/blog/blob/master/install-a-windows-service-using-powershell.md
-
 $ErrorActionPreference = "Stop"
 
-$cred = Get-Credential -Message "Log on user for SMTP Impostor Service"
-
-$serviceName = "SMTP Impostor"
-$existingService = Get-WmiObject -Class Win32_Service -Filter "Name='$serviceName'"
-
-if ($existingService)
-{
-  "'$serviceName' exists already. Stopping."
-  Stop-Service $serviceName
-  "Waiting 3 seconds to allow existing service to stop."
-  Start-Sleep -s 3
-
-  $existingService.Delete()
-  "Waiting 5 seconds to allow service to be uninstalled."
-  Start-Sleep -s 5
+# elevate if needed
+if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
+    "-----------------------------------------"
+    "Service install required elevation"
+    Pause
+  
+    $wd = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+    $file = $MyInvocation.MyCommand.Path
+  
+    Start-Process -FilePath PowerShell.exe -Verb Runas -ArgumentList "-Command `"cd $wd; & $file`""
+    Exit
 }
 
-npm i
-npm run build
+try {
 
-dotnet publish -c Release
+    $cred = Get-Credential -Message "Log on user for SMTP Impostor Service"
 
-$exePath = Resolve-Path ".\bin\Release\netcoreapp3.0\publish\SMTP.Impostor.Worker.exe"
-$username = ($cred.Domain + "\" + $cred.UserName).TrimStart("\");
-"Setting access for '$username'"
+    $serviceName = "SMTP Impostor"
+    $existingService = Get-WmiObject -Class Win32_Service -Filter "Name='$serviceName'"
 
-$acl = Get-Acl $exePath
-$permission = $username, "FullControl", "Allow"
-$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
-$acl.SetAccessRule($accessRule)
-Set-Acl -Path $exePath -AclObject $acl
+    if ($existingService)
+    {
+      "'$serviceName' exists, uninstalling old service"
+      Stop-Service $serviceName
+      Start-Sleep -s 3
+      $existingService.Delete() | Out-Null
+      Start-Sleep -s 5
+    }
 
-"Installing the service."
-New-Service -BinaryPathName $exePath -Name $serviceName -Credential $cred -DisplayName $serviceName -StartupType Automatic
-"Installed the service."
+    "Building UI"
+    npm i
+    npm run build
 
-"Starting the service."
-Start-Service $serviceName
+    "Building Worker"
+    dotnet publish -c Release
 
-"Completed."
+    $exePath = Resolve-Path ".\bin\Release\netcoreapp3.0\publish\SMTP.Impostor.Worker.exe"
+    $username = ($cred.Domain + "\" + $cred.UserName).TrimStart("\");
+    "Setting access for '$username'"
+
+    $acl = Get-Acl $exePath
+    $permission = $username, "FullControl", "Allow"
+    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
+    $acl.SetAccessRule($accessRule)
+    Set-Acl -Path $exePath -AclObject $acl
+
+    "Installing the service."
+    New-Service -BinaryPathName $exePath -Name $serviceName -Credential $cred -DisplayName $serviceName -StartupType Automatic
+
+    "Starting the service."
+    Start-Service $serviceName
+
+    "========================================="
+    "$serviceName installed"
+
+} catch {
+
+    "========================================="
+    "Could not install $serviceName"
+    "$_.Exception"
+
+}
+
+Pause
