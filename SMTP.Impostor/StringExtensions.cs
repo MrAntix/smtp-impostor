@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Text;
 
 namespace SMTP.Impostor
 {
@@ -94,6 +95,21 @@ namespace SMTP.Impostor
         public static string Tail(this string text, string uptoItem)
         {
             return Tail(text, uptoItem, StringComparison.CurrentCulture);
+        }
+
+        public static bool EndsWith(this StringBuilder sb, string text)
+        {
+            if (sb.Length < text.Length)
+                return false;
+
+            var sbLength = sb.Length;
+            var textLength = text.Length;
+            for (var i = 1; i <= textLength; i++)
+            {
+                if (text[textLength - i] != sb[sbLength - i])
+                    return false;
+            }
+            return true;
         }
     }
 }

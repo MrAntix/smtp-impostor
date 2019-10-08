@@ -1,13 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using SMTP.Impostor.Worker.Properties;
-using Microsoft.AspNetCore.Builder;
-using SMTP.Impostor.Store.File;
-using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System.IO;
+using SMTP.Impostor.Store.File;
+using SMTP.Impostor.Worker.Hubs;
+using SMTP.Impostor.Worker.Properties;
 
 namespace SMTP.Impostor.Worker
 {
@@ -35,6 +34,7 @@ namespace SMTP.Impostor.Worker
             services
                 .AddSMTPImpostor(Settings.Impostor)
                 .AddSMTPImpostorFileStore(Settings.ImpostorFileStore)
+                .AddSMTPImpostorHub()
                 .AddHostedService<SMTPImpostorService>();
         }
 
@@ -62,12 +62,7 @@ namespace SMTP.Impostor.Worker
             {
                 spa.Options.SourcePath = "src";
             });
-            app.Use(async (context, next) =>
-            {
-                logger.LogInformation($"request {context.Request.Path}");
-
-                await next();
-            });
+            app.UseSMTPImpostorHub();
         }
     }
 }

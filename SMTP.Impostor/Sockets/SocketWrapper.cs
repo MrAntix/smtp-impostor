@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -25,7 +25,8 @@ namespace SMTP.Impostor.Sockets
 
         void IDisposable.Dispose()
         {
-            _socket.Shutdown(SocketShutdown.Both);
+            if (_socket.Connected)
+                _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
             _socket.Dispose();
         }

@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SMTP.Impostor.Messages;
 
 namespace SMTP.Impostor.Store.File
@@ -9,11 +10,14 @@ namespace SMTP.Impostor.Store.File
 
     public class SMTPImpostorFileStore : ISMTPImpostorStore
     {
+        readonly ILogger<SMTPImpostorFileStore> _logger;
         readonly string _path;
 
         public SMTPImpostorFileStore(
+            ILogger<SMTPImpostorFileStore> logger,
             SMTPImpostorFileStoreSettings settings)
         {
+            _logger = logger ?? NullLogger<SMTPImpostorFileStore>.Instance;
             if (settings is null)
                 throw new ArgumentNullException(nameof(settings));
 
@@ -26,7 +30,7 @@ namespace SMTP.Impostor.Store.File
             //    UseShellExecute = true,
             //    Verb = "open"
             //});
-            Console.WriteLine($"Impostor file store \"{_path}\"");
+            _logger.LogInformation($"Impostor file store \"{_path}\"");
         }
 
         async Task<SMTPImpostorMessage> ISMTPImpostorStore.GetAsync(

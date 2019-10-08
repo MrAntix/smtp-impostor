@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SMTP.Impostor.Worker\SMTP.Impostor.Worker.csproj" />
     <ProjectReference Include="..\SMTP.Impostor\SMTP.Impostor.csproj" />
   </ItemGroup>
 

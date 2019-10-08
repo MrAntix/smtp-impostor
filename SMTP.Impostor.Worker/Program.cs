@@ -23,7 +23,7 @@ namespace SMTP.Impostor.Worker
                     Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
                     config.SetBasePath(
                         AppDomain.CurrentDomain.BaseDirectory);
-                    
+
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

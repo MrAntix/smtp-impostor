@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Net.Mime;
@@ -19,59 +20,68 @@ namespace SMTP.Impostor.Test
         {
             var hostSettings = new SMTPImpostorHostSettings(
                       hostName: "127.0.0.1",
-                      port: 25);
+                      port: 52525);
 
-            var expectedCount = 100;
+            var expectedCount = 10;
 
             var messages = new List<SMTPImpostorMessage>();
-            using (var host = GetSMTPImpostorHost(hostSettings))
-            using (
-                host.Events
+            using var host = GetSMTPImpostorHost(hostSettings);
+            using var events = host.Events
                     .OfType<SMTPImpostorMessageReceivedEvent>()
-                    .Subscribe(e => messages.Add(e.Data))
-                )
-            using (var client = new SmtpClient(hostSettings.HostName, hostSettings.Port))
-            using (var mailMessage = new MailMessage
+                    .Subscribe(e => messages.Add(e.Data));
+
+            using var client = new SmtpClient(hostSettings.HostName, hostSettings.Port);
+            using var mailMessage = new MailMessage
             {
                 From = new MailAddress("a@example.com"),
                 Subject = "SUBJECT"
-            })
+            };
+
+            mailMessage.To.Add("b@example.com");
+            mailMessage.CC.Add("c@example.com");
+            mailMessage.CC.Add("d@example.com");
+
+            //mailMessage.Body = TestResources.HTML_EMAIL;
+            //mailMessage.IsBodyHtml = true;
+
+            mailMessage.Body = "SOME CONTENT\nSOME CONTENT\nSOME CONTENT\nSOME CONTENT\n";
+
+            var alternate = AlternateView.CreateAlternateViewFromString(
+                TestResources.HTML_EMAIL,
+                new ContentType("text/html"));
+            mailMessage.AlternateViews.Add(alternate);
+
+            var buffer = new byte[100 * 1000];
+            for (var i = 0; i < buffer.Length; i++)
+                buffer[i] = 0;
+
+            using (var stream = new MemoryStream(buffer))
             {
-                mailMessage.To.Add("b@example.com");
-                mailMessage.CC.Add("c@example.com");
-                mailMessage.CC.Add("d@example.com");
-
-                //mailMessage.Body = TestResources.HTML_EMAIL;
-                //mailMessage.IsBodyHtml = true;
-
-                mailMessage.Body = "SOME CONTENT\nSOME CONTENT\nSOME CONTENT\nSOME CONTENT\n";
-
-                var alternate = AlternateView.CreateAlternateViewFromString(
-                    TestResources.HTML_EMAIL,
-                    new ContentType("text/html"));
-                mailMessage.AlternateViews.Add(alternate);
+                mailMessage.Attachments.Add(new Attachment(
+                    stream, new ContentType("application/app")
+                    ));
 
                 for (var i = 0; i < expectedCount; i++)
                     client.Send(mailMessage);
-
-                Assert.AreEqual(expectedCount, messages.Count());
-
-                var message = messages[1];
-
-                Assert.IsFalse(string.IsNullOrWhiteSpace(message.Id));
-                Assert.AreNotEqual(0, message.Headers);
-                Assert.IsFalse(string.IsNullOrWhiteSpace(message.Subject));
-                Assert.IsNotNull(message.From);
-                Assert.AreEqual(1, message.To.Count);
-                Assert.AreEqual(2, message.Cc.Count);
-                Assert.IsFalse(string.IsNullOrWhiteSpace(message.Content));
-
-                Console.WriteLine("===== HEADERS =====");
-                Console.WriteLine(string.Join("\n", message.Headers));
-
-                Console.WriteLine("===== CONTENT =====");
-                Console.WriteLine(message.Content);
             }
+
+            Assert.AreEqual(expectedCount, messages.Count());
+
+            var message = messages[1];
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(message.Id));
+            Assert.AreNotEqual(0, message.Headers);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(message.Subject));
+            Assert.IsNotNull(message.From);
+            Assert.AreEqual(1, message.To.Count);
+            Assert.AreEqual(2, message.Cc.Count);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(message.Content));
+
+            Console.WriteLine("===== HEADERS =====");
+            Console.WriteLine(string.Join("\n", message.Headers));
+
+            Console.WriteLine("===== CONTENT =====");
+            Console.WriteLine(message.Content);
         }
 
         ISMTPImpostorHost GetSMTPImpostorHost(

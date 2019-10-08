@@ -13,10 +13,7 @@ namespace SMTP.Impostor.Sockets
     internal class SocketHandler :
         ISMTPImpostorSocketHandler
     {
-        public const int SessionReadBufferSize = 255;
-        internal const string LINE_TERMINATOR = "\r\n";
-        internal const string HEADERS_TERMINATOR = "\r\n\r\n";
-        internal const string DATA_TERMINATOR = "\r\n.\r\n";
+        public const int SessionReadBufferSize = 4 * 1024;
 
         internal const string QUOTE_UTF8 = "=?utf-8?q?";
         internal const string BASE64_UTF8 = "=?utf-8?b?";
@@ -31,16 +28,12 @@ namespace SMTP.Impostor.Sockets
         public const string COMMAND_RSET = "RSET";
         public const string COMMAND_NOOP = "NOOP";
 
-        static readonly object LOCK_OBJECT = new object();
-        bool _disposed;
-
         ISMTPImpostorSocket _socket;
         NetworkStream _networkStream;
         byte[] _readBuffer;
         string _terminator;
 
-        readonly Action<SMTPImpostorMessage> _onMessage;
-        readonly TaskCompletionSource<bool> _taskCompletion;
+        readonly TaskCompletionSource<SMTPImpostorMessage> _taskCompletion;
         StringBuilder _data;
         MailAddress _from;
         List<MailAddress> _to;
@@ -50,15 +43,13 @@ namespace SMTP.Impostor.Sockets
         public string ClientId { get; set; }
 
         public SocketHandler(
-            ISMTPImpostorSocket socket,
-            Action<SMTPImpostorMessage> onMessage)
+            ISMTPImpostorSocket socket)
         {
             _socket = socket;
-            _onMessage = onMessage;
-            _taskCompletion = new TaskCompletionSource<bool>();
+            _taskCompletion = new TaskCompletionSource<SMTPImpostorMessage>();
         }
 
-        public Task HandleAsync()
+        public Task<SMTPImpostorMessage> HandleAsync()
         {
             ClientAddress = _socket.RemoteEndPoint.Address;
 
@@ -70,7 +61,9 @@ namespace SMTP.Impostor.Sockets
             Status = SocketHandlerStates.Connected;
             //Host.RaiseEvent(HostEventTypes.SessionConnected, this);
 
-            Read(LINE_TERMINATOR);
+            _readBuffer = new byte[SessionReadBufferSize];
+
+            StartRead(SMTPImpostorMessage.LINE_TERMINATOR);
 
             return _taskCompletion.Task;
         }
@@ -79,24 +72,23 @@ namespace SMTP.Impostor.Sockets
         ///   <para>Set up a read to a terminator</para>
         /// </summary>
         /// <param name = "terminator"></param>
-        void Read(string terminator)
+        void StartRead(string terminator)
         {
             _terminator = terminator;
             _data = new StringBuilder();
 
-            Read();
+            ContinueRead();
         }
 
         /// <summary>
         ///   <para>Sets up an async read</para>
         /// </summary>
-        void Read()
+        void ContinueRead()
         {
             if (_networkStream == null) return;
 
             try
             {
-                _readBuffer = new byte[SessionReadBufferSize];
                 _networkStream.BeginRead(
                     _readBuffer, 0, _readBuffer.Length,
                     ReadCallback,
@@ -115,27 +107,24 @@ namespace SMTP.Impostor.Sockets
         //[DebuggerStepThrough]
         void ReadCallback(IAsyncResult result)
         {
-            if (_networkStream == null) return;
-
             try
             {
                 var readData = Encoding.UTF8.GetString(
                     _readBuffer,
                     0, _networkStream.EndRead(result));
                 _data.Append(readData);
+
                 // check for terminator
-                if (_data.Length > _terminator.Length
-                    && _data.ToString(_data.Length - _terminator.Length, _terminator.Length).Equals(_terminator))
+                if (_data.EndsWith(_terminator))
                 {
                     // process data received not including the terminator
                     Process(
-                        _data.ToString(
-                            0, _data.Length - _terminator.Length));
+                        _data.ToString(0, _data.Length - _terminator.Length));
                 }
-                else if (!_disposed)
+                else if (_networkStream != null)
                 {
                     // read some more data
-                    Read();
+                    ContinueRead();
                 }
             }
             catch (Exception)
@@ -148,7 +137,7 @@ namespace SMTP.Impostor.Sockets
         {
             // _logger.LogInformation("Session.Write: => {0}", data);
 
-            data += LINE_TERMINATOR;
+            data += SMTPImpostorMessage.LINE_TERMINATOR;
 
             var bytes = Encoding.UTF8.GetBytes(data);
             _networkStream.Write(bytes, 0, bytes.Length);
@@ -169,24 +158,21 @@ namespace SMTP.Impostor.Sockets
         /// </summary>
         void Process(string data)
         {
-            var terminator = LINE_TERMINATOR;
+            var terminator = SMTPImpostorMessage.LINE_TERMINATOR;
             try
             {
                 if (Status == SocketHandlerStates.Data)
                 {
                     var content = _data.ToString(0, _data.Length - _terminator.Length);
+                    _data.Clear();
+
                     var message = SMTPImpostorMessage.FromContent(content);
-
-                    // raise event
-                    _onMessage(message);
-
                     // _logger.LogInformation("Session.Process Data: => {0}", data);
 
                     Write(ReplyCodes.Completed_250);
                     Status = SocketHandlerStates.Identified;
-                    _to = null;
 
-                    Dispose();
+                    _taskCompletion.SetResult(message);
 
                     return;
                 }
@@ -270,7 +256,7 @@ namespace SMTP.Impostor.Sockets
                     Status = SocketHandlerStates.Data;
                     Write(ReplyCodes.StartInput_354);
 
-                    terminator = DATA_TERMINATOR;
+                    terminator = SMTPImpostorMessage.DATA_TERMINATOR;
                 }
                 else
                 {
@@ -285,44 +271,12 @@ namespace SMTP.Impostor.Sockets
             }
             finally
             {
-                if (!_disposed)
+                if (_networkStream != null)
                 {
                     // next read
-                    Read(terminator);
+                    StartRead(terminator);
                 }
             }
-        }
-
-        public static IEnumerable<SMTPImpostorMessageHeader> GetHeaders(string data)
-        {
-            var headers = new List<SMTPImpostorMessageHeader>();
-            if (!data.Contains(HEADERS_TERMINATOR)) return headers;
-
-            // get the headers part of the data an un-fold 
-            var rawHeaders = data.Head(HEADERS_TERMINATOR)
-                .Replace(LINE_TERMINATOR + "\t", string.Empty)
-                .Replace(LINE_TERMINATOR + " ", string.Empty);
-
-            // parse into collection
-            foreach (var header in rawHeaders.Split('\n'))
-            {
-                var value = header;
-                var name = StringExtensions.Head(ref value, ":")
-                    .Trim().ToLower();
-
-                value = value.Trim();
-
-                if (name.Length > 0)
-                {
-                    // add as is
-                    headers.Add(new SMTPImpostorMessageHeader(
-                        name,
-                        SMTPImpostorDecoder.FromQuotedWord(value)
-                        ));
-                }
-            }
-
-            return headers;
         }
 
         /// <summary>
@@ -330,43 +284,19 @@ namespace SMTP.Impostor.Sockets
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-
-        /// <summary>
-        ///   <para>Finalize object</para>
-        /// </summary>
-        ~SocketHandler()
-        {
-            Dispose(false);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            lock (LOCK_OBJECT)
+            try
             {
-                if (!_disposed)
+                if (_socket != null)
                 {
-                    _disposed = true;
-                    if (disposing)
-                    {
-                        try
-                        {
-                            _networkStream.Dispose();
-
-                            //Host.RaiseEvent(HostEventTypes.SessionDisconnected, this);
-                        }
-                        finally
-                        {
-                            _networkStream = null;
-                            _socket = null;
-
-                            _taskCompletion.SetResult(true);
-                        }
-                    }
+                    _networkStream.Dispose();
+                    _socket.Dispose();
                 }
+                //Host.RaiseEvent(HostEventTypes.SessionDisconnected, this);
+            }
+            finally
+            {
+                _networkStream = null;
+                _socket = null;
             }
         }
     }

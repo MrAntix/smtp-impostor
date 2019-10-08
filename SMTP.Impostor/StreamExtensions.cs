@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Text;
 
 namespace SMTP.Impostor
@@ -32,7 +32,10 @@ namespace SMTP.Impostor
                     if (toBytes[matchLength] == buffer[i])
                     {
                         matchLength++;
-                        if (matchLength == toBytes.Length) break;
+                        if (matchLength == toBytes.Length)
+                            return data.ToString(0, matchStart);
+
+                        //                        if (matchLength == toBytes.Length) break;
                     }
                     else
                     {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Subjects;
@@ -14,17 +14,14 @@ namespace SMTP.Impostor
     {
         readonly ILoggerFactory _loggerFactory;
         readonly ISMTPImpostorSettings _settings;
-        readonly ISMTPImpostorSocketHandlerProvider _handlerProvider;
         readonly Subject<ISMTPImpostorEvent> _events;
 
         public SMTPImpostor(
             ILoggerFactory loggerFactory,
-            ISMTPImpostorSettings settings,
-            ISMTPImpostorSocketHandlerProvider handlerProvider)
+            ISMTPImpostorSettings settings)
         {
             _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _handlerProvider = handlerProvider ?? throw new ArgumentNullException(nameof(handlerProvider));
             _events = new Subject<ISMTPImpostorEvent>();
 
             foreach (var hostSettings in _settings.Hosts)
@@ -34,7 +31,6 @@ namespace SMTP.Impostor
         public ISMTPImpostorHost CreateHost()
         {
             return new SMTPImpostorHost(
-                _handlerProvider,
                 _loggerFactory.CreateLogger<SMTPImpostorHost>()
                 );
         }
