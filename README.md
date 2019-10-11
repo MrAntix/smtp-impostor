@@ -1,4 +1,7 @@
+<img src="/SMTP.Impostor.Worker/src/assets/icon-256x256.png?raw=true" align="right" alt="SMTP Impostor Icon"/>
+
 # smtp-impostor
+
 Fake SMTP server for developers - Catches emails sent via SMTP an puts them in a temp directory so you don't send people emails by accident
 
 ## v3 in development, but works now
@@ -10,32 +13,51 @@ worker written in c# dotnet core 3, the ui will need npm to build it but thats n
 
 .eml files are dropped in ```[Drive]\Users\[User]\AppData\Local\Temp\Impostor\127.0.0.1_25```, you will need outlook or something to open them
 
-see tests for examples of using in unit tests
+### using in unit tests
 
 ```
-var hostSettings = new SMTPImpostorHostSettings(
-          hostName: "127.0.0.1",
-          port: 52525);
+[TestMethod]
+public void catch_emails_with_impostor()
 
-SMTPImpostorMessage messages = null;
+  var hostSettings = new SMTPImpostorHostSettings(
+            hostName: "127.0.0.1",
+            port: 52525);
 
-using var host = GetSMTPImpostorHost(hostSettings);
-using var events = host.Events
-        .OfType<SMTPImpostorMessageReceivedEvent>()
-        .Subscribe(e => message = e.Data);
+  SMTPImpostorMessage messages = null;
 
-using var client = new SmtpClient(hostSettings.HostName, hostSettings.Port);
-using var mailMessage = new MailMessage
+  using var host = GetSMTPImpostorHost(hostSettings);
+  using var events = host.Events
+          .OfType<SMTPImpostorMessageReceivedEvent>()
+          .Subscribe(e => message = e.Data);
+
+  using var client = new SmtpClient(hostSettings.HostName, hostSettings.Port);
+  using var mailMessage = new MailMessage
+  {
+      From = new MailAddress("a@example.com"),
+      Subject = "SUBJECT",
+      Body = "SOME CONTENT\nSOME CONTENT\nSOME CONTENT\nSOME CONTENT\n"
+  };
+  mailMessage.To.Add("b@example.com");
+
+  client.Send(mailMessage);
+
+  Assert.IsFalse(string.IsNullOrWhiteSpace(message.Id));
+  Assert.AreNotEqual(0, message.Headers);
+  Assert.IsFalse(string.IsNullOrWhiteSpace(message.Subject));
+}
+
+ ISMTPImpostorHost GetSMTPImpostorHost(
+    SMTPImpostorHostSettings hostSettings)
 {
-    From = new MailAddress("a@example.com"),
-    Subject = "SUBJECT",
-    Body = "SOME CONTENT\nSOME CONTENT\nSOME CONTENT\nSOME CONTENT\n"
-};
-mailMessage.To.Add("b@example.com");
+    var services = new ServiceCollection()
+        .AddLogging()
+        .AddSMTPImpostor()
+        .BuildServiceProvider();
 
-client.Send(mailMessage);
+    var host = services.GetRequiredService<ISMTPImpostorHost>();
+    host.Configure(hostSettings);
+    host.Start();
 
-Assert.IsFalse(string.IsNullOrWhiteSpace(message.Id));
-Assert.AreNotEqual(0, message.Headers);
-Assert.IsFalse(string.IsNullOrWhiteSpace(message.Subject));
+    return host;
+}
 ```
