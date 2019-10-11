@@ -19,7 +19,7 @@ namespace SMTP.Impostor.Test
         public void receives()
         {
             var hostSettings = new SMTPImpostorHostSettings(
-                      hostName: "127.0.0.1",
+                      ip: "127.0.0.1",
                       port: 52525);
 
             var expectedCount = 10;
@@ -30,7 +30,7 @@ namespace SMTP.Impostor.Test
                     .OfType<SMTPImpostorMessageReceivedEvent>()
                     .Subscribe(e => messages.Add(e.Data));
 
-            using var client = new SmtpClient(hostSettings.HostName, hostSettings.Port);
+            using var client = new SmtpClient(hostSettings.IP, hostSettings.Port);
             using var mailMessage = new MailMessage
             {
                 From = new MailAddress("a@example.com"),

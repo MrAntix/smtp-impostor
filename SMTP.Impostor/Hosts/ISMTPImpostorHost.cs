@@ -1,12 +1,16 @@
-using System;
+﻿using System;
 using SMTP.Impostor.Events;
+using SMTP.Impostor.Sockets;
 
 namespace SMTP.Impostor.Hosts
 {
     public interface ISMTPImpostorHost :
         IDisposable
     {
-        void Configure(SMTPImpostorHostSettings hostSettings);
+        SMTPImpostorHostSettings Settings { get; }
+        SMTPImpostorHostStates State { get; }
+
+        void Configure(SMTPImpostorHostSettings settings);
         void Start();
         void Stop();
 

@@ -6,11 +6,23 @@
 
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
-
+import {
+  HubState,
+  IHubMessage,
+  IHubSocketProvider,
+} from './impostor-hub/model';
 
 export namespace Components {
   interface AppHome {}
   interface AppRoot {}
+  interface ImpostorHub {
+    'connectAsync': (url?: string) => Promise<void>;
+    'disconnectAsync': () => Promise<void>;
+    'sendAsync': (message: IHubMessage) => Promise<void>;
+    'socketProvider': IHubSocketProvider;
+    'state': HubState;
+    'url': string;
+  }
 }
 
 declare global {
@@ -27,19 +39,34 @@ declare global {
     prototype: HTMLAppRootElement;
     new (): HTMLAppRootElement;
   };
+
+  interface HTMLImpostorHubElement extends Components.ImpostorHub, HTMLStencilElement {}
+  var HTMLImpostorHubElement: {
+    prototype: HTMLImpostorHubElement;
+    new (): HTMLImpostorHubElement;
+  };
   interface HTMLElementTagNameMap {
     'app-home': HTMLAppHomeElement;
     'app-root': HTMLAppRootElement;
+    'impostor-hub': HTMLImpostorHubElement;
   }
 }
 
 declare namespace LocalJSX {
   interface AppHome {}
   interface AppRoot {}
+  interface ImpostorHub {
+    'onMessageReceived'?: (event: CustomEvent<IHubMessage>) => void;
+    'onStateChanged'?: (event: CustomEvent<HubState>) => void;
+    'socketProvider'?: IHubSocketProvider;
+    'state'?: HubState;
+    'url'?: string;
+  }
 
   interface IntrinsicElements {
     'app-home': AppHome;
     'app-root': AppRoot;
+    'impostor-hub': ImpostorHub;
   }
 }
 
@@ -51,6 +78,7 @@ declare module "@stencil/core" {
     interface IntrinsicElements {
       'app-home': LocalJSX.AppHome & JSXBase.HTMLAttributes<HTMLAppHomeElement>;
       'app-root': LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
+      'impostor-hub': LocalJSX.ImpostorHub & JSXBase.HTMLAttributes<HTMLImpostorHubElement>;
     }
   }
 }

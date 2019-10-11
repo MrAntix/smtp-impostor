@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,6 @@ namespace SMTP.Impostor.Store.File
     public class SMTPImpostorFileStore : ISMTPImpostorStore
     {
         readonly ILogger<SMTPImpostorFileStore> _logger;
-        readonly string _path;
 
         public SMTPImpostorFileStore(
             ILogger<SMTPImpostorFileStore> logger,
@@ -21,8 +21,8 @@ namespace SMTP.Impostor.Store.File
             if (settings is null)
                 throw new ArgumentNullException(nameof(settings));
 
-            _path = Path.Combine(settings.Path ?? Path.GetTempPath(), "Impostor");
-            Directory.CreateDirectory(_path);
+            StorePath = Path.Combine(settings.Path ?? Path.GetTempPath(), "Impostor");
+            Directory.CreateDirectory(StorePath);
 
             //Process.Start(new ProcessStartInfo
             //{
@@ -30,12 +30,13 @@ namespace SMTP.Impostor.Store.File
             //    UseShellExecute = true,
             //    Verb = "open"
             //});
-            _logger.LogInformation($"Impostor file store \"{_path}\"");
+            _logger.LogInformation($"Impostor file store \"{StorePath}\"");
         }
 
-        async Task<SMTPImpostorMessage> ISMTPImpostorStore.GetAsync(
-            string host,
-            string messageId)
+        public readonly string StorePath;
+
+        async Task<SMTPImpostorMessage> ISMTPImpostorStore
+            .GetAsync(string host, string messageId)
         {
             if (string.IsNullOrWhiteSpace(host))
                 throw new ArgumentException("message", nameof(host));
@@ -52,7 +53,8 @@ namespace SMTP.Impostor.Store.File
             return null;
         }
 
-        async Task ISMTPImpostorStore.PutAsync(string host, SMTPImpostorMessage message)
+        async Task ISMTPImpostorStore
+            .PutAsync(string host, SMTPImpostorMessage message)
         {
             if (string.IsNullOrWhiteSpace(host))
                 throw new ArgumentException("message", nameof(host));
@@ -63,17 +65,18 @@ namespace SMTP.Impostor.Store.File
             await System.IO.File.WriteAllTextAsync(messagePath, message.Content);
         }
 
-        Task ISMTPImpostorStore.SearchAsync(SMTPImpostorStoreSearchCriteria criteria)
+        async Task<IImmutableList<SMTPImpostorMessage>> ISMTPImpostorStore
+            .SearchAsync(SMTPImpostorStoreSearchCriteria criteria)
         {
             if (criteria is null)
                 throw new ArgumentNullException(nameof(criteria));
 
-            throw new NotImplementedException();
+            return new SMTPImpostorMessage[] { }.ToImmutableList();
         }
 
         string GetEnsureMessagePath(string host)
         {
-            var path = Path.Combine(_path, host.Replace(":", "_"));
+            var path = Path.Combine(StorePath, host.Replace(":", "_"));
             Directory.CreateDirectory(path);
 
             return path;

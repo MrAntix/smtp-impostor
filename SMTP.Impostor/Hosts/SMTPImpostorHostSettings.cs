@@ -7,28 +7,28 @@ namespace SMTP.Impostor.Hosts
         IEquatable<SMTPImpostorHostSettings>
     {
         public SMTPImpostorHostSettings(
-            string hostName, int port = 25,
-            string friendlyName = null)
+            string ip, int port = 25,
+            string name = null)
         {
-            HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
+            IP = ip ?? throw new ArgumentNullException(nameof(ip));
             Port = port;
-            FriendlyName = friendlyName ?? $"{hostName}:{port}";
+            Name = name ?? $"{ip}:{port}";
         }
 
-        public string HostName { get; }
+        public string IP { get; }
         public int Port { get; }
-        public string FriendlyName { get; }
+        public string Name { get; }
 
         public override string ToString()
         {
-            return FriendlyName;
+            return Name;
         }
 
         bool IEquatable<SMTPImpostorHostSettings>
             .Equals(SMTPImpostorHostSettings other)
         {
             return other != null
-                && string.Equals(HostName, other.HostName, StringComparison.InvariantCultureIgnoreCase)
+                && string.Equals(IP, other.IP, StringComparison.InvariantCultureIgnoreCase)
                 && Port == other.Port;
         }
     }

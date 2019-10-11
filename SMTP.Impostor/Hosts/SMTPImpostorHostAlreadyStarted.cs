@@ -8,7 +8,7 @@ namespace SMTP.Impostor.Hosts
     {
         public SMTPImpostorHostAlreadyStarted(
             SMTPImpostorHostSettings hostSettings)
-            : base($"{hostSettings.FriendlyName} was already started")
+            : base($"{hostSettings.Name} was already started")
         {
             HostSettings = hostSettings;
         }

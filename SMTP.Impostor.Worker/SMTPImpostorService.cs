@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using SMTP.Impostor.Hosts;
 using SMTP.Impostor.Messages;
 using SMTP.Impostor.Store;
+using SMTP.Impostor.Worker.Hubs;
 
 namespace SMTP.Impostor.Worker
 {
@@ -14,35 +15,55 @@ namespace SMTP.Impostor.Worker
     {
         readonly ILogger<SMTPImpostorService> _logger;
         readonly SMTPImpostor _impostor;
+        readonly SMTPImpostorHubService _hub;
         readonly ISMTPImpostorStore _store;
-        IDisposable _events;
+
+        IDisposable _impostorEvents;
+        IDisposable _hubMessages;
 
         public SMTPImpostorService(
             ILogger<SMTPImpostorService> logger,
             SMTPImpostor impostor,
+            SMTPImpostorHubService hub,
             ISMTPImpostorStore store)
         {
             _logger = logger;
             _impostor = impostor;
+            _hub = hub;
             _store = store;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _events = _impostor.Events.Subscribe(async e =>
+            _impostorEvents = _impostor.Events.Subscribe(async e =>
             {
                 _logger.LogInformation($"{e.HostSettings} {e.GetType().Name}");
 
                 if (e is SMTPImpostorMessageReceivedEvent mre)
                 {
-                    await _store.PutAsync(e.HostSettings.FriendlyName, mre.Data);
+                    await _store.PutAsync(e.HostSettings.Name, mre.Data);
+                    await _hub.SendMessage(
+                        new SMTPImpostorHubMessage(
+                            "MessageRecieved",
+                            JsonSerializer.Serialize(new
+                            {
+                                mre.Data.Date,
+                                From = mre.Data.From.Address,
+                                mre.Data.Subject
+                            })
+                        ));
                     GC.Collect();
                 }
             });
 
+            _hubMessages = _hub.Messages.Subscribe(async e =>
+            {
+
+            });
+
             var host = _impostor.AddHost(
                 new SMTPImpostorHostSettings(
-                    hostName: "127.0.0.1",
+                    ip: "127.0.0.1",
                     port: 25));
             host.Start();
 
@@ -51,7 +72,8 @@ namespace SMTP.Impostor.Worker
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            _events.Dispose();
+            _impostorEvents.Dispose();
+            _hubMessages.Dispose();
 
             return Task.CompletedTask;
         }

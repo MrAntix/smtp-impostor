@@ -58,11 +58,11 @@ namespace SMTP.Impostor.Worker
                 endpoints.MapControllers();
             });
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "src";
-            });
-            app.UseSMTPImpostorHub();
+            app.UseSMTPImpostorHub()
+                .UseSpa(spa =>
+                {
+                    spa.Options.SourcePath = "src";
+                });
         }
     }
 }

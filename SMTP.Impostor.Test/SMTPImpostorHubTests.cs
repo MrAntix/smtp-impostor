@@ -110,7 +110,8 @@ namespace SMTP.Impostor.Test
         SMTPImpostorHubService GetHub()
         {
             return new SMTPImpostorHubService(
-                NullLogger<SMTPImpostorHubService>.Instance);
+                NullLogger<SMTPImpostorHubService>.Instance,
+                new FakeHubActionExecutor());
         }
 
         class SMTPImpostorHubClient :

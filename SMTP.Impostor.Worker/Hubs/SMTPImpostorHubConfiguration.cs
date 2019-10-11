@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using SMTP.Impostor.Worker.Hubs.Actions;
 
 namespace SMTP.Impostor.Worker.Hubs
 {
@@ -11,6 +13,16 @@ namespace SMTP.Impostor.Worker.Hubs
             this IServiceCollection services)
         {
             services.AddSingleton<SMTPImpostorHubService>();
+            services.AddSingleton<IHubActionExecutor, HubActionExecutor>();
+            foreach (var actionType in typeof(HubActionExecutor)
+                .Assembly.GetTypes()
+                .Where(t =>
+                    !t.IsAbstract
+                    && typeof(IHubAction).IsAssignableFrom(t)))
+            {
+                services.AddSingleton(actionType);
+                services.AddSingleton(sp => sp.GetRequiredService(actionType) as IHubAction);
+            }
 
             return services;
         }
@@ -18,16 +30,13 @@ namespace SMTP.Impostor.Worker.Hubs
         public static IApplicationBuilder UseSMTPImpostorHub(
             this IApplicationBuilder app)
         {
-            var service = app.ApplicationServices
-                .GetRequiredService<SMTPImpostorHubService>();
+            var hub = app.ApplicationServices.GetRequiredService<SMTPImpostorHubService>();
 
             app.UseWebSockets()
                 .Map(HUB_PATH, hubApp =>
                 {
-
                     hubApp.Use(async (context, next) =>
                     {
-
                         if (!context.WebSockets.IsWebSocketRequest)
                         {
                             context.Response.StatusCode = 400;
@@ -35,7 +44,7 @@ namespace SMTP.Impostor.Worker.Hubs
                         }
 
                         var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                        await service.ConnectAsync(SMTPImpostorHubClient.Wrap(webSocket));
+                        await hub.ConnectAsync(SMTPImpostorHubClient.Wrap(webSocket));
                     });
                 });
 

@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SMTP.Impostor.Worker.Hubs.Actions;
 
 namespace SMTP.Impostor.Worker.Hubs
 {
@@ -15,14 +16,17 @@ namespace SMTP.Impostor.Worker.Hubs
         IDisposable
     {
         readonly ILogger<SMTPImpostorHubService> _logger;
+        readonly IHubActionExecutor _executor;
         readonly SemaphoreSlim _messageSemaphore;
         readonly BehaviorSubject<IImmutableList<ISMTPImpostorHubClient>> _clients;
         readonly Subject<SMTPImpostorHubMessage> _messages;
 
         public SMTPImpostorHubService(
-            ILogger<SMTPImpostorHubService> logger)
+            ILogger<SMTPImpostorHubService> logger,
+            IHubActionExecutor executor)
         {
             _logger = logger;
+            _executor = executor;
             _clients = new BehaviorSubject<IImmutableList<ISMTPImpostorHubClient>>(ImmutableList<ISMTPImpostorHubClient>.Empty);
             _messages = new Subject<SMTPImpostorHubMessage>();
             _messageSemaphore = new SemaphoreSlim(1);
@@ -44,13 +48,33 @@ namespace SMTP.Impostor.Worker.Hubs
             {
                 while (client.State == WebSocketState.Open)
                 {
-                    var data = await client.ReceiveAsync();
-
-                    if (!string.IsNullOrWhiteSpace(data))
+                    try
                     {
-                        var message = Newtonsoft.Json.JsonConvert
-                            .DeserializeObject<SMTPImpostorHubMessage>(data);
-                        _messages.OnNext(message);
+                        var data = await client.ReceiveAsync();
+
+                        if (!string.IsNullOrWhiteSpace(data))
+                        {
+                            var message = Newtonsoft.Json.JsonConvert
+                                .DeserializeObject<SMTPImpostorHubMessage>(data);
+                            _messages.OnNext(message);
+
+                            var result = await _executor.ExecuteAsync(message.Type, message.Data);
+                            if (result != NullActionResponse.Instance)
+                            {
+                                await client.SendAsync(
+                                    JsonSerializer.Serialize(
+                                        SMTPImpostorHubMessage.From(result),
+                                        new JsonSerializerOptions
+                                        {
+                                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                                        }
+                                    ));
+                            }
+                        }
+                    }
+                    catch (WebSocketException ex)
+                    {
+                        _logger.LogError(ex, "ListenAsync");
                     }
                 }
             }

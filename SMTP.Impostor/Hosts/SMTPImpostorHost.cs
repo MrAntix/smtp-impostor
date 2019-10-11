@@ -14,19 +14,16 @@ namespace SMTP.Impostor.Sockets
     public class SMTPImpostorHost : ISMTPImpostorHost
     {
         ISMTPImpostorHost This => this;
-
-        readonly ILogger<SMTPImpostorHost> _logger;
-
-        Subject<ISMTPImpostorEvent> _events;
-        IObservable<ISMTPImpostorEvent> ISMTPImpostorHost.Events => _events;
-
-        SMTPImpostorHostSettings _hostSettings;
-        bool _started;
         public SMTPImpostorHostStateChangeEvent StoppedEvent;
         public SMTPImpostorHostStateChangeEvent StartedEvent;
         public SMTPImpostorHostStateChangeEvent ReceivingEvent;
         public SMTPImpostorHostStateChangeEvent ErroredEvent;
 
+        readonly ILogger<SMTPImpostorHost> _logger;
+        bool _started;
+
+        Subject<ISMTPImpostorEvent> _events;
+        IObservable<ISMTPImpostorEvent> ISMTPImpostorHost.Events => _events;
 
         public SMTPImpostorHost(
             ILogger<SMTPImpostorHost> logger = null)
@@ -35,6 +32,7 @@ namespace SMTP.Impostor.Sockets
             _events = new Subject<ISMTPImpostorEvent>();
         }
 
+        public SMTPImpostorHostSettings Settings { get; private set; }
         public SMTPImpostorHostStates State { get; private set; }
         void RaiseStateChange(SMTPImpostorHostStateChangeEvent e)
         {
@@ -42,15 +40,15 @@ namespace SMTP.Impostor.Sockets
             State = e.Data;
         }
 
-        void ISMTPImpostorHost.Configure(SMTPImpostorHostSettings hostSettings)
+        void ISMTPImpostorHost.Configure(SMTPImpostorHostSettings settings)
         {
-            _hostSettings = hostSettings ??
-                throw new ArgumentNullException(nameof(hostSettings));
+            Settings = settings ??
+                throw new ArgumentNullException(nameof(settings));
 
-            StoppedEvent = new SMTPImpostorHostStateChangeEvent(hostSettings, SMTPImpostorHostStates.Stopped);
-            StartedEvent = new SMTPImpostorHostStateChangeEvent(hostSettings, SMTPImpostorHostStates.Started);
-            ReceivingEvent = new SMTPImpostorHostStateChangeEvent(hostSettings, SMTPImpostorHostStates.Receiving);
-            ErroredEvent = new SMTPImpostorHostStateChangeEvent(hostSettings, SMTPImpostorHostStates.Errored);
+            StoppedEvent = new SMTPImpostorHostStateChangeEvent(settings, SMTPImpostorHostStates.Stopped);
+            StartedEvent = new SMTPImpostorHostStateChangeEvent(settings, SMTPImpostorHostStates.Started);
+            ReceivingEvent = new SMTPImpostorHostStateChangeEvent(settings, SMTPImpostorHostStates.Receiving);
+            ErroredEvent = new SMTPImpostorHostStateChangeEvent(settings, SMTPImpostorHostStates.Errored);
 
             RaiseStateChange(StoppedEvent);
         }
@@ -58,7 +56,7 @@ namespace SMTP.Impostor.Sockets
         void ISMTPImpostorHost.Start()
         {
             if (_started)
-                throw new SMTPImpostorHostAlreadyStarted(_hostSettings);
+                throw new SMTPImpostorHostAlreadyStarted(Settings);
 
             _started = true;
             RaiseStateChange(StartedEvent);
@@ -68,8 +66,8 @@ namespace SMTP.Impostor.Sockets
                 try
                 {
                     var listener = new TcpListener(
-                        IPAddress.Parse(_hostSettings.HostName),
-                        _hostSettings.Port);
+                        IPAddress.Parse(Settings.IP),
+                        Settings.Port);
                     listener.Start();
 
                     while (_started)
@@ -87,14 +85,14 @@ namespace SMTP.Impostor.Sockets
 
                                 var message = await handler.HandleAsync();
                                 _events.OnNext(
-                                    new SMTPImpostorMessageReceivedEvent(_hostSettings, message)
+                                    new SMTPImpostorMessageReceivedEvent(Settings, message)
                                     );
 
                                 RaiseStateChange(StartedEvent);
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogError(ex, $"host {_hostSettings.FriendlyName}");
+                                _logger.LogError(ex, $"host {Settings.Name}");
                                 RaiseStateChange(ErroredEvent);
                             }
                             finally
@@ -108,7 +106,7 @@ namespace SMTP.Impostor.Sockets
                 }
                 catch (SocketException ex)
                 {
-                    _logger.LogError(ex, $"host {_hostSettings.FriendlyName}");
+                    _logger.LogError(ex, $"host {Settings.Name}");
                     This.Stop();
 
                     RaiseStateChange(ErroredEvent);

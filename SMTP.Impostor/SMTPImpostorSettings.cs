@@ -12,7 +12,7 @@ namespace SMTP.Impostor
         {
             Hosts = new[]{
                 new SMTPImpostorHostSettings(
-                        hostName: "127.0.0.1",
+                        ip: "127.0.0.1",
                         port: 25)
                 }.ToImmutableList()
         };
