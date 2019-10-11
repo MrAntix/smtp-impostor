@@ -20,7 +20,7 @@ worker written in c# dotnet core 3, the ui will need npm to build it but thats n
 public void catch_emails_with_impostor()
 
   var hostSettings = new SMTPImpostorHostSettings(
-            hostName: "127.0.0.1",
+            ip: "127.0.0.1",
             port: 52525);
 
   SMTPImpostorMessage messages = null;
