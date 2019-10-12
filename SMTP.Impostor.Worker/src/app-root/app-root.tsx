@@ -44,6 +44,9 @@ export class AppRoot {
     this.logger.debug('handleHubStatusChangedAsync', { e });
 
     switch (e.detail) {
+      default:
+        this.status = {};
+        break;
       case HubStatus.connected:
         await this.hub.sendAsync({
           type: 'GetStatus'
