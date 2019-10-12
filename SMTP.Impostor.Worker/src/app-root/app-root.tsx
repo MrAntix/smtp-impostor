@@ -1,6 +1,10 @@
-import { Component, h, State } from '@stencil/core';
-import { HubStatus, IHubMessage } from '../impostor-hub';
+import { Component, h, State, Prop } from '@stencil/core';
+import "@stencil/redux";
+import { Store } from "@stencil/redux";
+import { Action } from 'redux';
 
+import { HubStatus, IHubMessage } from '../impostor-hub';
+import { IAppState, configureStore } from '../redux';
 
 @Component({
   tag: 'app-root',
@@ -10,8 +14,25 @@ import { HubStatus, IHubMessage } from '../impostor-hub';
 export class AppRoot {
   logger = globalThis.getLogger('AppRoot');
 
-  @State() status: any;
+  @State() status: IAppState;
   hub: HTMLImpostorHubElement;
+
+  @Prop({ context: "store" })
+  store: Store;
+
+  act: (action: Action) => void;
+
+  async componentWillLoad() {
+    this.store.setStore(configureStore({}));
+    this.store.mapDispatchToProps(this, {
+      act: (action: Action) => dispatch => dispatch(action)
+    });
+    this.store.mapStateToProps(this, (status: IAppState) => {
+      return {
+        status
+      };
+    });
+  }
 
   render() {
     return (
@@ -45,7 +66,7 @@ export class AppRoot {
 
     switch (e.detail) {
       default:
-        this.status = {};
+        //this.status = {};
         break;
       case HubStatus.connected:
         await this.hub.sendAsync({
@@ -58,13 +79,6 @@ export class AppRoot {
   async handleHubMessageReceivedAsync(e: CustomEvent<IHubMessage>) {
     this.logger.debug('handleHubMessageReceivedAsync', { e });
 
-    switch (e.detail.type) {
-      case 'Status':
-        this.status = {
-          ...e.detail.model
-        };
-
-        break;
-    }
+    this.act(e.detail);
   }
 }

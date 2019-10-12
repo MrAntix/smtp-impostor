@@ -16,16 +16,20 @@
   "license": "MIT",
   "devDependencies": {
     "@stencil/core": "^1.7.0",
+    "@stencil/redux": "^0.1.1",
     "@stencil/router": "^1.0.1",
-    "convert-svg-to-png": "^0.5.0",
-    "imagemin": "^6.1.0",
-    "imagemin-pngquant": "^7.0.0",
-    "to-ico": "^1.1.5",
     "@types/jest": "24.0.18",
     "@types/puppeteer": "1.19.0",
     "barrelsby": "^2.1.1",
+    "convert-svg-to-png": "^0.5.0",
+    "imagemin": "^6.1.0",
+    "imagemin-pngquant": "^7.0.0",
     "jest": "24.8.0",
     "jest-cli": "24.8.0",
+    "redux": "^4.0.4",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-thunk": "^2.3.0",
+    "to-ico": "^1.1.5",
     "workbox-build": "4.3.1"
   }
 }

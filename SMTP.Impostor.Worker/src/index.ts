@@ -7,4 +7,5 @@ export * from './app-home/index';
 export * from './app-root/index';
 export * from './global/index';
 export * from './impostor-hub/index';
+export * from './redux/index';
 export * from './storage/index';

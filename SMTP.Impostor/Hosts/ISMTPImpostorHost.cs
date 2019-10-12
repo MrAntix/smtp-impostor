@@ -7,6 +7,7 @@ namespace SMTP.Impostor.Hosts
     public interface ISMTPImpostorHost :
         IDisposable
     {
+        Guid Id { get; }
         SMTPImpostorHostSettings Settings { get; }
         SMTPImpostorHostStates State { get; }
 

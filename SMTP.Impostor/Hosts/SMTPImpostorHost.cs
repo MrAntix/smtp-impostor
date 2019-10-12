@@ -28,9 +28,12 @@ namespace SMTP.Impostor.Sockets
         public SMTPImpostorHost(
             ILogger<SMTPImpostorHost> logger = null)
         {
+            Id = Guid.NewGuid();
             _logger = logger ?? NullLogger<SMTPImpostorHost>.Instance;
             _events = new Subject<ISMTPImpostorEvent>();
         }
+
+        public Guid Id { get; }
 
         public SMTPImpostorHostSettings Settings { get; private set; }
         public SMTPImpostorHostStates State { get; private set; }

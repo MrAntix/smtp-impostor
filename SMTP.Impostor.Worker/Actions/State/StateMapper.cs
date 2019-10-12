@@ -19,6 +19,7 @@ namespace SMTP.Impostor.Worker.Actions.State
             if (source == null) return null;
 
             return new HostStatus(
+                source.Id,
                 source.Settings.Name,
                 source.Settings.IP, source.Settings.Port,
                 source.State
