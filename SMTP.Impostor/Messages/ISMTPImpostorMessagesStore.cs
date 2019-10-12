@@ -1,10 +1,9 @@
 ﻿using System.Collections.Immutable;
 using System.Threading.Tasks;
-using SMTP.Impostor.Messages;
 
-namespace SMTP.Impostor.Store
+namespace SMTP.Impostor.Messages
 {
-    public interface ISMTPImpostorStore
+    public interface ISMTPImpostorMessagesStore
     {
         Task<SMTPImpostorMessage> GetAsync(string host, string messageId);
         Task PutAsync(string host, SMTPImpostorMessage message);

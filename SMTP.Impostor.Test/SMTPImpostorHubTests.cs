@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -15,13 +14,14 @@ namespace SMTP.Impostor.Test
     [TestClass]
     public class SMTPImpostorHubTests
     {
+        readonly SMTPImpostorSerialization _serialization = new SMTPImpostorSerialization();
         readonly SMTPImpostorHubMessage MESSAGE;
         readonly string MESSAGE_JSON;
 
         public SMTPImpostorHubTests()
-        {
+        {            
             MESSAGE = new SMTPImpostorHubMessage("TYPE", "DATA");
-            MESSAGE_JSON = JsonSerializer.Serialize(MESSAGE);
+            MESSAGE_JSON = _serialization.Serialize(MESSAGE);
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace SMTP.Impostor.Test
                 client.TriggerReceive(MESSAGE_JSON);
 
                 Task.Delay(100).GetAwaiter().GetResult();
-                Assert.AreEqual(MESSAGE_JSON, JsonSerializer.Serialize(message));
+                Assert.AreEqual(MESSAGE_JSON, _serialization.Serialize(message));
             }
         }
 
@@ -111,7 +111,8 @@ namespace SMTP.Impostor.Test
         {
             return new SMTPImpostorHubService(
                 NullLogger<SMTPImpostorHubService>.Instance,
-                new FakeHubActionExecutor());
+                new FakeActionExecutor(),
+                _serialization);
         }
 
         class SMTPImpostorHubClient :

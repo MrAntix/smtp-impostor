@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using SMTP.Impostor.Store.File;
+using SMTP.Impostor.Stores.FileSystem.HostSettings;
+using SMTP.Impostor.Stores.FileSystem.Messages;
 using SMTP.Impostor.Worker.Hubs;
 using SMTP.Impostor.Worker.Properties;
 
@@ -33,14 +33,14 @@ namespace SMTP.Impostor.Worker
 
             services
                 .AddSMTPImpostor(Settings.Impostor)
-                .AddSMTPImpostorFileStore(Settings.ImpostorFileStore)
+                .AddSMTPImpostorFileSystemMessagesStore()
+                .AddSMTPImpostorFileSystemHostSettingsStore()
                 .AddSMTPImpostorHub()
-                .AddHostedService<SMTPImpostorService>();
+                .AddSMTPImpostorWorker();
         }
 
         public void Configure(
-            IApplicationBuilder app, IWebHostEnvironment env,
-            ILogger<Startup> logger)
+            IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

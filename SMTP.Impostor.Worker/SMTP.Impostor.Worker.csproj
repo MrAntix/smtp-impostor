@@ -13,10 +13,11 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SMTP.Impostor.Store\SMTP.Impostor.Store.csproj" />
+    <ProjectReference Include="..\SMTP.Impostor.Stores.FileSystem\SMTP.Impostor.Stores.FileSystem.csproj" />
     <ProjectReference Include="..\SMTP.Impostor\SMTP.Impostor.csproj" />
   </ItemGroup>
 

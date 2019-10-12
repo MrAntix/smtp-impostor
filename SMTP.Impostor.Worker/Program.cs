@@ -27,7 +27,7 @@ namespace SMTP.Impostor.Worker
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddHostedService<SMTPImpostorService>();
+                    services.AddHostedService<SMTPImpostorWorkerService>();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

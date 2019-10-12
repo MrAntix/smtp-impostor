@@ -1,4 +1,4 @@
-﻿namespace SMTP.Impostor.Worker.Hubs.Actions
+﻿namespace SMTP.Impostor.Worker.Actions
 {
     public class NullActionResponse
     {

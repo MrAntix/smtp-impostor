@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace SMTP.Impostor.Store
+namespace SMTP.Impostor.Messages
 {
     public class SMTPImpostorStoreSearchCriteria
     {

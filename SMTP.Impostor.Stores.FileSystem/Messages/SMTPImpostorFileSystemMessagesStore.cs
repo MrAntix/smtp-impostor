@@ -1,41 +1,60 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using SMTP.Impostor.Messages;
 
-namespace SMTP.Impostor.Store.File
+namespace SMTP.Impostor.Stores.FileSystem.Messages
 {
 
-    public class SMTPImpostorFileStore : ISMTPImpostorStore
+    public class SMTPImpostorFileSystemMessagesStore : ISMTPImpostorMessagesStore
     {
-        readonly ILogger<SMTPImpostorFileStore> _logger;
+        readonly ILogger<SMTPImpostorFileSystemMessagesStore> _logger;
 
-        public SMTPImpostorFileStore(
-            ILogger<SMTPImpostorFileStore> logger,
-            SMTPImpostorFileStoreSettings settings)
+        public SMTPImpostorFileSystemMessagesStore(
+            ILogger<SMTPImpostorFileSystemMessagesStore> logger,
+            ISMTPImpostorSettings settings)
         {
-            _logger = logger ?? NullLogger<SMTPImpostorFileStore>.Instance;
+            _logger = logger ?? NullLogger<SMTPImpostorFileSystemMessagesStore>.Instance;
             if (settings is null)
                 throw new ArgumentNullException(nameof(settings));
 
-            StorePath = Path.Combine(settings.Path ?? Path.GetTempPath(), "Impostor");
+            StorePath = settings.FileStoreRoot;
             Directory.CreateDirectory(StorePath);
 
-            //Process.Start(new ProcessStartInfo
-            //{
-            //    FileName = _path,
-            //    UseShellExecute = true,
-            //    Verb = "open"
-            //});
             _logger.LogInformation($"Impostor file store \"{StorePath}\"");
+
+            TryOpenStorePath();
         }
 
         public readonly string StorePath;
 
-        async Task<SMTPImpostorMessage> ISMTPImpostorStore
+        public bool TryOpenStorePath()
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = StorePath,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    $"Could not launch store path {StorePath}");
+            }
+
+            return false;
+        }
+
+        async Task<SMTPImpostorMessage> ISMTPImpostorMessagesStore
             .GetAsync(string host, string messageId)
         {
             if (string.IsNullOrWhiteSpace(host))
@@ -44,16 +63,16 @@ namespace SMTP.Impostor.Store.File
                 throw new ArgumentNullException(nameof(messageId));
 
             var messagePath = GetMessageFilePath(host, messageId);
-            if (System.IO.File.Exists(messagePath))
+            if (File.Exists(messagePath))
             {
-                var content = await System.IO.File.ReadAllTextAsync(messagePath);
+                var content = await File.ReadAllTextAsync(messagePath);
                 return SMTPImpostorMessage.FromContent(content);
             }
 
             return null;
         }
 
-        async Task ISMTPImpostorStore
+        async Task ISMTPImpostorMessagesStore
             .PutAsync(string host, SMTPImpostorMessage message)
         {
             if (string.IsNullOrWhiteSpace(host))
@@ -62,10 +81,10 @@ namespace SMTP.Impostor.Store.File
                 throw new ArgumentNullException(nameof(message));
 
             var messagePath = GetMessageFilePath(host, message.Id);
-            await System.IO.File.WriteAllTextAsync(messagePath, message.Content);
+            await File.WriteAllTextAsync(messagePath, message.Content);
         }
 
-        async Task<IImmutableList<SMTPImpostorMessage>> ISMTPImpostorStore
+        async Task<IImmutableList<SMTPImpostorMessage>> ISMTPImpostorMessagesStore
             .SearchAsync(SMTPImpostorStoreSearchCriteria criteria)
         {
             if (criteria is null)

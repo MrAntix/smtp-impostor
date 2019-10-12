@@ -3,22 +3,22 @@ using System.Collections.Immutable;
 using System.Linq;
 using SMTP.Impostor.Hosts;
 
-namespace SMTP.Impostor.Worker.Hubs.Actions
+namespace SMTP.Impostor.Worker.Actions.State
 {
     public static class StateMapper
     {
-        public static IImmutableList<HostState> Map(
+        public static IImmutableList<HostStatus> Map(
             this IEnumerable<ISMTPImpostorHost> source)
         {
             return source?.Select(Map).ToImmutableList();
         }
 
-        public static HostState Map(
+        public static HostStatus Map(
             this ISMTPImpostorHost source)
         {
             if (source == null) return null;
 
-            return new HostState(
+            return new HostStatus(
                 source.Settings.Name,
                 source.Settings.IP, source.Settings.Port,
                 source.State

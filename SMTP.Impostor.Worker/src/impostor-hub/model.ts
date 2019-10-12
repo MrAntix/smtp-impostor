@@ -14,7 +14,7 @@ export interface IHubSocketProvider {
 
 export const hubSocketProvider: IHubSocketProvider = url => new WebSocket(url);
 
-export enum HubState {
+export enum HubStatus {
   disconnected,
   connecting,
   connected,

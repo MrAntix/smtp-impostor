@@ -7,7 +7,7 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
-  HubState,
+  HubStatus,
   IHubMessage,
   IHubSocketProvider,
 } from './impostor-hub/model';
@@ -20,7 +20,7 @@ export namespace Components {
     'disconnectAsync': () => Promise<void>;
     'sendAsync': (message: IHubMessage) => Promise<void>;
     'socketProvider': IHubSocketProvider;
-    'state': HubState;
+    'status': HubStatus;
     'url': string;
   }
 }
@@ -57,9 +57,9 @@ declare namespace LocalJSX {
   interface AppRoot {}
   interface ImpostorHub {
     'onMessageReceived'?: (event: CustomEvent<IHubMessage>) => void;
-    'onStateChanged'?: (event: CustomEvent<HubState>) => void;
+    'onStatusChanged'?: (event: CustomEvent<HubStatus>) => void;
     'socketProvider'?: IHubSocketProvider;
-    'state'?: HubState;
+    'status'?: HubStatus;
     'url'?: string;
   }
 

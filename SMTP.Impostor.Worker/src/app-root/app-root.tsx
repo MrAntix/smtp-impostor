@@ -1,5 +1,5 @@
 import { Component, h, State } from '@stencil/core';
-import { HubState, IHubMessage } from '../impostor-hub';
+import { HubStatus, IHubMessage } from '../impostor-hub';
 
 
 @Component({
@@ -10,7 +10,7 @@ import { HubState, IHubMessage } from '../impostor-hub';
 export class AppRoot {
   logger = globalThis.getLogger('AppRoot');
 
-  @State() state: any;
+  @State() status: any;
   hub: HTMLImpostorHubElement;
 
   render() {
@@ -19,7 +19,7 @@ export class AppRoot {
         <header>
           <h1>SMTP Impostor</h1>
           <impostor-hub ref={el => this.hub = el}
-            onStateChanged={e => this.handleHubStateChangedAsync(e)}
+            onStatusChanged={e => this.handleHubStatusChangedAsync(e)}
             onMessageReceived={e => this.handleHubMessageReceivedAsync(e)}></impostor-hub>
         </header>
 
@@ -30,7 +30,7 @@ export class AppRoot {
             </stencil-route-switch>
           </stencil-router>
 
-          <pre>{JSON.stringify(this.state, undefined, 2)}</pre>
+          <pre>{JSON.stringify(this.status, undefined, 2)}</pre>
         </main>
       </div>
     );
@@ -40,13 +40,13 @@ export class AppRoot {
     this.hub.connectAsync()
   }
 
-  async handleHubStateChangedAsync(e: CustomEvent<HubState>) {
-    this.logger.debug('handleHubStateChangedAsync', { e });
+  async handleHubStatusChangedAsync(e: CustomEvent<HubStatus>) {
+    this.logger.debug('handleHubStatusChangedAsync', { e });
 
     switch (e.detail) {
-      case HubState.connected:
+      case HubStatus.connected:
         await this.hub.sendAsync({
-          type: 'GetState'
+          type: 'GetStatus'
         });
         break;
     }
@@ -56,8 +56,8 @@ export class AppRoot {
     this.logger.debug('handleHubMessageReceivedAsync', { e });
 
     switch (e.detail.type) {
-      case 'State':
-        this.state = {
+      case 'Status':
+        this.status = {
           ...e.detail.model
         };
 

@@ -1,20 +1,16 @@
-﻿using System.Collections.Immutable;
-using SMTP.Impostor.Hosts;
+﻿using System.IO;
 
 namespace SMTP.Impostor
 {
     public class SMTPImpostorSettings : ISMTPImpostorSettings
     {
-        public IImmutableList<SMTPImpostorHostSettings> Hosts { get; set; }
-            = ImmutableList<SMTPImpostorHostSettings>.Empty;
+        public string FileStoreRoot { get; set; }
 
-        public static ISMTPImpostorSettings Default = new SMTPImpostorSettings
-        {
-            Hosts = new[]{
-                new SMTPImpostorHostSettings(
-                        ip: "127.0.0.1",
-                        port: 25)
-                }.ToImmutableList()
-        };
+        public static ISMTPImpostorSettings Default { get; }
+            = new SMTPImpostorSettings
+            {
+                FileStoreRoot
+                    = Path.Combine(Path.GetTempPath(), "Impostor")
+            };
     }
 }

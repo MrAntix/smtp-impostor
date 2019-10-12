@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace SMTP.Impostor.Worker.Hubs.Actions
+namespace SMTP.Impostor.Worker.Actions
 {
-    public interface IHubActionExecutor
+    public interface IActionExecutor
     {
         Task<object> ExecuteAsync(string type, string data);
     }

@@ -1,7 +1,7 @@
 import { Component, h, Prop, Event, EventEmitter, Method } from '@stencil/core';
 import {
   IHubSocketProvider, hubSocketProvider, IHubSocket,
-  HubState, IHubMessage
+  HubStatus, IHubMessage
 } from './model';
 
 const RECONNECT_INIT = 200;
@@ -19,7 +19,7 @@ export class ImpostorHubComponent {
 
   @Prop() socketProvider: IHubSocketProvider = hubSocketProvider;
   @Prop() url: string = `wss://${location.host}/hub`;
-  @Prop() state: HubState = HubState.disconnected;
+  @Prop() status: HubStatus = HubStatus.disconnected;
 
   @Method() async connectAsync(
     url?: string
@@ -37,7 +37,7 @@ export class ImpostorHubComponent {
         this.logger.debug('socket.onopen', { e });
 
         this.reconnectIn = RECONNECT_INIT;
-        this.setState(HubState.connected);
+        this.setStatus(HubStatus.connected);
       };
 
       this.socket.onclose = (e: CloseEvent) => {
@@ -50,7 +50,7 @@ export class ImpostorHubComponent {
       this.socket.onerror = (e: any) => {
         this.logger.warn('socket.onerror', { e });
 
-        this.setState(HubState.error);
+        this.setStatus(HubStatus.error);
       };
 
       this.socket.onmessage = (e: MessageEvent) => {
@@ -66,7 +66,7 @@ export class ImpostorHubComponent {
 
     } catch (err) {
       this.logger.error('connect', err);
-      this.setState(HubState.error);
+      this.setStatus(HubStatus.error);
       this.retryConnect();
     }
   }
@@ -100,18 +100,18 @@ export class ImpostorHubComponent {
     }
     this.socket = null;
 
-    this.setState(HubState.disconnected);
+    this.setStatus(HubStatus.disconnected);
   }
 
   render() {
-    return <div>State {HubState[this.state]}</div>;
+    return <div>Status {HubStatus[this.status]}</div>;
   }
 
-  setState(state: HubState) {
-    this.state = state;
-    this.stateChanged.emit(state);
+  setStatus(value: HubStatus) {
+    this.status = value;
+    this.statusChanged.emit(value);
   }
 
-  @Event() stateChanged: EventEmitter<HubState>;
+  @Event() statusChanged: EventEmitter<HubStatus>;
   @Event() messageReceived: EventEmitter<IHubMessage>;
 }

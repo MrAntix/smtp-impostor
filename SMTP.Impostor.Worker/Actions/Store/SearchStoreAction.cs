@@ -1,18 +1,17 @@
 ﻿using System.Collections.Immutable;
 using System.Threading.Tasks;
 using SMTP.Impostor.Messages;
-using SMTP.Impostor.Store;
 
-namespace SMTP.Impostor.Worker.Hubs.Actions
+namespace SMTP.Impostor.Worker.Actions.Store
 {
 
     public class SearchStoreAction :
-        HubActionBase<SMTPImpostorStoreSearchCriteria, IImmutableList<SMTPImpostorMessage>>
+        ActionBase<SMTPImpostorStoreSearchCriteria, IImmutableList<SMTPImpostorMessage>>
     {
-        readonly ISMTPImpostorStore _store;
+        readonly ISMTPImpostorMessagesStore _store;
 
         public SearchStoreAction(
-            ISMTPImpostorStore store)
+            ISMTPImpostorMessagesStore store)
         {
             _store = store;
         }

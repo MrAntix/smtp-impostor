@@ -4,11 +4,10 @@ using System.Collections.Immutable;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using SMTP.Impostor.Worker.Hubs.Actions;
+using SMTP.Impostor.Worker.Actions;
 
 namespace SMTP.Impostor.Worker.Hubs
 {
@@ -16,17 +15,20 @@ namespace SMTP.Impostor.Worker.Hubs
         IDisposable
     {
         readonly ILogger<SMTPImpostorHubService> _logger;
-        readonly IHubActionExecutor _executor;
+        readonly IActionExecutor _executor;
+        readonly SMTPImpostorSerialization _serialization;
         readonly SemaphoreSlim _messageSemaphore;
         readonly BehaviorSubject<IImmutableList<ISMTPImpostorHubClient>> _clients;
         readonly Subject<SMTPImpostorHubMessage> _messages;
 
         public SMTPImpostorHubService(
             ILogger<SMTPImpostorHubService> logger,
-            IHubActionExecutor executor)
+            IActionExecutor executor,
+            SMTPImpostorSerialization serialization)
         {
             _logger = logger;
             _executor = executor;
+            _serialization = serialization;
             _clients = new BehaviorSubject<IImmutableList<ISMTPImpostorHubClient>>(ImmutableList<ISMTPImpostorHubClient>.Empty);
             _messages = new Subject<SMTPImpostorHubMessage>();
             _messageSemaphore = new SemaphoreSlim(1);
@@ -62,12 +64,8 @@ namespace SMTP.Impostor.Worker.Hubs
                             if (result != NullActionResponse.Instance)
                             {
                                 await client.SendAsync(
-                                    JsonSerializer.Serialize(
-                                        SMTPImpostorHubMessage.From(result),
-                                        new JsonSerializerOptions
-                                        {
-                                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                                        }
+                                    _serialization.Serialize(
+                                        CreateMessageFrom(result)
                                     ));
                             }
                         }
@@ -88,13 +86,21 @@ namespace SMTP.Impostor.Worker.Hubs
             }
         }
 
+        private object CreateMessageFrom(object model)
+        {
+            return new SMTPImpostorHubMessage(
+                model.GetType().Name,
+                _serialization.Serialize(model)
+                );
+        }
+
         public async Task SendMessage(
             SMTPImpostorHubMessage message,
             IEnumerable<ISMTPImpostorHubClient> clients = null)
         {
             await EnqueueMessage(async () =>
             {
-                var data = JsonSerializer.Serialize(message);
+                var data = _serialization.Serialize(message);
 
                 foreach (var client in clients ?? _clients.Value)
                 {

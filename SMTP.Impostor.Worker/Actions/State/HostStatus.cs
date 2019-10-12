@@ -1,10 +1,10 @@
 ﻿using SMTP.Impostor.Sockets;
 
-namespace SMTP.Impostor.Worker.Hubs.Actions
+namespace SMTP.Impostor.Worker.Actions.State
 {
-    public class HostState
+    public class HostStatus
     {
-        public HostState(
+        public HostStatus(
             string name,
             string ip, int port,
             SMTPImpostorHostStates state)

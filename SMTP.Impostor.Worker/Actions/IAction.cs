@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace SMTP.Impostor.Worker.Hubs.Actions
+namespace SMTP.Impostor.Worker.Actions
 {
-    public interface IHubAction
+    public interface IAction
     {
         Type RequestType { get; }
         Task<object> ExecuteAsync(object request);

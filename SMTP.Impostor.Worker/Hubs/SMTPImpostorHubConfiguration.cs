@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using SMTP.Impostor.Worker.Hubs.Actions;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SMTP.Impostor.Worker.Actions;
 
 namespace SMTP.Impostor.Worker.Hubs
 {
@@ -13,15 +14,16 @@ namespace SMTP.Impostor.Worker.Hubs
             this IServiceCollection services)
         {
             services.AddSingleton<SMTPImpostorHubService>();
-            services.AddSingleton<IHubActionExecutor, HubActionExecutor>();
-            foreach (var actionType in typeof(HubActionExecutor)
+            services.AddSingleton<IActionExecutor, ActionExecutor>();
+            services.TryAddSingleton<SMTPImpostorSerialization>();
+            foreach (var actionType in typeof(ActionExecutor)
                 .Assembly.GetTypes()
                 .Where(t =>
                     !t.IsAbstract
-                    && typeof(IHubAction).IsAssignableFrom(t)))
+                    && typeof(IAction).IsAssignableFrom(t)))
             {
                 services.AddSingleton(actionType);
-                services.AddSingleton(sp => sp.GetRequiredService(actionType) as IHubAction);
+                services.AddSingleton(sp => sp.GetRequiredService(actionType) as IAction);
             }
 
             return services;

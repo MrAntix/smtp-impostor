@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text.Json;
-
-namespace SMTP.Impostor.Worker.Hubs
+﻿namespace SMTP.Impostor.Worker.Hubs
 {
     public class SMTPImpostorHubMessage
     {
@@ -15,13 +12,5 @@ namespace SMTP.Impostor.Worker.Hubs
 
         public string Type { get; }
         public string Data { get; }
-
-        public static SMTPImpostorHubMessage From(object model)
-        {
-            return new SMTPImpostorHubMessage(
-                model.GetType().Name,
-                JsonSerializer.Serialize(model)
-                );
-        }
     }
 }

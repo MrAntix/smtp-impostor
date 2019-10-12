@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using SMTP.Impostor.Worker.Hubs.Actions;
+using SMTP.Impostor.Worker.Actions;
 
 namespace SMTP.Impostor.Test
 {
-    internal class FakeHubActionExecutor : IHubActionExecutor
+    internal class FakeActionExecutor : IActionExecutor
     {
-        Task<object> IHubActionExecutor
+        Task<object> IActionExecutor
             .ExecuteAsync(string type, string data)
         {
             return Task.FromResult((object)NullActionResponse.Instance);

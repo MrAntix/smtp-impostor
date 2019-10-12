@@ -13,19 +13,13 @@ namespace SMTP.Impostor
     public class SMTPImpostor : IDisposable
     {
         readonly ILoggerFactory _loggerFactory;
-        readonly ISMTPImpostorSettings _settings;
         readonly Subject<ISMTPImpostorEvent> _events;
 
         public SMTPImpostor(
-            ILoggerFactory loggerFactory,
-            ISMTPImpostorSettings settings)
+            ILoggerFactory loggerFactory)
         {
             _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _events = new Subject<ISMTPImpostorEvent>();
-
-            foreach (var hostSettings in _settings.Hosts)
-                AddHost(hostSettings);
         }
 
         public ISMTPImpostorHost CreateHost()

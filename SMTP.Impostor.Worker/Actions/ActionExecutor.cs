@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace SMTP.Impostor.Worker.Hubs.Actions
+namespace SMTP.Impostor.Worker.Actions
 {
-    public class HubActionExecutor : IHubActionExecutor
+    public class ActionExecutor : IActionExecutor
     {
-        readonly IImmutableDictionary<string, Tuple<Type, IHubAction>> _actions;
+        readonly IImmutableDictionary<string, Tuple<Type, IAction>> _actions;
 
-        public HubActionExecutor(
-            IEnumerable<IHubAction> actions)
+        public ActionExecutor(
+            IEnumerable<IAction> actions)
         {
             _actions = actions.Select(action =>
             {
@@ -27,7 +26,7 @@ namespace SMTP.Impostor.Worker.Hubs.Actions
             ).ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
         }
 
-        async Task<object> IHubActionExecutor.ExecuteAsync(
+        async Task<object> IActionExecutor.ExecuteAsync(
             string actionName, string data)
         {
             if (!_actions.ContainsKey(actionName))

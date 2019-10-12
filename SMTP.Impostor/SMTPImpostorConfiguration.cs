@@ -18,7 +18,7 @@ namespace SMTP.Impostor
                 p => () => p.GetRequiredService<ISMTPImpostorHost>()
                 );
 
-            services.AddTransient<SMTPImpostor>();
+            services.AddSingleton<SMTPImpostor>();
 
             return services;
         }

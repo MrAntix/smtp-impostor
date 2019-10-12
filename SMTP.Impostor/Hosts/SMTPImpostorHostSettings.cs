@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 
 namespace SMTP.Impostor.Hosts
 {
@@ -31,5 +32,12 @@ namespace SMTP.Impostor.Hosts
                 && string.Equals(IP, other.IP, StringComparison.InvariantCultureIgnoreCase)
                 && Port == other.Port;
         }
+
+        public static IImmutableList<SMTPImpostorHostSettings> Default
+            = new[]{
+                new SMTPImpostorHostSettings(
+                        ip: "127.0.0.1",
+                        port: 25)
+                }.ToImmutableList();
     }
 }

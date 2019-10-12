@@ -1,39 +1,41 @@
 ﻿using System;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SMTP.Impostor.Hosts;
 using SMTP.Impostor.Messages;
-using SMTP.Impostor.Store;
 using SMTP.Impostor.Worker.Hubs;
 
 namespace SMTP.Impostor.Worker
 {
-    public class SMTPImpostorService : BackgroundService
+    public class SMTPImpostorWorkerService : BackgroundService
     {
-        readonly ILogger<SMTPImpostorService> _logger;
+        readonly ILogger<SMTPImpostorWorkerService> _logger;
+        readonly SMTPImpostorSerialization _serialization;
         readonly SMTPImpostor _impostor;
         readonly SMTPImpostorHubService _hub;
-        readonly ISMTPImpostorStore _store;
+        readonly ISMTPImpostorMessagesStore _store;
+        readonly ISMTPImpostorHostSettingsStore _hostsSettings;
 
         IDisposable _impostorEvents;
-        IDisposable _hubMessages;
 
-        public SMTPImpostorService(
-            ILogger<SMTPImpostorService> logger,
+        public SMTPImpostorWorkerService(
+            ILogger<SMTPImpostorWorkerService> logger,
+            SMTPImpostorSerialization serialization,
             SMTPImpostor impostor,
             SMTPImpostorHubService hub,
-            ISMTPImpostorStore store)
+            ISMTPImpostorMessagesStore store,
+            ISMTPImpostorHostSettingsStore hostsSettings)
         {
             _logger = logger;
+            _serialization = serialization;
             _impostor = impostor;
             _hub = hub;
             _store = store;
+            _hostsSettings = hostsSettings;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _impostorEvents = _impostor.Events.Subscribe(async e =>
             {
@@ -45,7 +47,7 @@ namespace SMTP.Impostor.Worker
                     await _hub.SendMessage(
                         new SMTPImpostorHubMessage(
                             "MessageRecieved",
-                            JsonSerializer.Serialize(new
+                            _serialization.Serialize(new
                             {
                                 mre.Data.Date,
                                 From = mre.Data.From.Address,
@@ -56,24 +58,19 @@ namespace SMTP.Impostor.Worker
                 }
             });
 
-            _hubMessages = _hub.Messages.Subscribe(async e =>
+            var settings = await _hostsSettings.LoadAsync();
+            await _hostsSettings.SaveAsync(settings);
+
+            foreach (var hostSetttings in settings)
             {
-
-            });
-
-            var host = _impostor.AddHost(
-                new SMTPImpostorHostSettings(
-                    ip: "127.0.0.1",
-                    port: 25));
-            host.Start();
-
-            return Task.CompletedTask;
+                var host = _impostor.AddHost(hostSetttings);
+                host.Start();
+            }
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             _impostorEvents.Dispose();
-            _hubMessages.Dispose();
 
             return Task.CompletedTask;
         }
