@@ -1,19 +1,16 @@
 import { IStatus } from './model';
-import { ActionTypes, TypeKeys } from './actions';
+import { ActionTypes, Types } from './actions';
 
-const getInitialState = (): IStatus => {
-  return {
-    hosts: [],
-    fileStorePath: null
-  };
-};
+export const getInitialState = (): IStatus => ({
+  hosts: [],
+  fileStorePath: null
+});
 
-const status = (state = getInitialState(), action: ActionTypes): IStatus => {
+export default (state = getInitialState(), action: ActionTypes): IStatus => {
+  console.log('status.reducer', action);
   switch (action.type) {
-    case TypeKeys.STATUS:
+    case Types.STATUS:
       return action.model;
   }
   return state;
 };
-
-export default status;

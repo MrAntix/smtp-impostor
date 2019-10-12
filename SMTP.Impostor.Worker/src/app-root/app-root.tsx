@@ -5,6 +5,7 @@ import { Action } from 'redux';
 
 import { HubStatus, IHubMessage } from '../impostor-hub';
 import { IAppState, configureStore } from '../redux';
+import * as fromStatus from '../redux/status';
 
 @Component({
   tag: 'app-root',
@@ -13,24 +14,21 @@ import { IAppState, configureStore } from '../redux';
 })
 export class AppRoot {
   logger = globalThis.getLogger('AppRoot');
-
-  @State() status: IAppState;
   hub: HTMLImpostorHubElement;
 
-  @Prop({ context: "store" })
-  store: Store;
+  @Prop({ context: "store" }) store: Store;
 
-  act: (action: Action) => void;
+  @State() state: IAppState;
+
+  act: (action: any) => void;
 
   async componentWillLoad() {
     this.store.setStore(configureStore({}));
     this.store.mapDispatchToProps(this, {
       act: (action: Action) => dispatch => dispatch(action)
     });
-    this.store.mapStateToProps(this, (status: IAppState) => {
-      return {
-        status
-      };
+    this.store.mapStateToProps(this, (state: IAppState) => {
+      return { state };
     });
   }
 
@@ -51,7 +49,7 @@ export class AppRoot {
             </stencil-route-switch>
           </stencil-router>
 
-          <pre>{JSON.stringify(this.status, undefined, 2)}</pre>
+          <pre>{JSON.stringify(this.state, undefined, 2)}</pre>
         </main>
       </div>
     );
@@ -66,7 +64,10 @@ export class AppRoot {
 
     switch (e.detail) {
       default:
-        //this.status = {};
+        this.act({
+          type: fromStatus.Types.STATUS,
+          model: fromStatus.getInitialState()
+        });
         break;
       case HubStatus.connected:
         await this.hub.sendAsync({

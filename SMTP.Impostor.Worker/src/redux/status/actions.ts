@@ -1,6 +1,6 @@
 import { IHost } from './model';
 
-export enum TypeKeys {
+export enum Types {
   NULL = 'NULL',
   STATUS = 'Status',
   START = 'START',
@@ -9,11 +9,11 @@ export enum TypeKeys {
 }
 
 export interface NullAction {
-  type: TypeKeys.NULL;
+  type: Types.NULL;
 }
 
 export interface Status {
-  type: TypeKeys.STATUS;
+  type: Types.STATUS;
   model: {
     hosts: IHost[];
     fileStorePath: string;
@@ -21,31 +21,31 @@ export interface Status {
 }
 
 export interface HostStart {
-  type: TypeKeys.START;
+  type: Types.START;
   hostId: string;
 }
 export const startHost = (hostId: string) => dispatch => {
   const action: HostStart = {
-    type: TypeKeys.START,
+    type: Types.START,
     hostId
   };
   dispatch(action);
 };
 
 export interface HostStop {
-  type: TypeKeys.STOP;
+  type: Types.STOP;
   hostId: string;
 }
 export const stopHost = (hostId: string) => dispatch => {
   const action: HostStop = {
-    type: TypeKeys.STOP,
+    type: Types.STOP,
     hostId
   };
   dispatch(action);
 };
 
 export interface HostUpdated {
-  type: TypeKeys.UPDATED;
+  type: Types.UPDATED;
   host: IHost;
 }
 
