@@ -19,7 +19,7 @@ namespace SMTP.Impostor.Worker.Actions
                 var actionType = action.GetType();
                 var requestType = action.RequestType;
                 return KeyValuePair.Create(
-                      actionType.Name[0..^6],
+                      ActionBase.GetName(actionType),
                       Tuple.Create(requestType, action)
                       );
             }
@@ -30,7 +30,7 @@ namespace SMTP.Impostor.Worker.Actions
             string actionName, string data)
         {
             if (!_actions.ContainsKey(actionName))
-                return NullActionResponse.Instance;
+                return ActionNull.Instance;
 
             var actionInfo = _actions[actionName];
             var requestType = actionInfo.Item1;

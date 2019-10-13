@@ -3,8 +3,8 @@
     public enum SMTPImpostorHostStates
     {
         Stopped,
+        Errored,
         Started,
-        Receiving,
-        Errored
+        Receiving
     }
 }

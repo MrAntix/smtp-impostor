@@ -7,6 +7,8 @@ namespace SMTP.Impostor.Worker.Actions.State
     public class GetStatusAction :
         ActionBase<GetStatus, Status>
     {
+        public static string Name { get; } = GetName(typeof(GetStatusAction));
+
         readonly SMTPImpostor _impostor;
         readonly ISMTPImpostorMessagesStore _store;
 

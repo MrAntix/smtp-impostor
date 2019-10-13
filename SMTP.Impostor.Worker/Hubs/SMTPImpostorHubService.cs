@@ -61,7 +61,7 @@ namespace SMTP.Impostor.Worker.Hubs
                             _messages.OnNext(message);
 
                             var result = await _executor.ExecuteAsync(message.Type, message.Data);
-                            if (result != NullActionResponse.Instance)
+                            if (result != ActionNull.Instance)
                             {
                                 await client.SendAsync(
                                     _serialization.Serialize(

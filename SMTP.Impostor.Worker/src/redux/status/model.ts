@@ -4,16 +4,16 @@ export interface IStatus {
 }
 
 export interface IHost {
-  id: string;
-  name: string;
-  ip: string;
-  port: number;
-  state: HostStatus;
+  id?: string;
+  name?: string;
+  ip?: string;
+  port?: number;
+  state?: HostStatus;
 }
 
 export enum HostStatus {
   Stopped,
+  Errored,
   Started,
-  Receiving,
-  Errored
+  Receiving
 }

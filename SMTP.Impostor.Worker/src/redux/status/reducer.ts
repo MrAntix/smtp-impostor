@@ -1,8 +1,8 @@
 import { IStatus } from './model';
-import { ActionTypes, Types } from './actions';
+import { ActionTypes, Types } from './types';
 
 export const getInitialState = (): IStatus => ({
-  hosts: [],
+  hosts: null,
   fileStorePath: null
 });
 

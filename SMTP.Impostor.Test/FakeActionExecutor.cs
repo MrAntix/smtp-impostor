@@ -8,7 +8,7 @@ namespace SMTP.Impostor.Test
         Task<object> IActionExecutor
             .ExecuteAsync(string type, string data)
         {
-            return Task.FromResult((object)NullActionResponse.Instance);
+            return Task.FromResult((object)ActionNull.Instance);
         }
     }
 }

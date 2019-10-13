@@ -20,7 +20,8 @@ namespace SMTP.Impostor.Sockets
         public SMTPImpostorHostStateChangeEvent ErroredEvent;
 
         readonly ILogger<SMTPImpostorHost> _logger;
-        bool _started;
+        TcpListener _listener;
+        bool _listenerStarted = false;
 
         Subject<ISMTPImpostorEvent> _events;
         IObservable<ISMTPImpostorEvent> ISMTPImpostorHost.Events => _events;
@@ -39,8 +40,8 @@ namespace SMTP.Impostor.Sockets
         public SMTPImpostorHostStates State { get; private set; }
         void RaiseStateChange(SMTPImpostorHostStateChangeEvent e)
         {
-            _events.OnNext(e);
             State = e.Data;
+            _events.OnNext(e);
         }
 
         void ISMTPImpostorHost.Configure(SMTPImpostorHostSettings settings)
@@ -58,80 +59,81 @@ namespace SMTP.Impostor.Sockets
 
         void ISMTPImpostorHost.Start()
         {
-            if (_started)
+            if (_listenerStarted)
                 throw new SMTPImpostorHostAlreadyStarted(Settings);
 
-            _started = true;
             RaiseStateChange(StartedEvent);
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 try
                 {
-                    var listener = new TcpListener(
+                    _listener = new TcpListener(
                         IPAddress.Parse(Settings.IP),
                         Settings.Port);
-                    listener.Start();
+                    _listener.Start();
+                    _listenerStarted = true;
 
-                    while (_started)
+                    do
                     {
-                        var client = listener.AcceptTcpClient();
+                        var client = await _listener.AcceptTcpClientAsync();
                         RaiseStateChange(ReceivingEvent);
 
-                        Task.Run(async () =>
+                        try
                         {
-                            try
-                            {
-                                RaiseStateChange(ReceivingEvent);
+                            RaiseStateChange(ReceivingEvent);
 
-                                using var handler = new SocketHandler(SocketWrapper.Wrap(client.Client));
+                            using var handler = new SocketHandler(SocketWrapper.Wrap(client.Client));
 
-                                var message = await handler.HandleAsync();
-                                _events.OnNext(
-                                    new SMTPImpostorMessageReceivedEvent(Settings, message)
-                                    );
+                            var message = await handler.HandleAsync();
+                            _events.OnNext(
+                                new SMTPImpostorMessageReceivedEvent(Settings, message)
+                                );
 
-                                RaiseStateChange(StartedEvent);
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogError(ex, $"host {Settings.Name}");
-                                RaiseStateChange(ErroredEvent);
-                            }
-                            finally
-                            {
-                                client.Dispose();
-                            }
-                        });
-                    }
-
-                    listener.Stop();
+                            RaiseStateChange(StartedEvent);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, $"host {Settings.Name}");
+                            RaiseStateChange(ErroredEvent);
+                        }
+                        finally
+                        {
+                            client.Dispose();
+                        }
+                    } while (_listenerStarted);
                 }
+                catch (ObjectDisposedException) { }
                 catch (SocketException ex)
                 {
-                    _logger.LogError(ex, $"host {Settings.Name}");
-                    This.Stop();
+                    if (ex.SocketErrorCode != SocketError.Interrupted)
+                    {
+                        _logger.LogError(ex, $"host {Settings.Name}");
 
-                    RaiseStateChange(ErroredEvent);
+                        This.Stop();
+                        RaiseStateChange(ErroredEvent);
+                    }
                 }
             });
         }
 
         void ISMTPImpostorHost.Stop()
         {
-            if (_events != null)
-            {
-                RaiseStateChange(StoppedEvent);
-                _events.OnCompleted();
-                _events = null;
-            }
+            if (_listener != null)
+                _listener.Stop();
+            _listenerStarted = false;
 
-            _started = false;
+            RaiseStateChange(StoppedEvent);
         }
 
         void IDisposable.Dispose()
         {
             This.Stop();
+            if (_events != null)
+            {
+                _events.OnCompleted();
+                _events = null;
+            }
         }
     }
 }

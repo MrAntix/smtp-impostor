@@ -1,57 +1,68 @@
+import { IHubMessage } from '../../impostor-hub';
 import { IHost } from './model';
+import {
+  Types,
+  GetStatus,
+  Status,
+  AddHost,
+  RemoveHost,
+  StartHost,
+  StopHost
+} from './types';
+import { getInitialState } from './reducer';
 
-export enum Types {
-  NULL = 'NULL',
-  STATUS = 'Status',
-  START = 'START',
-  STOP = 'STOP',
-  UPDATED = 'UPDATED'
-}
+export const dispatch = (action: IHubMessage) => dispatch => {
+  dispatch(action);
+};
 
-export interface NullAction {
-  type: Types.NULL;
-}
-
-export interface Status {
-  type: Types.STATUS;
-  model: {
-    hosts: IHost[];
-    fileStorePath: string;
+export const initStatus = () => dispatch => {
+  const action: Status = {
+    type: Types.STATUS,
+    model: getInitialState()
   };
-}
+  dispatch(action);
+};
 
-export interface HostStart {
-  type: Types.START;
-  hostId: string;
-}
+export const getStatus = () => dispatch => {
+  const action: GetStatus = {
+    type: Types.GET_STATUS,
+    sendToHub: true
+  };
+  dispatch(action);
+};
+
+export const addHost = (host?: IHost) => dispatch => {
+  const action: AddHost = {
+    type: Types.ADD_HOST,
+    sendToHub: true,
+    model: host
+  };
+  dispatch(action);
+};
+
+export const removeHost = (hostId: string) => dispatch => {
+  const action: RemoveHost = {
+    type: Types.REMOVE_HOST,
+    sendToHub: true,
+    model: { hostId }
+  };
+  dispatch(action);
+};
+
 export const startHost = (hostId: string) => dispatch => {
-  const action: HostStart = {
-    type: Types.START,
-    hostId
+  const action: StartHost = {
+    type: Types.START_HOST,
+    sendToHub: true,
+    model: { hostId }
   };
   dispatch(action);
 };
 
-export interface HostStop {
-  type: Types.STOP;
-  hostId: string;
-}
 export const stopHost = (hostId: string) => dispatch => {
-  const action: HostStop = {
-    type: Types.STOP,
-    hostId
+  const action: StopHost = {
+    type: Types.STOP_HOST,
+    sendToHub: true,
+    model: { hostId }
   };
   dispatch(action);
 };
-
-export interface HostUpdated {
-  type: Types.UPDATED;
-  host: IHost;
-}
-
-export type ActionTypes =
-  | NullAction
-  | Status
-  | HostStart
-  | HostStop
-  | HostUpdated;
