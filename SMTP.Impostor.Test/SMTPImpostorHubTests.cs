@@ -19,7 +19,7 @@ namespace SMTP.Impostor.Test
         readonly string MESSAGE_JSON;
 
         public SMTPImpostorHubTests()
-        {            
+        {
             MESSAGE = new SMTPImpostorHubMessage("TYPE", "DATA");
             MESSAGE_JSON = _serialization.Serialize(MESSAGE);
         }

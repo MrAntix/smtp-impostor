@@ -5,7 +5,7 @@ using SMTP.Impostor.Stores.FileSystem.Messages;
 namespace SMTP.Impostor.Worker.Actions.State
 {
     public class GetStatusAction :
-        ActionBase<GetStatus, Status>
+        ActionBase<Status>
     {
         public static string Name { get; } = GetName(typeof(GetStatusAction));
 
@@ -20,8 +20,7 @@ namespace SMTP.Impostor.Worker.Actions.State
             _store = store;
         }
 
-        public override Task<Status> ExecuteAsync(
-            GetStatus request)
+        public override Task<Status> ExecuteAsync()
         {
             var fileStore = _store as SMTPImpostorFileSystemMessagesStore;
             var status = new Status(

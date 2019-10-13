@@ -1,4 +1,5 @@
-﻿using SMTP.Impostor.Events;
+﻿using System;
+using SMTP.Impostor.Events;
 using SMTP.Impostor.Hosts;
 
 namespace SMTP.Impostor.Messages
@@ -7,10 +8,14 @@ namespace SMTP.Impostor.Messages
         SMTPImpostorEventBase<SMTPImpostorMessage>
     {
         public SMTPImpostorMessageReceivedEvent(
+            Guid hostId,
             SMTPImpostorHostSettings hostSettings,
             SMTPImpostorMessage message) :
-            base(hostSettings, message)
+            base(hostId, message)
         {
+            HostSettings = hostSettings;
         }
+
+        public SMTPImpostorHostSettings HostSettings { get; }
     }
 }

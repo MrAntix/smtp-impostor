@@ -1,24 +1,33 @@
-using System;
-using SMTP.Impostor.Hosts;
+﻿using System;
 
 namespace SMTP.Impostor.Events
 {
-    public abstract class SMTPImpostorEventBase<TData> :
+    public abstract class SMTPImpostorEventBase :
         ISMTPImpostorEvent
     {
         public SMTPImpostorEventBase(
-            SMTPImpostorHostSettings hostSettings,
-            TData data)
+            Guid hostId)
         {
             Id = Guid.NewGuid();
             On = DateTimeOffset.UtcNow;
-            HostSettings = hostSettings;
-            Data = data;
+            HostId = hostId;
         }
 
         public Guid Id { get; }
         public DateTimeOffset On { get; }
-        public SMTPImpostorHostSettings HostSettings { get; }
+        public Guid HostId { get; }
+    }
+
+    public abstract class SMTPImpostorEventBase<TData> :
+        SMTPImpostorEventBase
+    {
+        public SMTPImpostorEventBase(
+            Guid hostId,
+            TData data) : base(hostId)
+        {
+            Data = data;
+        }
+
         public TData Data { get; }
     }
 }

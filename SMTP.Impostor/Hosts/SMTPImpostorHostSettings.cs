@@ -8,17 +8,20 @@ namespace SMTP.Impostor.Hosts
         IEquatable<SMTPImpostorHostSettings>
     {
         public SMTPImpostorHostSettings(
-            string ip, int port = 25,
-            string name = null)
+            string ip = null, int? port = 25,
+            string name = null,
+            bool start = false)
         {
-            IP = ip ?? throw new ArgumentNullException(nameof(ip));
-            Port = port;
-            Name = name ?? $"{ip}:{port}";
+            IP = ip ?? "127.0.0.1";
+            Port = port ?? 25;
+            Name = string.IsNullOrWhiteSpace(name) ? $"{IP}:{Port}" : name;
+            Start = start;
         }
 
         public string IP { get; }
         public int Port { get; }
         public string Name { get; }
+        public bool Start { get; }
 
         public override string ToString()
         {
@@ -35,9 +38,7 @@ namespace SMTP.Impostor.Hosts
 
         public static IImmutableList<SMTPImpostorHostSettings> Default
             = new[]{
-                new SMTPImpostorHostSettings(
-                        ip: "127.0.0.1",
-                        port: 25)
+                new SMTPImpostorHostSettings()
                 }.ToImmutableList();
     }
 }

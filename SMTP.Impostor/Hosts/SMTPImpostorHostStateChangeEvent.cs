@@ -1,5 +1,5 @@
+﻿using System;
 using SMTP.Impostor.Events;
-using SMTP.Impostor.Hosts;
 
 namespace SMTP.Impostor.Sockets
 {
@@ -7,9 +7,8 @@ namespace SMTP.Impostor.Sockets
          SMTPImpostorEventBase<SMTPImpostorHostStates>
     {
         public SMTPImpostorHostStateChangeEvent(
-            SMTPImpostorHostSettings hostSettings,
-            SMTPImpostorHostStates state) :
-            base(hostSettings, state)
+            Guid hostId,
+            SMTPImpostorHostStates state) : base(hostId, state)
         { }
     }
 }

@@ -36,17 +36,26 @@ namespace SMTP.Impostor
         public ISMTPImpostorHost AddHost(SMTPImpostorHostSettings hostSettings)
         {
             var host = CreateHost();
-            Hosts = Hosts.Add(hostSettings, host);
-
             host.Configure(hostSettings);
+
+            Hosts = Hosts.Add(host.Settings, host);
+            _events.OnNext(new SMTPImpostorHostAddedEvent(host.Id));
+
             host.Events.Subscribe(_events);
+
+            if (hostSettings.Start) host.Start();
 
             return host;
         }
 
         public void RemoveHost(SMTPImpostorHostSettings hostSettings)
         {
-            Hosts = Hosts.Remove(hostSettings);
+            if (Hosts.TryGetValue(hostSettings, out var host))
+            {
+                host.Stop();
+                Hosts = Hosts.Remove(hostSettings);
+                _events.OnNext(new SMTPImpostorHostRemovedEvent(host.Id));
+            }
         }
 
         void IDisposable.Dispose()

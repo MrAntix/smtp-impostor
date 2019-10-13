@@ -1,5 +1,4 @@
-using System;
-using SMTP.Impostor.Hosts;
+﻿using System;
 
 namespace SMTP.Impostor.Events
 {
@@ -7,6 +6,6 @@ namespace SMTP.Impostor.Events
     {
         Guid Id { get; }
         DateTimeOffset On { get; }
-        SMTPImpostorHostSettings HostSettings { get; }
+        Guid HostId { get; }
     }
 }

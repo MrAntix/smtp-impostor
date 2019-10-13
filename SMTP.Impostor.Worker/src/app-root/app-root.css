@@ -1,0 +1,38 @@
+h1 {
+  background-image: url(/assets/icon-48x48.png);
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+.hosts ul {
+  margin: 0;
+  padding: 0
+}
+
+.host {
+  display: flex;
+  padding: calc(var(--unit)/4) 0;
+}
+
+.host label {
+  margin-right: auto;
+}
+
+.host button:first-of-type {
+  margin-left: var(--unit);
+}
+
+main {
+  padding-bottom: var(--unit);
+}
+
+impostor-hub {
+  position: fixed;
+  bottom: var(--unit);
+  right: var(--unit);
+}
+
+pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+}

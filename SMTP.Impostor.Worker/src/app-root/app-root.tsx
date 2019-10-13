@@ -56,9 +56,6 @@ export class AppRoot {
       <div>
         <header>
           <h1>SMTP Impostor</h1>
-          <impostor-hub ref={el => this.hub = el}
-            onStatusChanged={e => this.handleHubStatusChangedAsync(e)}
-            onMessageReceived={e => this.dispatch(e.detail)}></impostor-hub>
         </header>
 
         <main>
@@ -68,23 +65,27 @@ export class AppRoot {
             </stencil-route-switch>
           </stencil-router>
 
-          <pre>{JSON.stringify(this.state, undefined, 2)}</pre>
-
           {this.state.status.hosts &&
             <div class="hosts">
               <ul>
                 {this.state.status.hosts.map(host => <li class="host">
                   <label>{host.name}</label>
-                  <label>{HostStatus[host.state]}</label>
+                  <span>{HostStatus[host.state]}</span>
                   {host.state == HostStatus.Stopped
                     ? <button onClick={() => this.startHost(host.id)}>Start</button>
                     : <button onClick={() => this.stopHost(host.id)}>Stop</button>
                   }
+                  <button onClick={() => this.removeHost(host.id)}>Remove</button>
                 </li>)}
               </ul>
               <button onClick={() => this.addHost()}>Add Host</button>
             </div>
           }
+
+          <pre>{JSON.stringify(this.state, undefined, 2)}</pre>
+          <impostor-hub ref={el => this.hub = el}
+            onStatusChanged={e => this.handleHubStatusChangedAsync(e)}
+            onMessageReceived={e => this.dispatch(e.detail)}></impostor-hub>
         </main>
       </div>
     );

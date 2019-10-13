@@ -9,6 +9,7 @@ export interface IHost {
   ip?: string;
   port?: number;
   state?: HostStatus;
+  start: boolean;
 }
 
 export enum HostStatus {
