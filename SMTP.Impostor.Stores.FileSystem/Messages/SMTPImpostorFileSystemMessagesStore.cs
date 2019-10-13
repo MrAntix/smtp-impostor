@@ -27,7 +27,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
             _logger.LogInformation($"Impostor file store \"{StorePath}\"");
 
-            TryOpenStorePath();
+            //TryOpenStorePath();
         }
 
         public readonly string StorePath;
