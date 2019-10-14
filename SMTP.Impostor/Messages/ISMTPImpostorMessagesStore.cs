@@ -7,6 +7,6 @@ namespace SMTP.Impostor.Messages
     {
         Task<SMTPImpostorMessage> GetAsync(string host, string messageId);
         Task PutAsync(string host, SMTPImpostorMessage message);
-        Task<IImmutableList<SMTPImpostorMessage>> SearchAsync(SMTPImpostorStoreSearchCriteria criteria);
+        Task<IImmutableList<SMTPImpostorMessage>> SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria);
     }
 }

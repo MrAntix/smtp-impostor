@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 
 namespace SMTP.Impostor.Messages
 {
-    public class SMTPImpostorStoreSearchCriteria
+    public class SMTPImpostorMessageStoreSearchCriteria
     {
-        public SMTPImpostorStoreSearchCriteria(
+        public SMTPImpostorMessageStoreSearchCriteria(
             string host,
             IEnumerable<string> ids,
             string text,

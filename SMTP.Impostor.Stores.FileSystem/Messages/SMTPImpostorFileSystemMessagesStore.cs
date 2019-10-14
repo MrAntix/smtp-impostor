@@ -85,7 +85,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         }
 
         async Task<IImmutableList<SMTPImpostorMessage>> ISMTPImpostorMessagesStore
-            .SearchAsync(SMTPImpostorStoreSearchCriteria criteria)
+            .SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria)
         {
             if (criteria is null)
                 throw new ArgumentNullException(nameof(criteria));

@@ -6,7 +6,7 @@ namespace SMTP.Impostor.Worker.Actions.Store
 {
 
     public class SearchStoreAction :
-        ActionBase<SMTPImpostorStoreSearchCriteria, IImmutableList<SMTPImpostorMessage>>
+        ActionBase<SMTPImpostorMessageStoreSearchCriteria, IImmutableList<SMTPImpostorMessage>>
     {
         readonly ISMTPImpostorMessagesStore _store;
 
@@ -17,7 +17,7 @@ namespace SMTP.Impostor.Worker.Actions.Store
         }
 
         public override async Task<IImmutableList<SMTPImpostorMessage>> ExecuteAsync(
-            SMTPImpostorStoreSearchCriteria request)
+            SMTPImpostorMessageStoreSearchCriteria request)
         {
             var result = await _store
                 .SearchAsync(request);

@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMTP.Impostor.Test.Sender",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMTP.Impostor.Stores.FileSystem", "SMTP.Impostor.Stores.FileSystem\SMTP.Impostor.Stores.FileSystem.csproj", "{FABED046-DF2B-473C-B2FB-63ABEEB9BFAF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".dist", ".dist", "{C2FA0674-C272-45BA-82A8-EA845B841326}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
