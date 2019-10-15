@@ -4,8 +4,6 @@
 
 Fake SMTP server for developers - Catches emails sent via SMTP an puts them in a temp directory so you don't send people emails by accident
 
-<img src="ui-screenshot.png" align="left" alt="SMTP Impostor UI" width="300px" style="margin-right:30px"/>
-
 ## in development, but works now
 
 worker written in c# [dotnet core 3](https://dotnet.microsoft.com/download/dotnet-core/3.0), the ui (wip) will need [npm](https://nodejs.org) to build
@@ -23,6 +21,8 @@ worker written in c# [dotnet core 3](https://dotnet.microsoft.com/download/dotne
 
 
 once running the admin ui (wip) is available through a browser ```https://localhost:62525```, you can install it as a web app if you are using a browser that supports [progressive web apps (pwa)](https://en.wikipedia.org/wiki/Progressive_web_applications)
+
+<img src="ui-screenshot.png" alt="SMTP Impostor UI"/>
 
 ### using in unit tests
 
