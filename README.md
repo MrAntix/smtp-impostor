@@ -17,7 +17,7 @@ worker written in c# [dotnet core 3](https://dotnet.microsoft.com/download/dotne
   3. ```/.deploy/uninstall.ps1``` uninstalls the installed service
      - requires admin elevation
 
-```{id}.eml``` files are dropped in ```{Drive}\Users\{User}\AppData\Local\Temp\Impostor\127.0.0.1_25```, windows 10 mail app can open them, otherwise you will need outlook or thunderbird to open them
+```{id}.eml``` files are dropped in ```{Drive}\Users\{User}\AppData\Local\Temp\Impostor\127.0.0.1_25```, windows 10 mail app can open them, otherwise you will need [thunderbird](https://www.thunderbird.net) or [outlook desktop](https://products.office.com/en-gb/outlook/email-and-calendar-software-microsoft-outlook)
 
 ### using in unit tests
 
