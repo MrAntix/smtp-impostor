@@ -1,15 +1,21 @@
 <img src="/SMTP.Impostor.Worker/src/assets/icon-256x256.png?raw=true" align="right" alt="SMTP Impostor Icon"/>
 
-# smtp-impostor
+# smtp-impostor v3.0
 
 Fake SMTP server for developers - Catches emails sent via SMTP an puts them in a temp directory so you don't send people emails by accident
 
-## v3 in development, but works now
+## in development, but works now
 
-worker written in c# dotnet core 3, the ui will need npm to build it but thats not done yet
+worker written in c# [dotnet core 3](https://dotnet.microsoft.com/download/dotnet-core/3.0), the ui (wip) will need [npm](https://nodejs.org) to build
 
-1. build and run the SMTP.Impostor.Worker to run as a console
-2. install.ps1 to run as a service (requires admin elevation)
+### available scripts ```/.deploy```
+
+  1. ```/.deploy/build.ps1``` builds worker project and publishes to ```/dist```.
+     - Run the SMTP.Impostor.Worker.exe to run as a console
+  2. ```/.deploy/install.ps1``` builds and installs as windows service
+     - requires admin elevation and request user to run service as
+  3. ```/.deploy/uninstall.ps1``` uninstalls the installed service
+     - requires admin elevation
 
 .eml files are dropped in ```[Drive]\Users\[User]\AppData\Local\Temp\Impostor\127.0.0.1_25```, you will need outlook or something to open them
 
