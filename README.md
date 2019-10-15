@@ -17,7 +17,7 @@ worker written in c# [dotnet core 3](https://dotnet.microsoft.com/download/dotne
   3. ```/.deploy/uninstall.ps1``` uninstalls the installed service
      - requires admin elevation
 
-.eml files are dropped in ```[Drive]\Users\[User]\AppData\Local\Temp\Impostor\127.0.0.1_25```, you will need outlook or something to open them
+```{id}.eml``` files are dropped in ```{Drive}\Users\{User}\AppData\Local\Temp\Impostor\127.0.0.1_25```, windows 10 mail app can open them, otherwise you will need outlook or thunderbird to open them
 
 ### using in unit tests
 
@@ -52,7 +52,7 @@ public void catch_emails_with_impostor()
   Assert.IsFalse(string.IsNullOrWhiteSpace(message.Subject));
 }
 
- ISMTPImpostorHost GetSMTPImpostorHost(
+ISMTPImpostorHost GetSMTPImpostorHost(
     SMTPImpostorHostSettings hostSettings)
 {
     var services = new ServiceCollection()
