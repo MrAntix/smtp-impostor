@@ -1,8 +1,10 @@
-<img src="/SMTP.Impostor.Worker/src/assets/icon-256x256.png?raw=true" align="right" alt="SMTP Impostor Icon"/>
+<img src="SMTP.Impostor.Worker/src/assets/icon-256x256.png?raw=true" align="right" alt="SMTP Impostor Icon"/>
 
 # smtp-impostor v3.0
 
 Fake SMTP server for developers - Catches emails sent via SMTP an puts them in a temp directory so you don't send people emails by accident
+
+<img src="ui-screenshot.png" align="left" alt="SMTP Impostor UI" width="300px" style="margin-right:30px"/>
 
 ## in development, but works now
 
@@ -18,6 +20,9 @@ worker written in c# [dotnet core 3](https://dotnet.microsoft.com/download/dotne
      - requires admin elevation
 
 ```{id}.eml``` files are dropped in ```{Drive}\Users\{User}\AppData\Local\Temp\Impostor\127.0.0.1_25```, windows 10 mail app can open them, otherwise you will need [thunderbird](https://www.thunderbird.net) or [outlook desktop](https://products.office.com/en-gb/outlook/email-and-calendar-software-microsoft-outlook)
+
+
+once running the admin ui (wip) is available through a browser ```https://localhost:62525```, you can install it as a web app if you are using a browser that supports [progressive web apps (pwa)](https://en.wikipedia.org/wiki/Progressive_web_applications)
 
 ### using in unit tests
 
