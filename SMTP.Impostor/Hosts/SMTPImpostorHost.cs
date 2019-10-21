@@ -27,9 +27,10 @@ namespace SMTP.Impostor.Sockets
         IObservable<ISMTPImpostorEvent> ISMTPImpostorHost.Events => _events;
 
         public SMTPImpostorHost(
-            ILogger<SMTPImpostorHost> logger = null)
+            ILogger<SMTPImpostorHost> logger = null,
+            Guid? id = null)
         {
-            Id = Guid.NewGuid();
+            Id = id ?? Guid.NewGuid();
             _logger = logger ?? NullLogger<SMTPImpostorHost>.Instance;
             _events = new Subject<ISMTPImpostorEvent>();
         }
@@ -128,12 +129,13 @@ namespace SMTP.Impostor.Sockets
 
         void IDisposable.Dispose()
         {
-            This.Stop();
             if (_events != null)
             {
                 _events.OnCompleted();
                 _events = null;
             }
+
+            This.Stop();
         }
     }
 }

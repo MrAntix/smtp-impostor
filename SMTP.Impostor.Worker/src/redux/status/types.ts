@@ -1,4 +1,4 @@
-import { IHost } from './model';
+import { IHost, IHostUpdate } from './model';
 
 export enum Types {
   NULL = 'NULL',
@@ -8,7 +8,8 @@ export enum Types {
   REMOVE_HOST = 'RemoveHost',
   START_HOST = 'Starthost',
   STOP_HOST = 'StopHost',
-  UPDATED = 'UPDATED'
+  UPDATE_HOST = 'UpdateHost',
+  HOST_UPDATED = 'HostUpdated'
 }
 
 export interface NullAction {
@@ -34,6 +35,17 @@ export interface AddHost {
   model: IHost;
 }
 
+export interface UpdateHost {
+  type: Types.UPDATE_HOST;
+  sendToHub: true;
+  model: IHostUpdate;
+}
+
+export interface HostUpdated {
+  type: Types.HOST_UPDATED;
+  host: IHost;
+}
+
 export interface RemoveHost {
   type: Types.REMOVE_HOST;
   sendToHub: true;
@@ -50,11 +62,6 @@ export interface StopHost {
   type: Types.STOP_HOST;
   sendToHub: true;
   model: { hostId: string };
-}
-
-export interface HostUpdated {
-  type: Types.UPDATED;
-  host: IHost;
 }
 
 export type ActionTypes =

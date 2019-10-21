@@ -47,4 +47,17 @@ namespace SMTP.Impostor.Worker.Actions
             return ActionNull.Instance;
         }
     }
+
+    public abstract class VoidActionBase : ActionBase, IAction
+    {
+        Type IAction.RequestType => typeof(ActionNull);
+
+        public abstract Task ExecuteAsync();
+
+        async Task<object> IAction.ExecuteAsync(object _)
+        {
+            await ExecuteAsync();
+            return ActionNull.Instance;
+        }
+    }
 }

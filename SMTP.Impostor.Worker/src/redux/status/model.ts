@@ -12,6 +12,13 @@ export interface IHost {
   start: boolean;
 }
 
+export interface IHostUpdate {
+  id?: string;
+  name?: string;
+  ip?: string;
+  port?: number;
+}
+
 export enum HostStatus {
   Stopped,
   Errored,

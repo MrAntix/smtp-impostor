@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using SMTP.Impostor.Worker.Actions;
 
 namespace SMTP.Impostor.Test
@@ -9,6 +10,16 @@ namespace SMTP.Impostor.Test
             .ExecuteAsync(string type, string data)
         {
             return Task.FromResult((object)ActionNull.Instance);
+        }
+    }
+
+    internal class FakeAction : VoidActionBase
+    {
+        public static string NAME { get; } = GetName(typeof(FakeAction));
+
+        public override Task ExecuteAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

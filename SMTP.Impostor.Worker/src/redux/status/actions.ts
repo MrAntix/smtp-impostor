@@ -1,5 +1,5 @@
 import { IHubMessage } from '../../impostor-hub';
-import { IHost } from './model';
+import { IHost, IHostUpdate } from './model';
 import {
   Types,
   GetStatus,
@@ -7,7 +7,8 @@ import {
   AddHost,
   RemoveHost,
   StartHost,
-  StopHost
+  StopHost,
+  UpdateHost
 } from './types';
 import { getInitialState } from './reducer';
 
@@ -31,11 +32,20 @@ export const getStatus = () => dispatch => {
   dispatch(action);
 };
 
-export const addHost = (host?: IHost) => dispatch => {
+export const addHost = (model?: IHost) => dispatch => {
   const action: AddHost = {
     type: Types.ADD_HOST,
     sendToHub: true,
-    model: host
+    model
+  };
+  dispatch(action);
+};
+
+export const updateHost = (model: IHostUpdate) => dispatch => {
+  const action: UpdateHost = {
+    type: Types.UPDATE_HOST,
+    sendToHub: true,
+    model
   };
   dispatch(action);
 };

@@ -23,6 +23,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMTP.Impostor.Stores.FileSy
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".dist", ".dist", "{C2FA0674-C272-45BA-82A8-EA845B841326}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".deploy", ".deploy", "{85669BBF-2C71-47D7-AAAB-4E730695C13A}"
+	ProjectSection(SolutionItems) = preProject
+		.deploy\build.ps1 = .deploy\build.ps1
+		.deploy\install.ps1 = .deploy\install.ps1
+		.deploy\uninstall.ps1 = .deploy\uninstall.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

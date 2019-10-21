@@ -75,6 +75,7 @@ namespace SMTP.Impostor.Worker
                     await _hostsSettings.SaveAsync(status.ToSettings());
                 }
                 else if (e is SMTPImpostorHostRemovedEvent
+                    || e is SMTPImpostorHostUpdatedEvent
                     || e is SMTPImpostorHostAddedEvent)
                 {
                     var status = await _executor

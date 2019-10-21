@@ -22,15 +22,16 @@ namespace SMTP.Impostor
             _events = new Subject<ISMTPImpostorEvent>();
         }
 
-        public ISMTPImpostorHost CreateHost()
+        public ISMTPImpostorHost CreateHost(Guid? id = null)
         {
             return new SMTPImpostorHost(
-                _loggerFactory.CreateLogger<SMTPImpostorHost>()
+                _loggerFactory.CreateLogger<SMTPImpostorHost>(),
+                id
                 );
         }
 
-        public IImmutableDictionary<SMTPImpostorHostSettings, ISMTPImpostorHost> Hosts { get; private set; }
-            = ImmutableDictionary<SMTPImpostorHostSettings, ISMTPImpostorHost>.Empty;
+        public IImmutableDictionary<Guid, ISMTPImpostorHost> Hosts { get; private set; }
+            = ImmutableDictionary<Guid, ISMTPImpostorHost>.Empty;
         public IObservable<ISMTPImpostorEvent> Events => _events;
 
         public ISMTPImpostorHost AddHost(SMTPImpostorHostSettings hostSettings)
@@ -38,24 +39,47 @@ namespace SMTP.Impostor
             var host = CreateHost();
             host.Configure(hostSettings);
 
-            Hosts = Hosts.Add(host.Settings, host);
+            Hosts = Hosts.Add(host.Id, host);
             _events.OnNext(new SMTPImpostorHostAddedEvent(host.Id));
 
-            host.Events.Subscribe(_events);
+            host.Events.Subscribe(e => _events.OnNext(e));
 
             if (hostSettings.Start) host.Start();
 
             return host;
         }
 
-        public void RemoveHost(SMTPImpostorHostSettings hostSettings)
+        public ISMTPImpostorHost UpdateHost(Guid hostId, SMTPImpostorHostSettings hostSettings)
         {
-            if (Hosts.TryGetValue(hostSettings, out var host))
+            var host = Hosts[hostId];
+            Hosts = Hosts.Remove(hostId);
+            host.Dispose();
+
+            host = CreateHost(hostId);
+            host.Configure(hostSettings);
+
+            Hosts = Hosts.Add(hostId, host);
+            _events.OnNext(new SMTPImpostorHostUpdatedEvent(hostId));
+
+            if (hostSettings.Start) host.Start();
+
+            host.Events.Subscribe(e => _events.OnNext(e));
+
+            return host;
+        }
+
+        public ISMTPImpostorHost TryRemoveHost(Guid hostId)
+        {
+            if (Hosts.TryGetValue(hostId, out var host))
             {
                 host.Stop();
-                Hosts = Hosts.Remove(hostSettings);
+                Hosts = Hosts.Remove(hostId);
                 _events.OnNext(new SMTPImpostorHostRemovedEvent(host.Id));
+
+                return host;
             }
+
+            return null;
         }
 
         void IDisposable.Dispose()
@@ -65,7 +89,6 @@ namespace SMTP.Impostor
                 foreach (var host in Hosts.ToArray())
                 {
                     host.Value.Dispose();
-                    RemoveHost(host.Key);
                 }
                 Hosts = null;
             }

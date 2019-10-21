@@ -18,7 +18,7 @@ namespace SMTP.Impostor.Worker.Actions.State
         {
             var host = _impostor.Hosts
                 .Values.First(h => h.Id == request.HostId);
-            _impostor.RemoveHost(host.Settings);
+            _impostor.TryRemoveHost(host.Id);
 
             return Task.CompletedTask;
         }

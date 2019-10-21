@@ -29,8 +29,11 @@ namespace SMTP.Impostor.Worker.Actions
         async Task<object> IActionExecutor.ExecuteAsync(
             string actionName, string data)
         {
+            if (actionName is null)            
+                throw new ArgumentNullException(nameof(actionName));            
+
             if (!_actions.ContainsKey(actionName))
-                return ActionNull.Instance;
+                throw new InvalidOperationException(actionName);
 
             var actionInfo = _actions[actionName];
             var requestType = actionInfo.Item1;

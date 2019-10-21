@@ -1,23 +1,31 @@
 import { Component, h, State, Prop } from '@stencil/core';
-import "@stencil/redux";
-import { Store } from "@stencil/redux";
+import '@stencil/redux';
+import { Store } from '@stencil/redux';
 
 import { IAppState, IAction, configureStore } from '../redux';
 
 import { HubStatus } from '../impostor-hub';
-import { dispatch, initStatus, getStatus, addHost, removeHost, startHost, stopHost } from '../redux/status/actions';
-import { HostStatus } from '../redux/status/model';
+import {
+  dispatch,
+  initStatus,
+  getStatus,
+  addHost,
+  removeHost,
+  startHost,
+  stopHost,
+  updateHost
+} from '../redux/status/actions';
 
 @Component({
   tag: 'app-root',
   styleUrl: 'app-root.css',
-  shadow: false
+  shadow: true
 })
 export class AppRoot {
   logger = globalThis.getLogger('AppRoot');
   hub: HTMLImpostorHubElement;
 
-  @Prop({ context: "store" }) store: Store;
+  @Prop({ context: 'store' }) store: Store;
 
   @State() state: IAppState;
 
@@ -28,13 +36,19 @@ export class AppRoot {
   removeHost: typeof removeHost;
   startHost: typeof startHost;
   stopHost: typeof stopHost;
+  updateHost: typeof updateHost;
 
   async componentWillLoad() {
     this.store.setStore(configureStore({}, () => this.hubAction()));
     this.store.mapDispatchToProps(this, {
       dispatch,
-      initStatus, getStatus,
-      addHost, removeHost, startHost, stopHost
+      initStatus,
+      getStatus,
+      addHost,
+      removeHost,
+      startHost,
+      stopHost,
+      updateHost
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
       return { state };
@@ -45,10 +59,9 @@ export class AppRoot {
     return next => async (action: IAction) => {
       this.logger.debug('hubAction', { action });
 
-      if (action.sendToHub)
-        await this.hub.sendAsync(action);
+      if (action.sendToHub) await this.hub.sendAsync(action);
       else next(action);
-    }
+    };
   }
 
   render() {
@@ -61,38 +74,47 @@ export class AppRoot {
         <main>
           <stencil-router>
             <stencil-route-switch scrollTopOffset={0}>
-              <stencil-route url='/' component='app-home' exact={true} />
+              <stencil-route url="/" component="app-home" exact={true} />
             </stencil-route-switch>
           </stencil-router>
 
-          {this.state.status.hosts &&
+          {this.state.status.hosts && (
             <div class="hosts">
               <ul>
-                {this.state.status.hosts.map(host => <li class="host">
-                  <label>{host.name}</label>
-                  <span>{HostStatus[host.state]}</span>
-                  {host.state == HostStatus.Stopped
-                    ? <button onClick={() => this.startHost(host.id)}>Start</button>
-                    : <button onClick={() => this.stopHost(host.id)}>Stop</button>
-                  }
-                  <button onClick={() => this.removeHost(host.id)}>Remove</button>
-                </li>)}
+                {this.state.status.hosts.map(host => (
+                  <li key={host.id} class="host">
+                    <smtp-host
+                      value={host}
+                      onStartHost={e => this.startHost(e.detail.id)}
+                      onStopHost={e => this.stopHost(e.detail.id)}
+                      onUpdateHost={e => this.updateHost(e.detail)}
+                    />
+                    <button
+                      class="warning"
+                      onClick={() => this.removeHost(host.id)}
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
               </ul>
               <button onClick={() => this.addHost()}>Add Host</button>
             </div>
-          }
+          )}
 
           <pre>{JSON.stringify(this.state, undefined, 2)}</pre>
-          <impostor-hub ref={el => this.hub = el}
+          <impostor-hub
+            ref={el => (this.hub = el)}
             onStatusChanged={e => this.handleHubStatusChangedAsync(e)}
-            onMessageReceived={e => this.dispatch(e.detail)}></impostor-hub>
+            onMessageReceived={e => this.dispatch(e.detail)}
+          ></impostor-hub>
         </main>
       </div>
     );
   }
 
   componentDidLoad() {
-    this.hub.connectAsync()
+    this.hub.connectAsync();
   }
 
   async handleHubStatusChangedAsync(e: CustomEvent<HubStatus>) {

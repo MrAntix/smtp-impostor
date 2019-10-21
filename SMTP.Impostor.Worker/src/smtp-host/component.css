@@ -1,0 +1,50 @@
+@import '../assets/styles/host.css';
+
+:host {
+  display: flex;
+}
+
+:host([readonly]) label,
+:host([readonly]) .control.ip,
+:host([readonly]) .control.port {
+  display: none;
+}
+
+:host([readonly]) input {
+  background-color: transparent;
+}
+
+.settings {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+}
+
+.control.ip {
+  flex: 1 0 auto;
+  width: 5em;
+}
+
+.control.port {
+  flex: 0 0 auto;
+  width: 3em;
+}
+
+.control.name {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.actions {
+  margin-left: auto;
+  display: flex;
+}
+
+small {
+  padding: var(--padding);
+  background-color: var( --background-color);
+}
