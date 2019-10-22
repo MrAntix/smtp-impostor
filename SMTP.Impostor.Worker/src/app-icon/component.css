@@ -1,0 +1,27 @@
+:host {
+  --host-icon-size: var(--icon-size, .6667em);
+  --host-icon-spacing: var(--icon-spacing, .1em);
+  --host-icon-color: var(--icon-color, currentColor);
+  --host-icon-outline-size: var(--icon-outline-size, .0075em);
+  --host-icon-outline-color: var(--host-icon-color, currentColor);
+
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  height: var(--host-icon-size);
+  width: var(--host-icon-size);
+  padding: var(--host-icon-spacing);
+}
+
+svg {
+  flex: 1 1 auto;
+  overflow: visible;
+  height: 100%;
+  width: 100%;
+  fill: var(--host-icon-color);
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke: var(--host-icon-outline-color);
+  stroke-width: var(--host-icon-outline-size);
+}

@@ -8,6 +8,9 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
+  AppIcons,
+} from './app-icon/model';
+import {
   HubStatus,
   IHubMessage,
   IHubSocketProvider,
@@ -18,7 +21,12 @@ import {
 } from './redux';
 
 export namespace Components {
-  interface AppHome {}
+  interface AppIcon {
+    'flipHorizontal': boolean;
+    'flipVertical': boolean;
+    'rotate': number;
+    'type': AppIcons;
+  }
   interface AppRoot {}
   interface ImpostorHub {
     'connectAsync': (url?: string) => Promise<void>;
@@ -39,10 +47,10 @@ export namespace Components {
 declare global {
 
 
-  interface HTMLAppHomeElement extends Components.AppHome, HTMLStencilElement {}
-  const HTMLAppHomeElement: {
-    prototype: HTMLAppHomeElement;
-    new (): HTMLAppHomeElement;
+  interface HTMLAppIconElement extends Components.AppIcon, HTMLStencilElement {}
+  const HTMLAppIconElement: {
+    prototype: HTMLAppIconElement;
+    new (): HTMLAppIconElement;
   };
 
   interface HTMLAppRootElement extends Components.AppRoot, HTMLStencilElement {}
@@ -63,7 +71,7 @@ declare global {
     new (): HTMLSmtpHostElement;
   };
   interface HTMLElementTagNameMap {
-    'app-home': HTMLAppHomeElement;
+    'app-icon': HTMLAppIconElement;
     'app-root': HTMLAppRootElement;
     'impostor-hub': HTMLImpostorHubElement;
     'smtp-host': HTMLSmtpHostElement;
@@ -71,7 +79,12 @@ declare global {
 }
 
 declare namespace LocalJSX {
-  interface AppHome {}
+  interface AppIcon {
+    'flipHorizontal'?: boolean;
+    'flipVertical'?: boolean;
+    'rotate'?: number;
+    'type'?: AppIcons;
+  }
   interface AppRoot {}
   interface ImpostorHub {
     'onMessageReceived'?: (event: CustomEvent<IHubMessage>) => void;
@@ -89,7 +102,7 @@ declare namespace LocalJSX {
   }
 
   interface IntrinsicElements {
-    'app-home': AppHome;
+    'app-icon': AppIcon;
     'app-root': AppRoot;
     'impostor-hub': ImpostorHub;
     'smtp-host': SmtpHost;
@@ -102,7 +115,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
-      'app-home': LocalJSX.AppHome & JSXBase.HTMLAttributes<HTMLAppHomeElement>;
+      'app-icon': LocalJSX.AppIcon & JSXBase.HTMLAttributes<HTMLAppIconElement>;
       'app-root': LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
       'impostor-hub': LocalJSX.ImpostorHub & JSXBase.HTMLAttributes<HTMLImpostorHubElement>;
       'smtp-host': LocalJSX.SmtpHost & JSXBase.HTMLAttributes<HTMLSmtpHostElement>;

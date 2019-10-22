@@ -1,4 +1,4 @@
-import { Component, h, State, Prop } from '@stencil/core';
+import { Component, h, State, Prop, Host } from '@stencil/core';
 import '@stencil/redux';
 import { Store } from '@stencil/redux';
 
@@ -18,7 +18,7 @@ import {
 
 @Component({
   tag: 'app-root',
-  styleUrl: 'app-root.css',
+  styleUrl: 'component.css',
   shadow: true
 })
 export class AppRoot {
@@ -65,52 +65,52 @@ export class AppRoot {
   }
 
   render() {
-    return (
-      <div>
-        <header>
-          <h1>SMTP Impostor</h1>
-        </header>
+    return <Host>
+      <header>
+        <h1>SMTP Impostor</h1>
+      </header>
 
-        <main>
-          <stencil-router>
-            <stencil-route-switch scrollTopOffset={0}>
-              <stencil-route url="/" component="app-home" exact={true} />
-            </stencil-route-switch>
-          </stencil-router>
+      <main>
+        <stencil-router>
+          <stencil-route-switch scrollTopOffset={0}>
+            <stencil-route url="/" component="app-home" exact={true} />
+          </stencil-route-switch>
+        </stencil-router>
 
-          {this.state.status.hosts && (
-            <div class="hosts">
-              <ul>
-                {this.state.status.hosts.map(host => (
-                  <li key={host.id} class="host">
-                    <smtp-host
-                      value={host}
-                      onStartHost={e => this.startHost(e.detail.id)}
-                      onStopHost={e => this.stopHost(e.detail.id)}
-                      onUpdateHost={e => this.updateHost(e.detail)}
-                    />
-                    <button
-                      class="warning"
-                      onClick={() => this.removeHost(host.id)}
-                    >
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              <button onClick={() => this.addHost()}>Add Host</button>
-            </div>
-          )}
+        {this.state.status.hosts && (
+          <div class="hosts">
+            <ul>
+              {this.state.status.hosts.map(host => (
+                <li key={host.id} class="host">
+                  <smtp-host
+                    value={host}
+                    onStartHost={e => this.startHost(e.detail.id)}
+                    onStopHost={e => this.stopHost(e.detail.id)}
+                    onUpdateHost={e => this.updateHost(e.detail)}
+                  />
+                  <button
+                    class="remove-host warning"
+                    onClick={() => this.removeHost(host.id)}
+                  >
+                    <app-icon type="minus" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button class="add-host primary" onClick={() => this.addHost()}>
+              <app-icon type="plus" />
+            </button>
+          </div>
+        )}
 
-          <pre>{JSON.stringify(this.state, undefined, 2)}</pre>
-          <impostor-hub
-            ref={el => (this.hub = el)}
-            onStatusChanged={e => this.handleHubStatusChangedAsync(e)}
-            onMessageReceived={e => this.dispatch(e.detail)}
-          ></impostor-hub>
-        </main>
-      </div>
-    );
+      </main>
+      <pre>{JSON.stringify(this.state, undefined, 2)}</pre>
+      <impostor-hub
+        ref={el => (this.hub = el)}
+        onStatusChanged={e => this.handleHubStatusChangedAsync(e)}
+        onMessageReceived={e => this.dispatch(e.detail)}
+      ></impostor-hub>
+    </Host>;
   }
 
   componentDidLoad() {

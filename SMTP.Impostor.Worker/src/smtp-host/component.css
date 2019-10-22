@@ -2,6 +2,12 @@
 
 :host {
   display: flex;
+  flex-direction: column-reverse;
+  flex-wrap: wrap;
+}
+
+:host([readonly]) {
+  flex-direction: row;
 }
 
 :host([readonly]) label,
@@ -14,7 +20,13 @@
   background-color: transparent;
 }
 
+input {
+  width: auto;
+  flex: 1 1 auto;
+}
+
 .settings {
+  flex: 1 1 auto;
   display: flex;
   flex-wrap: wrap;
 }
@@ -22,16 +34,21 @@
 .control {
   display: flex;
   flex-direction: column;
+  justify-items: stretch;
 }
 
 .control.ip {
   flex: 1 0 auto;
-  width: 5em;
+  width: 4em;
 }
 
 .control.port {
   flex: 0 0 auto;
   width: 3em;
+}
+
+.control.port input {
+  text-align: center;
 }
 
 .control.name {
@@ -44,7 +61,37 @@
   display: flex;
 }
 
-small {
-  padding: var(--padding);
-  background-color: var( --background-color);
+.toggle-state {
+  position: relative;
+  align-self: flex-start;
+  width: 4.5em;
+  padding-left: calc(var(--host-padding) + var(--host-unit));
+}
+
+.toggle-state::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left:0;
+  width: var(--host-unit);
+  bottom: 0;
+  background-color: var(--host-lowlight);
+  border-radius: var(--host-border-radius);
+}
+
+:host(.started) .toggle-state::before {
+  background-color: var(--host-success-color);
+}
+
+:host(.receiving) .toggle-state::before {
+  background-color: var(--host-success-color);
+  filter: brightness(1.25);
+}
+
+:host(.errored) .toggle-state::before {
+  background-color: var(--host-warning-color);
+}
+
+:host(.stopped) .toggle-state::before {
+  background-color: var(--host-error-color);
 }

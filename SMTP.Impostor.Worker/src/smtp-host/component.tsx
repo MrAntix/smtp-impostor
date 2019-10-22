@@ -19,7 +19,9 @@ export class SMTPHostComponent {
 
   @Method()
   async toggleState(start?: boolean) {
-    start = start == null ? !this.readonly : !!start;
+    start = start == null
+      ? this.value.state !== HostStatus.Started
+      : !!start;
 
     if (start) this.startHost.emit(this.value)
     else this.stopHost.emit(this.value)
@@ -29,7 +31,7 @@ export class SMTPHostComponent {
     if (this.value == null) return '(host not set)';
 
     return (
-      <Host>
+      <Host class={HostStatus[this.value.state].toLowerCase()}>
         <div class="settings">
           <div class="control ip">
             <label>IP Address</label>
@@ -64,8 +66,9 @@ export class SMTPHostComponent {
           </div>
         </div>
         <div class="actions">
-          <button class="toggle-readonly" type="button" onClick={() => this.toggleReadonly()}>Edit</button>
-          <small class="state">{HostStatus[this.value.state]}</small>
+          <button class="toggle-readonly" type="button" onClick={() => this.toggleReadonly()}>
+            <app-icon type="triangle" rotate={this.readonly ? 180 : 0} />
+          </button>
           <button class="toggle-state" type="button" onClick={() => this.toggleState()}>
             <span>{this.value.state == HostStatus.Stopped ? "Start" : "Stop"}</span>
           </button>

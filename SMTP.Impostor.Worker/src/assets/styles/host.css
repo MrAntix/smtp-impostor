@@ -21,6 +21,9 @@
   --host-error-color: var(--error-color, #c22);
   --host-error-color-alt: var(--error-color-alt, #eee);
 
+  --host-lowlight: var(--lowlight, rgba(0, 0, 0, .2));
+  --host-highlight: var(--highlight, rgba(255, 255, 255, .4));
+
   --host-button-padding: var(--host-padding) calc(var(--host-padding) * 2);
   --host-button-color: var(--host-action-color-alt);
   --host-button-background-color: var(--host-action-color);
@@ -47,6 +50,10 @@ button {
   border: var(--host-button-border, none);
   border-radius: var(--host-button-border-radius, 2px);
   margin: var(--host-margin);
+}
+
+button app-icon {
+  margin: -.25em;
 }
 
 button.primary {

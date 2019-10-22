@@ -20,6 +20,15 @@
   --warning-color-alt: #eee;
   --error-color: #c22;
   --error-color-alt: #eee;
+
+  --lowlight: rgba(0, 0, 0, .2);
+  --highlight: rgba(255, 255, 255, .4);
+
+  --icon-size: .5em;
+  --icon-spacing: .1em;
+  --icon-color: currentColor;
+  --icon-outline-size: .0075em;
+  --icon-outline-color: var(--icon-color, currentColor);
 }
 
 body {

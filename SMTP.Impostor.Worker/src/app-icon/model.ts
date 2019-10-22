@@ -1,0 +1,1 @@
+export type AppIcons = 'arrow' | 'arrow-corner' | 'bowtie' | 'chevron' | 'chevron-dbl' | 'circle' | 'close' | 'collapse' | 'expand' | 'ellipsis' | 'key' | 'minus' | 'paperclip' | 'plus' | 'rotate' | 'square' | 'star' | 'triangle';

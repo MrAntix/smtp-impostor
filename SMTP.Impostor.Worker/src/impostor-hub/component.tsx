@@ -104,7 +104,7 @@ export class ImpostorHubComponent {
   }
 
   render() {
-    return <div>Status {HubStatus[this.status]}</div>;
+    return <div>worker {HubStatus[this.status]}</div>;
   }
 
   setStatus(value: HubStatus) {

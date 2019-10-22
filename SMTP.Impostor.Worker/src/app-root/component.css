@@ -1,0 +1,59 @@
+@import '../assets/styles/host.css';
+
+:host {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: var(--host-padding);
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  background-image: url(/assets/icon-48x48.png);
+  background-position: right center;
+  background-repeat: no-repeat;
+
+  padding-right: 55px;
+}
+
+.hosts {
+  display: flex;
+  flex-direction: column;
+}
+
+.hosts ul {
+  margin: 0;
+  padding: 0
+}
+
+.host {
+  display: flex;
+  align-items: flex-start;
+}
+
+.add-host {
+  align-self: flex-end;
+}
+
+smtp-host {
+  flex: 1 1 auto;
+}
+
+main {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+pre {
+  font-size: .8em;
+  color: rgba(0, 0, 0, .75);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+impostor-hub{
+  align-self: flex-end;
+}

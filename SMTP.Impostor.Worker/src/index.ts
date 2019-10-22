@@ -3,8 +3,7 @@
  */
 
 export * from './components';
-export * from './app-home/index';
-export * from './app-root/index';
+export * from './app-icon/index';
 export * from './global/index';
 export * from './impostor-hub/index';
 export * from './redux/index';
