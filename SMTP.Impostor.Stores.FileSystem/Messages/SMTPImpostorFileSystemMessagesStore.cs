@@ -95,7 +95,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
         string GetEnsureMessagePath(Guid hostId)
         {
-            var path = Path.Combine(StorePath, hostId.ToString("N"));
+            var path = Path.Combine(StorePath, hostId.ToString());
             Directory.CreateDirectory(path);
 
             return path;
