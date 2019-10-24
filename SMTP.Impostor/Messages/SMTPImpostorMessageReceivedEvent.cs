@@ -8,10 +8,9 @@ namespace SMTP.Impostor.Messages
         SMTPImpostorEventBase<SMTPImpostorMessage>
     {
         public SMTPImpostorMessageReceivedEvent(
-            Guid hostId,
             SMTPImpostorHostSettings hostSettings,
             SMTPImpostorMessage message) :
-            base(hostId, message)
+            base(hostSettings.Id, message)
         {
             HostSettings = hostSettings;
         }

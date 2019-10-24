@@ -49,7 +49,7 @@ namespace SMTP.Impostor.Worker
 
                 if (e is SMTPImpostorMessageReceivedEvent mre)
                 {
-                    await _messagesStore.PutAsync(mre.HostSettings.Name, mre.Data);
+                    await _messagesStore.PutAsync(mre.HostSettings.Id, mre.Data);
                     await _hub.SendMessage(
                         new SMTPImpostorHubMessage(
                             "MessageRecieved",

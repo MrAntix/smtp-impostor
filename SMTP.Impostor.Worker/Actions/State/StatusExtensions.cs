@@ -18,6 +18,7 @@ namespace SMTP.Impostor.Worker.Actions.State
             if (source is null) return null;
 
             return new SMTPImpostorHostSettings(
+                source.Id,
                 source.IP, source.Port,
                 source.Name,
                 source.State == Sockets.SMTPImpostorHostStates.Started);

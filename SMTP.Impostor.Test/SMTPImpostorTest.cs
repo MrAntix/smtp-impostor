@@ -92,8 +92,8 @@ namespace SMTP.Impostor.Test
                 .AddSMTPImpostor()
                 .BuildServiceProvider();
 
-            var host = services.GetRequiredService<ISMTPImpostorHost>();
-            host.Configure(hostSettings);
+            var hostProvider = services.GetRequiredService<ISMTPImpostorHostProvider>();
+            var host = hostProvider.CreateHost(hostSettings);
             host.Start();
 
             return host;

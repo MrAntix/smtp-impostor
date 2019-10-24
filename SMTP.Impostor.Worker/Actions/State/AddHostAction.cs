@@ -14,9 +14,9 @@ namespace SMTP.Impostor.Worker.Actions.State
             _impostor = impostor;
         }
 
-        public override Task ExecuteAsync(SMTPImpostorHostSettings request)
+        public override Task ExecuteAsync(SMTPImpostorHostSettings settings)
         {
-            _impostor.AddHost(request);
+            _impostor.AddHost(settings);
 
             return Task.CompletedTask;
         }

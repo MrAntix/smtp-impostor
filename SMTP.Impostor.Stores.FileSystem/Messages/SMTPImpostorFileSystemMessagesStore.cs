@@ -55,14 +55,14 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         }
 
         async Task<SMTPImpostorMessage> ISMTPImpostorMessagesStore
-            .GetAsync(string host, string messageId)
+            .GetAsync(Guid hostId, string messageId)
         {
-            if (string.IsNullOrWhiteSpace(host))
-                throw new ArgumentException("message", nameof(host));
+            if (Guid.Empty == hostId)
+                throw new ArgumentException("message", nameof(hostId));
             if (string.IsNullOrWhiteSpace(messageId))
                 throw new ArgumentNullException(nameof(messageId));
 
-            var messagePath = GetMessageFilePath(host, messageId);
+            var messagePath = GetMessageFilePath(hostId, messageId);
             if (File.Exists(messagePath))
             {
                 var content = await File.ReadAllTextAsync(messagePath);
@@ -73,14 +73,14 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         }
 
         async Task ISMTPImpostorMessagesStore
-            .PutAsync(string host, SMTPImpostorMessage message)
+            .PutAsync(Guid hostId, SMTPImpostorMessage message)
         {
-            if (string.IsNullOrWhiteSpace(host))
-                throw new ArgumentException("message", nameof(host));
+            if (Guid.Empty == hostId)
+                throw new ArgumentException("message", nameof(hostId));
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
 
-            var messagePath = GetMessageFilePath(host, message.Id);
+            var messagePath = GetMessageFilePath(hostId, message.Id);
             await File.WriteAllTextAsync(messagePath, message.Content);
         }
 
@@ -93,17 +93,17 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             return new SMTPImpostorMessage[] { }.ToImmutableList();
         }
 
-        string GetEnsureMessagePath(string host)
+        string GetEnsureMessagePath(Guid hostId)
         {
-            var path = Path.Combine(StorePath, host.Replace(":", "_"));
+            var path = Path.Combine(StorePath, hostId.ToString("N"));
             Directory.CreateDirectory(path);
 
             return path;
         }
 
-        string GetMessageFilePath(string host, string messageId)
+        string GetMessageFilePath(Guid hostId, string messageId)
         {
-            return Path.Combine(GetEnsureMessagePath(host), $"{messageId}.eml");
+            return Path.Combine(GetEnsureMessagePath(hostId), $"{messageId}.eml");
         }
     }
 }

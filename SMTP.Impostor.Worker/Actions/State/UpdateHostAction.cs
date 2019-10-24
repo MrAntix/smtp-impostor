@@ -17,10 +17,10 @@ namespace SMTP.Impostor.Worker.Actions.State
 
         public override Task ExecuteAsync(HostUpdate update)
         {
-            var host = _impostor.Hosts[update.Id];
+            var host = _impostor.Hosts[update.HostId];
 
-            var hostSetting = host.MapToSettings(update);
-            _impostor.UpdateHost(host.Id, hostSetting);
+            var hostSettings = host.MapToSettings(update);
+            _impostor.UpdateHost(update.HostId, hostSettings);
 
             return Task.CompletedTask;
         }

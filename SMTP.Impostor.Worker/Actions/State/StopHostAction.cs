@@ -17,7 +17,7 @@ namespace SMTP.Impostor.Worker.Actions.State
         public override Task ExecuteAsync(HostIdentity request)
         {
             var host = _impostor.Hosts
-                .Values.First(h => h.Id == request.HostId);
+                .Values.First(h => h.Settings.Id == request.HostId);
             host.Stop();
 
             return Task.CompletedTask;

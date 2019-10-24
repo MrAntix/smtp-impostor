@@ -13,12 +13,8 @@ namespace SMTP.Impostor
         {
             services.AddSingleton(settings ?? SMTPImpostorSettings.Default);
 
-            services.AddTransient<ISMTPImpostorHost, SMTPImpostorHost>();
-            services.AddSingleton<Func<ISMTPImpostorHost>>(
-                p => () => p.GetRequiredService<ISMTPImpostorHost>()
-                );
-
             services.AddSingleton<SMTPImpostor>();
+            services.AddSingleton<ISMTPImpostorHostProvider>(sp => sp.GetRequiredService<SMTPImpostor>());
 
             return services;
         }

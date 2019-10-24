@@ -10,7 +10,7 @@ using SMTP.Impostor.Sockets;
 
 namespace SMTP.Impostor
 {
-    public class SMTPImpostor : IDisposable
+    public class SMTPImpostor : ISMTPImpostorHostProvider, IDisposable
     {
         readonly ILoggerFactory _loggerFactory;
         readonly Subject<ISMTPImpostorEvent> _events;
@@ -22,11 +22,12 @@ namespace SMTP.Impostor
             _events = new Subject<ISMTPImpostorEvent>();
         }
 
-        public ISMTPImpostorHost CreateHost(Guid? id = null)
+        public ISMTPImpostorHost CreateHost(
+            SMTPImpostorHostSettings settings)
         {
             return new SMTPImpostorHost(
                 _loggerFactory.CreateLogger<SMTPImpostorHost>(),
-                id
+                settings
                 );
         }
 
@@ -36,11 +37,10 @@ namespace SMTP.Impostor
 
         public ISMTPImpostorHost AddHost(SMTPImpostorHostSettings hostSettings)
         {
-            var host = CreateHost();
-            host.Configure(hostSettings);
+            var host = CreateHost(hostSettings);
 
-            Hosts = Hosts.Add(host.Id, host);
-            _events.OnNext(new SMTPImpostorHostAddedEvent(host.Id));
+            Hosts = Hosts.Add(host.Settings.Id, host);
+            _events.OnNext(new SMTPImpostorHostAddedEvent(host.Settings.Id));
 
             host.Events.Subscribe(e => _events.OnNext(e));
 
@@ -55,8 +55,7 @@ namespace SMTP.Impostor
             Hosts = Hosts.Remove(hostId);
             host.Dispose();
 
-            host = CreateHost(hostId);
-            host.Configure(hostSettings);
+            host = CreateHost(hostSettings);
 
             Hosts = Hosts.Add(hostId, host);
             _events.OnNext(new SMTPImpostorHostUpdatedEvent(hostId));
@@ -74,7 +73,7 @@ namespace SMTP.Impostor
             {
                 host.Stop();
                 Hosts = Hosts.Remove(hostId);
-                _events.OnNext(new SMTPImpostorHostRemovedEvent(host.Id));
+                _events.OnNext(new SMTPImpostorHostRemovedEvent(hostId));
 
                 return host;
             }

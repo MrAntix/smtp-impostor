@@ -8,16 +8,19 @@ namespace SMTP.Impostor.Hosts
         IEquatable<SMTPImpostorHostSettings>
     {
         public SMTPImpostorHostSettings(
+            Guid? id = null,
             string ip = null, int? port = 25,
             string name = null,
             bool start = false)
         {
+            Id = id ?? Guid.NewGuid();
             IP = ip ?? "127.0.0.1";
             Port = port ?? 25;
             Name = string.IsNullOrWhiteSpace(name) ? $"{IP}:{Port}" : name;
             Start = start;
         }
 
+        public Guid Id { get; }
         public string IP { get; }
         public int Port { get; }
         public string Name { get; }

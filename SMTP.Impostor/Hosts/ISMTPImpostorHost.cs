@@ -7,11 +7,9 @@ namespace SMTP.Impostor.Hosts
     public interface ISMTPImpostorHost :
         IDisposable
     {
-        Guid Id { get; }
         SMTPImpostorHostSettings Settings { get; }
         SMTPImpostorHostStates State { get; }
 
-        void Configure(SMTPImpostorHostSettings settings);
         void Start();
         void Stop();
 
