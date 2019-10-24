@@ -29,6 +29,10 @@ h1 {
   padding: 0
 }
 
+.hosts .host:nth-child(even) {
+  background-color: rgba(0, 0, 0, .025);
+}
+
 .host {
   display: flex;
   align-items: flex-start;
@@ -54,6 +58,6 @@ pre {
   word-break: break-all;
 }
 
-impostor-hub{
+impostor-hub {
   align-self: flex-end;
 }
