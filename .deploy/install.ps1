@@ -22,9 +22,10 @@ try {
         & "$path\service\uninstall.ps1" $serviceName
     }
 
+    & "$path\test\build.ps1" $serviceName "$dist\tester" "win-x64"
     & "$path\ui\build.ps1" $serviceName
-    & "$path\service\build.ps1" $serviceName $dist "win-x64"
-    & "$path\service\install.ps1" $serviceName "$dist\win-x64"
+    & "$path\service\build.ps1" $serviceName "$dist\worker" "win-x64"
+    & "$path\service\install.ps1" $serviceName "$dist\worker\win-x64"
     
 
     "========================================="
