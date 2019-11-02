@@ -11,7 +11,8 @@
   flex-direction: column;
 }
 
-:host::after {
+:host::before {
+  z-index: -1;
   content: '';
   position: fixed;
   top: var(--host-padding);
@@ -66,9 +67,9 @@ pre {
   color: rgba(0, 0, 0, .75);
   white-space: pre-wrap;
   word-break: break-all;
-  padding-bottom: 2em;
 }
 
 impostor-hub {
+  padding: 1em 0;
   align-self: flex-end;
 }
