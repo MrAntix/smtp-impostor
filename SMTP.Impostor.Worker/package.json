@@ -6,8 +6,8 @@
   "scripts": {
     "barrels": "barrelsby -q --delete --directory src --include \\.ts$ --exclude \"\\.(spec|e2e)\\.ts$\" --location all",
     "build": "stencil build",
+    "dev": "stencil build --dev --watch",
     "icons": "node package-icons.js",
-    "start": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate"
@@ -15,7 +15,7 @@
   "dependencies": {},
   "license": "MIT",
   "devDependencies": {
-    "@stencil/core": "^1.7.2",
+    "@stencil/core": "^1.7.5",
     "@stencil/redux": "^0.1.1",
     "@stencil/router": "^1.0.1",
     "@types/jest": "24.0.18",
