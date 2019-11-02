@@ -28,13 +28,15 @@ namespace SMTP.Impostor.Sockets
 
         public SMTPImpostorHost(
             ILogger<SMTPImpostorHost> logger,
-            SMTPImpostorHostSettings settings)
+            SMTPImpostorHostSettings settings,
+            ISMTPImpostorMessagesStore messages)
         {
             _logger = logger ?? NullLogger<SMTPImpostorHost>.Instance;
             _events = new Subject<ISMTPImpostorEvent>();
 
             Settings = settings ??
                 throw new ArgumentNullException(nameof(settings));
+            Messages = messages;
 
             StoppedEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStates.Stopped);
             StartedEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStates.Started);
@@ -44,7 +46,8 @@ namespace SMTP.Impostor.Sockets
             RaiseStateChange(StoppedEvent);
         }
 
-        public SMTPImpostorHostSettings Settings { get; private set; }
+        public SMTPImpostorHostSettings Settings { get; }
+        public ISMTPImpostorMessagesStore Messages { get; }
         public SMTPImpostorHostStates State { get; private set; }
         void RaiseStateChange(SMTPImpostorHostStateChangeEvent e)
         {

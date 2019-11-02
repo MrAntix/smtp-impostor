@@ -1,5 +1,6 @@
 ﻿using System;
 using SMTP.Impostor.Events;
+using SMTP.Impostor.Messages;
 using SMTP.Impostor.Sockets;
 
 namespace SMTP.Impostor.Hosts
@@ -14,5 +15,6 @@ namespace SMTP.Impostor.Hosts
         void Stop();
 
         IObservable<ISMTPImpostorEvent> Events { get; }
+        ISMTPImpostorMessagesStore Messages { get; }
     }
 }

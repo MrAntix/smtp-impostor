@@ -1,7 +1,9 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -12,22 +14,27 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
     public class SMTPImpostorFileSystemMessagesStore : ISMTPImpostorMessagesStore
     {
-        readonly ILogger<SMTPImpostorFileSystemMessagesStore> _logger;
+        public const string MESSAGE_EXTN = ".eml";
+
+        readonly ILogger<ISMTPImpostorMessagesStore> _logger;
+        readonly IList<SMTPImpostorMessageInfo> _messageIndex;
 
         public SMTPImpostorFileSystemMessagesStore(
-            ILogger<SMTPImpostorFileSystemMessagesStore> logger,
-            ISMTPImpostorSettings settings)
+            ILogger<ISMTPImpostorMessagesStore> logger,
+            ISMTPImpostorSettings settings,
+            Guid hostId)
         {
             _logger = logger ?? NullLogger<SMTPImpostorFileSystemMessagesStore>.Instance;
             if (settings is null)
                 throw new ArgumentNullException(nameof(settings));
 
-            StorePath = settings.FileStoreRoot;
+            StorePath = Path.Combine(settings.FileStoreRoot, hostId.ToString());
             Directory.CreateDirectory(StorePath);
 
             _logger.LogInformation($"Impostor file store \"{StorePath}\"");
 
             //TryOpenStorePath();
+            _messageIndex = new List<SMTPImpostorMessageInfo>();
         }
 
         public readonly string StorePath;
@@ -55,55 +62,89 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         }
 
         async Task<SMTPImpostorMessage> ISMTPImpostorMessagesStore
-            .GetAsync(Guid hostId, string messageId)
+            .GetAsync(string messageId)
         {
-            if (Guid.Empty == hostId)
-                throw new ArgumentException("message", nameof(hostId));
             if (string.IsNullOrWhiteSpace(messageId))
                 throw new ArgumentNullException(nameof(messageId));
 
-            var messagePath = GetMessageFilePath(hostId, messageId);
-            if (File.Exists(messagePath))
+            if (CheckMessagePath(out var path, false))
             {
-                var content = await File.ReadAllTextAsync(messagePath);
-                return SMTPImpostorMessage.FromContent(content);
+                var messagePath = GetMessageFilePath(path, messageId);
+                if (File.Exists(messagePath))
+                {
+                    var content = await File.ReadAllTextAsync(messagePath);
+                    return SMTPImpostorMessage.FromContent(content);
+                }
             }
 
             return null;
         }
 
         async Task ISMTPImpostorMessagesStore
-            .PutAsync(Guid hostId, SMTPImpostorMessage message)
+            .PutAsync(SMTPImpostorMessage message)
         {
-            if (Guid.Empty == hostId)
-                throw new ArgumentException("message", nameof(hostId));
+            CheckMessagePath(out var path, true);
+
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
 
-            var messagePath = GetMessageFilePath(hostId, message.Id);
+            var messagePath = GetMessageFilePath(path, message.Id);
             await File.WriteAllTextAsync(messagePath, message.Content);
         }
 
-        async Task<IImmutableList<SMTPImpostorMessage>> ISMTPImpostorMessagesStore
+        async Task<IImmutableList<SMTPImpostorMessageInfo>> ISMTPImpostorMessagesStore
             .SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria)
         {
             if (criteria is null)
                 throw new ArgumentNullException(nameof(criteria));
 
-            return new SMTPImpostorMessage[] { }.ToImmutableList();
+            if (CheckMessagePath(out var path, false))
+            {
+                var directory = new DirectoryInfo(path);
+                var query = directory.EnumerateFiles()
+                    .OrderBy(fi => fi.CreationTimeUtc)
+                    .AsEnumerable();
+
+                if (criteria.Ids?.Any() ?? false)
+                {
+                    query = query.Where(info =>
+                        criteria.Ids.Any(id => info.FullName == GetMessageFilePath(path, id))
+                        );
+                }
+
+                var messages = await Task.WhenAll(
+                    query
+                        .Skip(criteria.Index).Take(criteria.Count)
+                        .Select(async fi =>
+                        {
+                            var content = await File.ReadAllTextAsync(fi.FullName);
+                            return SMTPImpostorMessage.FromContent(content);
+                        })
+                    );
+
+                return messages.Cast<SMTPImpostorMessageInfo>().ToImmutableList();
+            }
+
+            return new SMTPImpostorMessageInfo[] { }.ToImmutableList();
         }
 
-        string GetEnsureMessagePath(Guid hostId)
+        string GetMessageFilePath(string path, string messageId)
         {
-            var path = Path.Combine(StorePath, hostId.ToString());
-            Directory.CreateDirectory(path);
-
-            return path;
+            return Path.Combine(path, $"{messageId}{MESSAGE_EXTN}");
         }
 
-        string GetMessageFilePath(Guid hostId, string messageId)
+        bool CheckMessagePath(out string path, bool create)
         {
-            return Path.Combine(GetEnsureMessagePath(hostId), $"{messageId}.eml");
+            path = StorePath;
+            if (Directory.Exists(path)) return true;
+
+            if (create)
+            {
+                Directory.CreateDirectory(path);
+                return true;
+            }
+
+            return false;
         }
     }
 }

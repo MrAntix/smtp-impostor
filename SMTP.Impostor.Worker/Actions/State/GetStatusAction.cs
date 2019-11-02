@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using SMTP.Impostor.Messages;
-using SMTP.Impostor.Stores.FileSystem.Messages;
+using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {
@@ -9,23 +7,22 @@ namespace SMTP.Impostor.Worker.Actions.State
     {
         public static string Name { get; } = GetName(typeof(GetStatusAction));
 
+        readonly ISMTPImpostorSettings _settings;
         readonly SMTPImpostor _impostor;
-        readonly ISMTPImpostorMessagesStore _store;
 
         public GetStatusAction(
-            SMTPImpostor impostor,
-            ISMTPImpostorMessagesStore store)
+            ISMTPImpostorSettings settings,
+            SMTPImpostor impostor)
         {
+            _settings = settings;
             _impostor = impostor;
-            _store = store;
         }
 
         public override Task<Status> ExecuteAsync()
         {
-            var fileStore = _store as SMTPImpostorFileSystemMessagesStore;
             var status = new Status(
                     _impostor.Hosts.Values.Map(),
-                     fileStore?.StorePath);
+                    _settings.FileStoreRoot);
 
             return Task.FromResult(status);
         }

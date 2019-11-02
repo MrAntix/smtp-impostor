@@ -5,7 +5,7 @@ using System.Net.Mail;
 
 namespace SMTP.Impostor.Messages
 {
-    public class SMTPImpostorMessage
+    public class SMTPImpostorMessage : SMTPImpostorMessageInfo
     {
         internal const string LINE_TERMINATOR = "\r\n";
         internal const string HEADERS_TERMINATOR = "\r\n\r\n";
@@ -19,26 +19,18 @@ namespace SMTP.Impostor.Messages
             IEnumerable<MailAddress> to,
             IEnumerable<MailAddress> cc,
             DateTimeOffset date,
-            string content)
+            string content) : base(id, subject, from, date)
         {
-            Id = id;
             Headers = headers?.ToImmutableList() ?? ImmutableList<SMTPImpostorMessageHeader>.Empty;
-            Subject = subject;
-            From = from;
             To = to?.ToImmutableList() ?? ImmutableList<MailAddress>.Empty;
             Cc = cc?.ToImmutableList() ?? ImmutableList<MailAddress>.Empty;
-            Date = date;
             Content = content;
         }
 
-        public string Id { get; }
         public IImmutableList<SMTPImpostorMessageHeader> Headers { get; }
-        public string Subject { get; }
-        public MailAddress From { get; }
         public IImmutableList<MailAddress> To { get; }
 
         public IImmutableList<MailAddress> Cc { get; }
-        public DateTimeOffset Date { get; }
         public string Content { get; }
 
         public static SMTPImpostorMessage FromContent(string content)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace SMTP.Impostor.Messages
@@ -6,7 +7,7 @@ namespace SMTP.Impostor.Messages
     public class SMTPImpostorMessageStoreSearchCriteria
     {
         public SMTPImpostorMessageStoreSearchCriteria(
-            string host,
+            Guid hostId,
             IEnumerable<string> ids,
             string text,
             int index = 0,
@@ -14,14 +15,14 @@ namespace SMTP.Impostor.Messages
             )
         {
             Ids = ids?.ToImmutableList();
-            Host = host;
+            HostId = hostId;
             Text = text;
             Index = index;
             Count = count;
         }
 
+        public Guid HostId { get; }
         public IImmutableList<string> Ids { get; }
-        public string Host { get; }
         public string Text { get; }
         public int Index { get; }
         public int Count { get; }

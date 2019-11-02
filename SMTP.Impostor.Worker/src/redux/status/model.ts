@@ -10,6 +10,7 @@ export interface IHost {
   port?: number;
   state?: HostStatus;
   start: boolean;
+  isOpen: boolean;
 }
 
 export interface IHostUpdate {

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using SMTP.Impostor.Messages;
 
 namespace SMTP.Impostor.Stores.FileSystem.Messages
@@ -8,7 +8,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         public static IServiceCollection AddSMTPImpostorFileSystemMessagesStore(
             this IServiceCollection services)
         {
-            services.AddTransient<ISMTPImpostorMessagesStore, SMTPImpostorFileSystemMessagesStore>();
+            services.AddTransient<ISMTPImpostorMessagesStoreProvider, SMTPImpostorFileSystemMessagesStoreProvider>();
 
             return services;
         }

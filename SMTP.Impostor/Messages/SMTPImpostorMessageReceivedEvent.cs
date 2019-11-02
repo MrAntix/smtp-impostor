@@ -1,5 +1,4 @@
-﻿using System;
-using SMTP.Impostor.Events;
+﻿using SMTP.Impostor.Events;
 using SMTP.Impostor.Hosts;
 
 namespace SMTP.Impostor.Messages

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -18,7 +18,6 @@ namespace SMTP.Impostor.Worker
         readonly SMTPImpostor _impostor;
         readonly SMTPImpostorHubService _hub;
         readonly IActionExecutor _executor;
-        readonly ISMTPImpostorMessagesStore _messagesStore;
         readonly ISMTPImpostorHostSettingsStore _hostsSettings;
 
         IDisposable _impostorEvents;
@@ -29,7 +28,6 @@ namespace SMTP.Impostor.Worker
             SMTPImpostor impostor,
             SMTPImpostorHubService hub,
             IActionExecutor executor,
-            ISMTPImpostorMessagesStore store,
             ISMTPImpostorHostSettingsStore hostsSettings)
         {
             _logger = logger;
@@ -37,7 +35,6 @@ namespace SMTP.Impostor.Worker
             _impostor = impostor;
             _hub = hub;
             _executor = executor;
-            _messagesStore = store;
             _hostsSettings = hostsSettings;
         }
 
@@ -49,7 +46,9 @@ namespace SMTP.Impostor.Worker
 
                 if (e is SMTPImpostorMessageReceivedEvent mre)
                 {
-                    await _messagesStore.PutAsync(mre.HostSettings.Id, mre.Data);
+                    var host = _impostor.Hosts[e.HostId];
+                    await host.Messages.PutAsync(mre.Data);
+
                     await _hub.SendMessage(
                         new SMTPImpostorHubMessage(
                             "MessageRecieved",

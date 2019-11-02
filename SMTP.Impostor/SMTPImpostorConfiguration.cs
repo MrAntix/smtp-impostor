@@ -1,7 +1,5 @@
-﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using SMTP.Impostor.Hosts;
-using SMTP.Impostor.Sockets;
 
 namespace SMTP.Impostor
 {

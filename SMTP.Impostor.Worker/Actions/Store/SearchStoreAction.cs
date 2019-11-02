@@ -1,26 +1,27 @@
-﻿using System.Collections.Immutable;
-using System.Threading.Tasks;
 using SMTP.Impostor.Messages;
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Worker.Actions.Store
 {
-
     public class SearchStoreAction :
-        ActionBase<SMTPImpostorMessageStoreSearchCriteria, IImmutableList<SMTPImpostorMessage>>
+        ActionBase<SMTPImpostorMessageStoreSearchCriteria, IImmutableList<SMTPImpostorMessageInfo>>
     {
-        readonly ISMTPImpostorMessagesStore _store;
+        readonly SMTPImpostor _impostor;
 
         public SearchStoreAction(
-            ISMTPImpostorMessagesStore store)
+            SMTPImpostor impostor)
         {
-            _store = store;
+            _impostor = impostor;
         }
 
-        public override async Task<IImmutableList<SMTPImpostorMessage>> ExecuteAsync(
-            SMTPImpostorMessageStoreSearchCriteria request)
+        public override async Task<IImmutableList<SMTPImpostorMessageInfo>> ExecuteAsync(
+            SMTPImpostorMessageStoreSearchCriteria criteria)
         {
-            var result = await _store
-                .SearchAsync(request);
+            var result = await _impostor
+                .Hosts[criteria.HostId]
+                .Messages
+                .SearchAsync(criteria);
 
             return result;
         }

@@ -11,11 +11,13 @@ namespace SMTP.Impostor.Hosts
             Guid? id = null,
             string ip = null, int? port = 25,
             string name = null,
+            string storeType = null,
             bool start = false)
         {
             Id = id ?? Guid.NewGuid();
             IP = ip ?? "127.0.0.1";
             Port = port ?? 25;
+            StoreType = storeType;
             Name = string.IsNullOrWhiteSpace(name) ? $"{IP}:{Port}" : name;
             Start = start;
         }
@@ -23,6 +25,7 @@ namespace SMTP.Impostor.Hosts
         public Guid Id { get; }
         public string IP { get; }
         public int Port { get; }
+        public string StoreType { get; }
         public string Name { get; }
         public bool Start { get; }
 

@@ -2,6 +2,7 @@
 {
     public interface ISMTPImpostorSettings
     {
+        string DefaultStoreType { get; }
         string FileStoreRoot { get; }
     }
 }

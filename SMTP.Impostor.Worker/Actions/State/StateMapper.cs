@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using SMTP.Impostor.Hosts;
@@ -23,6 +23,7 @@ namespace SMTP.Impostor.Worker.Actions.State
                 source.Settings.Id,
                 source.Settings.Name,
                 source.Settings.IP, source.Settings.Port,
+                source.Settings.StoreType,
                 source.State
                 );
         }
@@ -37,6 +38,7 @@ namespace SMTP.Impostor.Worker.Actions.State
                 source.Settings.Id,
                 update.IP ?? source.Settings.IP, update.Port ?? source.Settings.Port,
                 update.Name ?? source.Settings.Name,
+                source.Settings.StoreType,
                 source.State == SMTPImpostorHostStates.Started
                 );
         }
