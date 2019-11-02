@@ -8,7 +8,9 @@ import {
   RemoveHost,
   StartHost,
   StopHost,
-  UpdateHost
+  UpdateHost,
+  ToggleHostConfiguration,
+  ToggleHostMessages
 } from './types';
 import { getInitialState } from './reducer';
 
@@ -73,6 +75,28 @@ export const stopHost = (hostId: string) => dispatch => {
     type: Types.STOP_HOST,
     sendToHub: true,
     model: { hostId }
+  };
+  dispatch(action);
+};
+
+export const toggleHostConfiguration = (host: IHost, value?: boolean) => dispatch => {
+  const action: ToggleHostConfiguration = {
+    type: Types.TOGGLE_HOST_CONFIGURATION,
+    model: {
+      hostId: host.id,
+      value: value == null ? !host.showConfiguration : !!value
+    }
+  };
+  dispatch(action);
+};
+
+export const toggleHostMessages = (host: IHost, value?: boolean) => dispatch => {
+  const action: ToggleHostMessages = {
+    type: Types.TOGGLE_HOST_MESSAGES,
+    model: {
+      hostId: host.id,
+      value: value == null ? !host.showMessages : !!value
+    }
   };
   dispatch(action);
 };

@@ -31,6 +31,9 @@ export class AppIconComponent {
           <path d="M 1,3 3,1 7.5,5.5 12,1 14,3 9.5,7.5 14,12 12,14 7.5,9.5 3,14 1,12 5.5,7.5 Z" />
         );
 
+      case 'cog':
+        return <path d="M 1,3 3,1 7.5,5.5 12,1 14,3 9.5,7.5 14,12 12,14 7.5,9.5 3,14 1,12 5.5,7.5 Z" />;
+
       case 'expand':
         return (
           <g>

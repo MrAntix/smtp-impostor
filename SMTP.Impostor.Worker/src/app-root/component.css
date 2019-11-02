@@ -11,12 +11,16 @@
   flex-direction: column;
 }
 
-h1 {
+:host::after {
+  content: '';
+  position: fixed;
+  top: var(--host-padding);
+  right: var(--host-padding);
+  bottom: var(--host-padding);
+  left: var(--host-padding);
   background-image: url(/assets/icon-48x48.png);
-  background-position: right center;
+  background-position: left bottom;
   background-repeat: no-repeat;
-
-  padding-right: 55px;
 }
 
 .hosts {
@@ -58,10 +62,11 @@ main {
 }
 
 pre {
-  font-size: .8em;
+  font-size: .75em;
   color: rgba(0, 0, 0, .75);
   white-space: pre-wrap;
   word-break: break-all;
+  padding-bottom: 2em;
 }
 
 impostor-hub {

@@ -10,11 +10,17 @@ export class SMTPHostComponent {
   logger = globalThis.getLogger('SMTPHostComponent');
 
   @Prop() value: IHost = null;
-  @Prop({ reflect: true }) readonly: boolean = true;
+  @Prop({ reflect: true }) showMessages: boolean = false;
+  @Prop({ reflect: true }) showConfiguration: boolean = false;
 
   @Method()
-  async toggleReadonly(value?: boolean) {
-    this.readonly = value == null ? !this.readonly : !!value;
+  async toggleMessages(value?: boolean) {
+    this.showMessages = value == null ? !this.showMessages : !!value;
+  }
+
+  @Method()
+  async toggleConfiguration(value?: boolean) {
+    this.showConfiguration = value == null ? !this.showConfiguration : !!value;
   }
 
   @Method()
@@ -58,7 +64,7 @@ export class SMTPHostComponent {
             <input
               name="name"
               value={this.value.name}
-              readOnly={this.readonly}
+              readOnly={!this.showConfiguration}
               onChange={(e: any) =>
                 this.updateHost.emit({ id: this.value.id, name: e.target.value })
               }
@@ -66,9 +72,6 @@ export class SMTPHostComponent {
           </div>
         </div>
         <div class="actions">
-          <button class="toggle-readonly" type="button" onClick={() => this.toggleReadonly()}>
-            <app-icon type="triangle" rotate={this.readonly ? 180 : 0} />
-          </button>
           <button class="toggle-state" type="button" onClick={() => this.toggleState()}>
             <span>{this.value.state == HostStatus.Stopped ? "Start" : "Stop"}</span>
           </button>

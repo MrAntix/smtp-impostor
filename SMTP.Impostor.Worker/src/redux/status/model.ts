@@ -10,7 +10,8 @@ export interface IHost {
   port?: number;
   state?: HostStatus;
   start: boolean;
-  isOpen: boolean;
+  showConfiguration: boolean;
+  showMessages: boolean;
 }
 
 export interface IHostUpdate {

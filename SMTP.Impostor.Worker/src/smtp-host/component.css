@@ -6,17 +6,17 @@
   flex-wrap: wrap;
 }
 
-:host([readonly]) {
+:host(:not([configure])) {
   flex-direction: row;
 }
 
-:host([readonly]) label,
-:host([readonly]) .control.ip,
-:host([readonly]) .control.port {
+:host(:not([configure])) label,
+:host(:not([configure])) .control.ip,
+:host(:not([configure])) .control.port {
   display: none;
 }
 
-:host([readonly]) input {
+:host(:not([configure])) input {
   background-color: transparent;
 }
 

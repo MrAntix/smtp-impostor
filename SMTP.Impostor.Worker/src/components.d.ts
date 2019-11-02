@@ -37,8 +37,10 @@ export namespace Components {
     'url': string;
   }
   interface SmtpHost {
-    'readonly': boolean;
-    'toggleReadonly': (value?: boolean) => Promise<void>;
+    'showConfiguration': boolean;
+    'showMessages': boolean;
+    'toggleConfiguration': (value?: boolean) => Promise<void>;
+    'toggleMessages': (value?: boolean) => Promise<void>;
     'toggleState': (start?: boolean) => Promise<void>;
     'value': IHost;
   }
@@ -48,25 +50,25 @@ declare global {
 
 
   interface HTMLAppIconElement extends Components.AppIcon, HTMLStencilElement {}
-  const HTMLAppIconElement: {
+  var HTMLAppIconElement: {
     prototype: HTMLAppIconElement;
     new (): HTMLAppIconElement;
   };
 
   interface HTMLAppRootElement extends Components.AppRoot, HTMLStencilElement {}
-  const HTMLAppRootElement: {
+  var HTMLAppRootElement: {
     prototype: HTMLAppRootElement;
     new (): HTMLAppRootElement;
   };
 
   interface HTMLImpostorHubElement extends Components.ImpostorHub, HTMLStencilElement {}
-  const HTMLImpostorHubElement: {
+  var HTMLImpostorHubElement: {
     prototype: HTMLImpostorHubElement;
     new (): HTMLImpostorHubElement;
   };
 
   interface HTMLSmtpHostElement extends Components.SmtpHost, HTMLStencilElement {}
-  const HTMLSmtpHostElement: {
+  var HTMLSmtpHostElement: {
     prototype: HTMLSmtpHostElement;
     new (): HTMLSmtpHostElement;
   };
@@ -97,7 +99,8 @@ declare namespace LocalJSX {
     'onStartHost'?: (event: CustomEvent<IHost>) => void;
     'onStopHost'?: (event: CustomEvent<IHost>) => void;
     'onUpdateHost'?: (event: CustomEvent<IHostUpdate>) => void;
-    'readonly'?: boolean;
+    'showConfiguration'?: boolean;
+    'showMessages'?: boolean;
     'value'?: IHost;
   }
 

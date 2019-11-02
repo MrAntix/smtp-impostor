@@ -13,7 +13,9 @@ import {
   removeHost,
   startHost,
   stopHost,
-  updateHost
+  updateHost,
+  toggleHostConfiguration,
+  toggleHostMessages
 } from '../redux/status/actions';
 
 @Component({
@@ -37,6 +39,8 @@ export class AppRoot {
   startHost: typeof startHost;
   stopHost: typeof stopHost;
   updateHost: typeof updateHost;
+  toggleHostMessages: typeof toggleHostMessages;
+  toggleHostConfiguration: typeof toggleHostConfiguration;
 
   async componentWillLoad() {
     this.store.setStore(configureStore({}, () => this.hubAction()));
@@ -48,7 +52,9 @@ export class AppRoot {
       removeHost,
       startHost,
       stopHost,
-      updateHost
+      updateHost,
+      toggleHostMessages,
+      toggleHostConfiguration
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
       return { state };
@@ -66,10 +72,6 @@ export class AppRoot {
 
   render() {
     return <Host>
-      <header>
-        <h1>SMTP Impostor</h1>
-      </header>
-
       <main>
         <stencil-router>
           <stencil-route-switch scrollTopOffset={0}>
@@ -81,18 +83,26 @@ export class AppRoot {
           <div class="hosts">
             <ul>
               {this.state.status.hosts.map(host => (
-                <li key={host.id} class="host">
+                <li key={host.id} class="host"
+                  onClick={() => this.toggleHostMessages(host)}>
                   <smtp-host
                     value={host}
+                    showMessages={host.showMessages}
+                    showConfiguration={host.showConfiguration}
                     onStartHost={e => this.startHost(e.detail.id)}
                     onStopHost={e => this.stopHost(e.detail.id)}
                     onUpdateHost={e => this.updateHost(e.detail)}
                   />
+                  <button class="toggle-readonly" type="button">
+                    <app-icon type="triangle" rotate={host.showMessages ? 0 : 180} />
+                  </button>
                   <button
                     class="remove-host warning"
-                    onClick={() => this.removeHost(host.id)}
+                    onClick={e => {
+                      e.stopPropagation()
+                    }}
                   >
-                    <app-icon type="minus" />
+                    <app-icon type="cog" />
                   </button>
                 </li>
               ))}

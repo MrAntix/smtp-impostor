@@ -9,7 +9,9 @@ export enum Types {
   START_HOST = 'Starthost',
   STOP_HOST = 'StopHost',
   UPDATE_HOST = 'UpdateHost',
-  HOST_UPDATED = 'HostUpdated'
+  HOST_UPDATED = 'HostUpdated',
+  TOGGLE_HOST_CONFIGURATION = 'ToggleHostConfiguration',
+  TOGGLE_HOST_MESSAGES = 'ToggleHostMessages'
 }
 
 export interface NullAction {
@@ -64,7 +66,19 @@ export interface StopHost {
   model: { hostId: string };
 }
 
+export interface ToggleHostConfiguration {
+  type: Types.TOGGLE_HOST_CONFIGURATION;
+  model: { hostId: string, value: boolean };
+}
+
+export interface ToggleHostMessages {
+  type: Types.TOGGLE_HOST_MESSAGES;
+  model: { hostId: string, value: boolean };
+}
+
 export type ActionTypes =
   | NullAction
   | Status
-  | HostUpdated;
+  | HostUpdated
+  | ToggleHostConfiguration
+  | ToggleHostMessages;
