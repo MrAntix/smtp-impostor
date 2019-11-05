@@ -18,6 +18,7 @@ import {
 import {
   IHost,
   IHostUpdate,
+  ISearchHostMessagesCriteria,
 } from './redux';
 
 export namespace Components {
@@ -37,6 +38,7 @@ export namespace Components {
     'url': string;
   }
   interface SmtpHost {
+    'searchMessages': (criteria: Partial<ISearchHostMessagesCriteria>, debounce?: number) => Promise<void>;
     'showConfiguration': boolean;
     'showMessages': boolean;
     'toggleConfiguration': (value?: boolean) => Promise<void>;
@@ -96,6 +98,7 @@ declare namespace LocalJSX {
     'url'?: string;
   }
   interface SmtpHost {
+    'onSearchHostMessages'?: (event: CustomEvent<{ host: IHost, criteria: ISearchHostMessagesCriteria }>) => void;
     'onStartHost'?: (event: CustomEvent<IHost>) => void;
     'onStopHost'?: (event: CustomEvent<IHost>) => void;
     'onUpdateHost'?: (event: CustomEvent<IHostUpdate>) => void;

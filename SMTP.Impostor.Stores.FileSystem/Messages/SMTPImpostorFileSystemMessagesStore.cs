@@ -1,13 +1,12 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using SMTP.Impostor.Messages;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using SMTP.Impostor.Messages;
 
 namespace SMTP.Impostor.Stores.FileSystem.Messages
 {
@@ -92,7 +91,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             await File.WriteAllTextAsync(messagePath, message.Content);
         }
 
-        async Task<IImmutableList<SMTPImpostorMessageInfo>> ISMTPImpostorMessagesStore
+        async Task<SMTPImpostorMessageStoreSearchResult> ISMTPImpostorMessagesStore
             .SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria)
         {
             if (criteria is null)
@@ -104,6 +103,8 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                 var query = directory.EnumerateFiles()
                     .OrderBy(fi => fi.CreationTimeUtc)
                     .AsEnumerable();
+
+                var totalCount = 10;
 
                 if (criteria.Ids?.Any() ?? false)
                 {
@@ -122,10 +123,12 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                         })
                     );
 
-                return messages.Cast<SMTPImpostorMessageInfo>().ToImmutableList();
+                return new SMTPImpostorMessageStoreSearchResult(
+                    criteria.Index, totalCount,
+                    messages);
             }
 
-            return new SMTPImpostorMessageInfo[] { }.ToImmutableList();
+            return SMTPImpostorMessageStoreSearchResult.Empty;
         }
 
         string GetMessageFilePath(string path, string messageId)

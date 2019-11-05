@@ -1,5 +1,5 @@
 import { IHubMessage } from '../../impostor-hub';
-import { IHost, IHostUpdate } from './model';
+import { IHost, IHostUpdate, ISearchHostMessagesCriteria } from './model';
 import {
   Types,
   GetStatus,
@@ -10,7 +10,8 @@ import {
   StopHost,
   UpdateHost,
   ToggleHostConfiguration,
-  ToggleHostMessages
+  ToggleHostMessages,
+  SearchHostMessages
 } from './types';
 import { getInitialState } from './reducer';
 
@@ -96,6 +97,18 @@ export const toggleHostMessages = (host: IHost, value?: boolean) => dispatch => 
     model: {
       hostId: host.id,
       value: value == null ? !host.showMessages : !!value
+    }
+  };
+  dispatch(action);
+};
+
+export const searchHostMessages = (host: IHost, criteria: ISearchHostMessagesCriteria) => dispatch => {
+  const action: SearchHostMessages = {
+    type: Types.SEARCH_HOST_MESSAGES,
+    sendToHub: true,
+    model: {
+      hostId: host.id,
+      criteria
     }
   };
   dispatch(action);

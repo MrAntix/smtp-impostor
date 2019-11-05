@@ -15,10 +15,21 @@ export default (state = getInitialState(), action: ActionTypes): IStatus => {
       return action.model;
     case Types.TOGGLE_HOST_CONFIGURATION:
       return updateHost(state,
-        action.model.hostId, { showConfiguration: action.model.value })
+        action.model.hostId, {
+        showConfiguration: action.model.value
+      })
     case Types.TOGGLE_HOST_MESSAGES:
       return updateHost(state,
-        action.model.hostId, { showMessages: action.model.value })
+        action.model.hostId, {
+        showMessages: action.model.value
+      })
+    case Types.HOST_MESSAGES_LOADED:
+      return updateHost(state,
+        action.model.hostId, {
+        messagesIndex: action.model.result.index,
+        messagesCount: action.model.result.total,
+        messages: action.model.result.messages
+      })
   }
 };
 

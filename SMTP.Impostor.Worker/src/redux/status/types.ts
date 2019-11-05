@@ -1,4 +1,7 @@
-import { IHost, IHostUpdate } from './model';
+import {
+  IHost, IHostUpdate,
+  ISearchHostMessagesCriteria, IHostMessagesSearchResult
+} from './model';
 
 export enum Types {
   NULL = 'NULL',
@@ -11,7 +14,9 @@ export enum Types {
   UPDATE_HOST = 'UpdateHost',
   HOST_UPDATED = 'HostUpdated',
   TOGGLE_HOST_CONFIGURATION = 'ToggleHostConfiguration',
-  TOGGLE_HOST_MESSAGES = 'ToggleHostMessages'
+  TOGGLE_HOST_MESSAGES = 'ToggleHostMessages',
+  SEARCH_HOST_MESSAGES = 'SearchHostMessages',
+  HOST_MESSAGES_LOADED = 'HostMessagesLoaded'
 }
 
 export interface NullAction {
@@ -76,9 +81,27 @@ export interface ToggleHostMessages {
   model: { hostId: string, value: boolean };
 }
 
+export interface SearchHostMessages {
+  type: Types.SEARCH_HOST_MESSAGES;
+  sendToHub: true;
+  model: {
+    hostId: string,
+    criteria: ISearchHostMessagesCriteria
+  }
+}
+
+export interface HostMessagesLoaded {
+  type: Types.HOST_MESSAGES_LOADED;
+  model: {
+    hostId: string,
+    result: IHostMessagesSearchResult
+  }
+}
+
 export type ActionTypes =
   | NullAction
   | Status
   | HostUpdated
   | ToggleHostConfiguration
-  | ToggleHostMessages;
+  | ToggleHostMessages
+  | HostMessagesLoaded;

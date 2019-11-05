@@ -15,7 +15,8 @@ import {
   stopHost,
   updateHost,
   toggleHostConfiguration,
-  toggleHostMessages
+  toggleHostMessages,
+  searchHostMessages
 } from '../redux/status/actions';
 
 @Component({
@@ -41,6 +42,7 @@ export class AppRoot {
   updateHost: typeof updateHost;
   toggleHostMessages: typeof toggleHostMessages;
   toggleHostConfiguration: typeof toggleHostConfiguration;
+  searchHostMessages: typeof searchHostMessages;
 
   async componentWillLoad() {
     this.store.setStore(configureStore({}, () => this.hubAction()));
@@ -54,7 +56,8 @@ export class AppRoot {
       stopHost,
       updateHost,
       toggleHostMessages,
-      toggleHostConfiguration
+      toggleHostConfiguration,
+      searchHostMessages
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
       return { state };
@@ -83,8 +86,7 @@ export class AppRoot {
           <div class="hosts">
             <ul>
               {this.state.status.hosts.map(host => (
-                <li key={host.id} class="host"
-                  onClick={() => this.toggleHostMessages(host)}>
+                <li key={host.id} class="host">
                   <smtp-host
                     value={host}
                     showMessages={host.showMessages}
@@ -92,14 +94,17 @@ export class AppRoot {
                     onStartHost={e => this.startHost(e.detail.id)}
                     onStopHost={e => this.stopHost(e.detail.id)}
                     onUpdateHost={e => this.updateHost(e.detail)}
+                    onSearchHostMessages={e => this.searchHostMessages(e.detail.host, e.detail.criteria)}
                   />
-                  <button class="toggle-readonly" type="button">
+                  <button class="toggle-readonly" type="button"
+                    onClick={() => this.toggleHostMessages(host)}>
                     <app-icon type="triangle" rotate={host.showMessages ? 0 : 180} />
                   </button>
                   <button
                     class="remove-host warning"
                     onClick={e => {
-                      e.stopPropagation()
+                      e.stopPropagation();
+                      this.removeHost(host.id);
                     }}
                   >
                     <app-icon type="cog" />

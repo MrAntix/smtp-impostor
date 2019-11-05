@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Messages
@@ -7,6 +7,6 @@ namespace SMTP.Impostor.Messages
     {
         Task<SMTPImpostorMessage> GetAsync(string messageId);
         Task PutAsync(SMTPImpostorMessage message);
-        Task<IImmutableList<SMTPImpostorMessageInfo>> SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria);
+        Task<SMTPImpostorMessageStoreSearchResult> SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria);
     }
 }

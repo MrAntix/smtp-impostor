@@ -1,5 +1,8 @@
 import { Component, Prop, h, Host, Event, EventEmitter, Method } from '@stencil/core';
-import { IHost, HostStatus, IHostUpdate } from '../redux';
+import {
+  IHost, HostStatus, IHostUpdate,
+  ISearchHostMessagesCriteria, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA
+} from '../redux';
 
 @Component({
   tag: 'smtp-host',
@@ -31,6 +34,30 @@ export class SMTPHostComponent {
 
     if (start) this.startHost.emit(this.value)
     else this.stopHost.emit(this.value)
+  }
+
+  messagesSearchCriteria = DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA;
+  messagesSearchTimer: any;
+
+  @Method()
+  async searchMessages(
+    criteria: Partial<ISearchHostMessagesCriteria>,
+    debounce: number = 0) {
+
+    this.messagesSearchCriteria = {
+      ...this.messagesSearchCriteria,
+      ...criteria
+    };
+
+    if(this.messagesSearchTimer) clearTimeout(this.messagesSearchTimer);
+    this.messagesSearchTimer = setTimeout(() => {
+      console.log('searchMessages', this.messagesSearchCriteria);
+
+      this.searchHostMessages.emit({
+        host: this.value,
+        criteria: this.messagesSearchCriteria
+      });
+    }, debounce);
   }
 
   render() {
@@ -76,11 +103,29 @@ export class SMTPHostComponent {
             <span>{this.value.state == HostStatus.Stopped ? "Start" : "Stop"}</span>
           </button>
         </div>
+        {this.value.showMessages && this.renderMessages()}
       </Host>
     );
+  }
+
+  renderMessages() {
+    return <div>
+      <div class="message-toolbar">
+        <input onInput={(e: any) =>
+          this.searchMessages({ text: e.target.value }, 500)} />
+      </div>
+      <ul class="messages">
+        {this.value.messages && this.value.messages
+          .map(message => <li class="message">
+            <div class="message-date">{message.date}</div>
+            <div class="message-subject">{message.subject}</div>
+          </li>)}
+      </ul>
+    </div>
   }
 
   @Event() startHost: EventEmitter<IHost>;
   @Event() stopHost: EventEmitter<IHost>;
   @Event() updateHost: EventEmitter<IHostUpdate>;
+  @Event() searchHostMessages: EventEmitter<{ host: IHost, criteria: ISearchHostMessagesCriteria }>;
 }
