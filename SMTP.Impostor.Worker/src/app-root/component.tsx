@@ -2,7 +2,7 @@ import { Component, h, State, Prop, Host } from '@stencil/core';
 import '@stencil/redux';
 import { Store } from '@stencil/redux';
 
-import { IAppState, IAction, configureStore } from '../redux';
+import { IAppState, IAction, configureStore, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA } from '../redux';
 
 import { HubStatus } from '../impostor-hub';
 import {
@@ -60,6 +60,14 @@ export class AppRoot {
       searchHostMessages
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
+
+      if (state.status.hosts) {
+        state.status.hosts.forEach(host => {
+          if (!host.messages)
+            this.searchHostMessages(host, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA);
+        });
+      }
+
       return { state };
     });
   }
@@ -119,7 +127,6 @@ export class AppRoot {
         )}
 
       </main>
-      <pre>{JSON.stringify(this.state, undefined, 2)}</pre>
       <impostor-hub
         ref={el => (this.hub = el)}
         onStatusChanged={e => this.handleHubStatusChangedAsync(e)}

@@ -9,6 +9,7 @@ namespace SMTP.Impostor.Worker.Actions.State
             Guid id,
             string name,
             string ip, int port,
+            int messagesCount,
             string storeType,
             SMTPImpostorHostStates state)
         {
@@ -16,6 +17,7 @@ namespace SMTP.Impostor.Worker.Actions.State
             Name = name;
             IP = ip;
             Port = port;
+            MessagesCount = messagesCount;
             StoreType = storeType;
             State = state;
         }
@@ -24,6 +26,7 @@ namespace SMTP.Impostor.Worker.Actions.State
         public string Name { get; }
         public string IP { get; }
         public int Port { get; }
+        public int MessagesCount { get; }
         public string StoreType { get; }
         public SMTPImpostorHostStates State { get; }
     }

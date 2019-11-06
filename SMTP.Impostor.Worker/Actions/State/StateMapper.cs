@@ -23,6 +23,7 @@ namespace SMTP.Impostor.Worker.Actions.State
                 source.Settings.Id,
                 source.Settings.Name,
                 source.Settings.IP, source.Settings.Port,
+                0,
                 source.Settings.StoreType,
                 source.State
                 );

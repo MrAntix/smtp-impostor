@@ -35,6 +35,21 @@ input {
   display: flex;
   flex-direction: column;
   justify-items: stretch;
+  position: relative;
+}
+
+.control small {
+  position: absolute;
+  top: var(--host-padding);
+  right: var(--host-padding);
+}
+
+.control small::before {
+  content: '(';
+}
+
+.control small::after {
+  content: ')';
 }
 
 .control.ip {
@@ -72,7 +87,7 @@ input {
   content: '';
   position: absolute;
   top: 0;
-  left:0;
+  left: 0;
   width: var(--host-unit);
   bottom: 0;
   background-color: var(--host-lowlight);
@@ -94,4 +109,20 @@ input {
 
 :host(.stopped) .toggle-state::before {
   background-color: var(--host-error-color);
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.messages-toolbar{
+  flex: 0 0 auto;
+}
+
+.messages-list {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }

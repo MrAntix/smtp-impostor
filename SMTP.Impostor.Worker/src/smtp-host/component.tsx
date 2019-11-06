@@ -49,7 +49,7 @@ export class SMTPHostComponent {
       ...criteria
     };
 
-    if(this.messagesSearchTimer) clearTimeout(this.messagesSearchTimer);
+    if (this.messagesSearchTimer) clearTimeout(this.messagesSearchTimer);
     this.messagesSearchTimer = setTimeout(() => {
       console.log('searchMessages', this.messagesSearchCriteria);
 
@@ -96,6 +96,7 @@ export class SMTPHostComponent {
                 this.updateHost.emit({ id: this.value.id, name: e.target.value })
               }
             />
+            <small>{this.value.messagesCount}</small>
           </div>
         </div>
         <div class="actions">
@@ -109,12 +110,12 @@ export class SMTPHostComponent {
   }
 
   renderMessages() {
-    return <div>
-      <div class="message-toolbar">
+    return <div class="messages">
+      <div class="messages-toolbar">
         <input onInput={(e: any) =>
           this.searchMessages({ text: e.target.value }, 500)} />
       </div>
-      <ul class="messages">
+      <ul class="messages-list">
         {this.value.messages && this.value.messages
           .map(message => <li class="message">
             <div class="message-date">{message.date}</div>
