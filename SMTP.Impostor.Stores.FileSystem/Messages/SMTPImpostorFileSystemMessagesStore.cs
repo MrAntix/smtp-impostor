@@ -100,11 +100,11 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             if (CheckMessagePath(out var path, false))
             {
                 var directory = new DirectoryInfo(path);
-                var query = directory.EnumerateFiles()
+                var query = directory.EnumerateFiles($"*{MESSAGE_EXTN}")
                     .OrderBy(fi => fi.CreationTimeUtc)
                     .AsEnumerable();
 
-                var totalCount = 10;
+                var totalCount = query.Count();
 
                 if (criteria.Ids?.Any() ?? false)
                 {
