@@ -2,12 +2,7 @@
 
 :host {
   display: flex;
-  flex-direction: column-reverse;
-  flex-wrap: wrap;
-}
-
-:host(:not([configure])) {
-  flex-direction: row;
+  flex-direction: columN;
 }
 
 :host(:not([configure])) label,
@@ -18,6 +13,11 @@
 
 :host(:not([configure])) input {
   background-color: transparent;
+}
+
+header {
+  display: flex;
+  flex: 1 0 auto;
 }
 
 input {
@@ -114,9 +114,10 @@ input {
 .messages {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
-.messages-toolbar{
+.messages-toolbar {
   flex: 0 0 auto;
 }
 
@@ -125,4 +126,33 @@ input {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  margin: var(--host-padding) 0;
+  padding: 0;
+}
+
+.message {
+  flex: 1 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  padding: var(--host-padding);
+}
+
+.message:nth-child(odd) {
+  background-color: rgba(0, 0, 0, .05);
+}
+
+.message-from {
+  flex: 1 1 auto;
+  font-size: .9em;
+}
+
+.message-date {
+  flex: 0 0 auto;
+  font-size: .8em;
+  margin-left: auto;
+}
+
+.message-subject {
+  width: 100%;
+  font-size: 1.1em;
 }

@@ -38,17 +38,17 @@ namespace SMTP.Impostor.Sockets
                 throw new ArgumentNullException(nameof(settings));
             Messages = messages;
 
-            StoppedEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStates.Stopped);
-            StartedEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStates.Started);
-            ReceivingEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStates.Receiving);
-            ErroredEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStates.Errored);
+            StoppedEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStatus.Stopped);
+            StartedEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStatus.Started);
+            ReceivingEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStatus.Receiving);
+            ErroredEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStatus.Errored);
 
             RaiseStateChange(StoppedEvent);
         }
 
         public SMTPImpostorHostSettings Settings { get; }
         public ISMTPImpostorMessagesStore Messages { get; }
-        public SMTPImpostorHostStates State { get; private set; }
+        public SMTPImpostorHostStatus State { get; private set; }
         void RaiseStateChange(SMTPImpostorHostStateChangeEvent e)
         {
             State = e.Data;

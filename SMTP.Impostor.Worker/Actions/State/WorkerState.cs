@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {
-    public class Status
+    public class WorkerState
     {
-        public Status(
-            IEnumerable<HostStatus> hosts,
+        public WorkerState(
+            IEnumerable<HostState> hosts,
             string fileStorePath)
         {
             Hosts = hosts?.ToImmutableList();
             FileStorePath = fileStorePath;
         }
 
-        public IImmutableList<HostStatus> Hosts { get; }
+        public IImmutableList<HostState> Hosts { get; }
         public string FileStorePath { get; }
     }
 }

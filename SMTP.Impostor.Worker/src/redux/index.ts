@@ -5,4 +5,4 @@
 export * from './model';
 export * from './reducer';
 export * from './store';
-export * from './status/index';
+export * from './state/index';

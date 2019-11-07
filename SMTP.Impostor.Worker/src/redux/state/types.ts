@@ -1,21 +1,22 @@
 import {
   IHost, IHostUpdate,
-  ISearchHostMessagesCriteria, IHostMessagesSearchResult
+  ISearchHostMessagesCriteria, IHostMesssageInfo
 } from './model';
 
 export enum Types {
   NULL = 'NULL',
-  GET_STATUS = 'GetStatus',
-  STATUS = 'Status',
+  LOAD_WORKER_STATE = 'LoadWorkerState',
+  WORKER_STATE = 'WorkerState',
   ADD_HOST = 'AddHost',
   REMOVE_HOST = 'RemoveHost',
   START_HOST = 'Starthost',
   STOP_HOST = 'StopHost',
   UPDATE_HOST = 'UpdateHost',
-  HOST_UPDATED = 'HostUpdated',
+  HOST_STATE = 'HostState',
   TOGGLE_HOST_CONFIGURATION = 'ToggleHostConfiguration',
   TOGGLE_HOST_MESSAGES = 'ToggleHostMessages',
   SEARCH_HOST_MESSAGES = 'SearchHostMessages',
+  HOST_MESSAGE_RECEIVED = 'HostMessageReceived',
   HOST_MESSAGES_LOADED = 'HostMessagesLoaded'
 }
 
@@ -23,13 +24,13 @@ export interface NullAction {
   type: Types.NULL;
 }
 
-export interface GetStatus {
-  type: Types.GET_STATUS;
+export interface LoadWorkerState {
+  type: Types.LOAD_WORKER_STATE;
   sendToHub: true;
 }
 
-export interface Status {
-  type: Types.STATUS;
+export interface WorkerState {
+  type: Types.WORKER_STATE;
   model: {
     hosts: IHost[];
     fileStorePath: string;
@@ -48,11 +49,6 @@ export interface UpdateHost {
   model: IHostUpdate;
 }
 
-export interface HostUpdated {
-  type: Types.HOST_UPDATED;
-  host: IHost;
-}
-
 export interface RemoveHost {
   type: Types.REMOVE_HOST;
   sendToHub: true;
@@ -69,6 +65,11 @@ export interface StopHost {
   type: Types.STOP_HOST;
   sendToHub: true;
   model: { hostId: string };
+}
+
+export interface HostState {
+  type: Types.HOST_STATE;
+  model: IHost;
 }
 
 export interface ToggleHostConfiguration {
@@ -90,18 +91,30 @@ export interface SearchHostMessages {
   }
 }
 
+export interface HostMessageReceived {
+  type: Types.HOST_MESSAGE_RECEIVED;
+  model: {
+    hostId: string,
+    date: Date,
+    from: string,
+    subject: string
+  }
+}
+
 export interface HostMessagesLoaded {
   type: Types.HOST_MESSAGES_LOADED;
   model: {
     hostId: string,
-    result: IHostMessagesSearchResult
+    index: number;
+    total: number;
+    messages: IHostMesssageInfo[];
   }
 }
 
 export type ActionTypes =
   | NullAction
-  | Status
-  | HostUpdated
+  | WorkerState
+  | HostState
   | ToggleHostConfiguration
   | ToggleHostMessages
   | HostMessagesLoaded;

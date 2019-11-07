@@ -58,6 +58,7 @@
 
 smtp-host {
   flex: 1 1 auto;
+  height: 100%;
 }
 
 main {

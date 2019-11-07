@@ -2,13 +2,13 @@ import { Component, h, State, Prop, Host } from '@stencil/core';
 import '@stencil/redux';
 import { Store } from '@stencil/redux';
 
-import { IAppState, IAction, configureStore, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA } from '../redux';
+import { IAppState, IAction, configureStore, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA, Types } from '../redux';
 
 import { HubStatus } from '../impostor-hub';
 import {
   dispatch,
-  initStatus,
-  getStatus,
+  initWorkerState,
+  loadWorkerState,
   addHost,
   removeHost,
   startHost,
@@ -17,7 +17,7 @@ import {
   toggleHostConfiguration,
   toggleHostMessages,
   searchHostMessages
-} from '../redux/status/actions';
+} from '../redux/state/actions';
 
 @Component({
   tag: 'app-root',
@@ -33,8 +33,8 @@ export class AppRoot {
   @State() state: IAppState;
 
   dispatch: typeof dispatch;
-  initStatus: typeof initStatus;
-  getStatus: typeof getStatus;
+  initWorkerState: typeof initWorkerState;
+  loadWorkerState: typeof loadWorkerState;
   addHost: typeof addHost;
   removeHost: typeof removeHost;
   startHost: typeof startHost;
@@ -48,8 +48,8 @@ export class AppRoot {
     this.store.setStore(configureStore({}, () => this.hubAction()));
     this.store.mapDispatchToProps(this, {
       dispatch,
-      initStatus,
-      getStatus,
+      initWorkerState,
+      loadWorkerState,
       addHost,
       removeHost,
       startHost,
@@ -61,10 +61,10 @@ export class AppRoot {
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
 
-      if (state.status.hosts) {
-        state.status.hosts.forEach(host => {
+      if (state.worker.hosts) {
+        state.worker.hosts.forEach(host => {
           if (!host.messages)
-            this.searchHostMessages(host, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA);
+            this.searchHostMessages(host.id, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA);
         });
       }
 
@@ -77,7 +77,18 @@ export class AppRoot {
       this.logger.debug('hubAction', { action });
 
       if (action.sendToHub) await this.hub.sendAsync(action);
-      else next(action);
+      else {
+
+        switch (action.type) {
+          case Types.HOST_MESSAGE_RECEIVED:
+            this.searchHostMessages(
+              action.model.hostId,
+              DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA);
+            break;
+        }
+
+        await next(action);
+      }
     };
   }
 
@@ -90,10 +101,10 @@ export class AppRoot {
           </stencil-route-switch>
         </stencil-router>
 
-        {this.state.status.hosts && (
+        {this.state.worker.hosts && (
           <div class="hosts">
             <ul>
-              {this.state.status.hosts.map(host => (
+              {this.state.worker.hosts.map(host => (
                 <li key={host.id} class="host">
                   <smtp-host
                     value={host}
@@ -102,7 +113,7 @@ export class AppRoot {
                     onStartHost={e => this.startHost(e.detail.id)}
                     onStopHost={e => this.stopHost(e.detail.id)}
                     onUpdateHost={e => this.updateHost(e.detail)}
-                    onSearchHostMessages={e => this.searchHostMessages(e.detail.host, e.detail.criteria)}
+                    onSearchHostMessages={e => this.searchHostMessages(e.detail.hostId, e.detail.criteria)}
                   />
                   <button class="toggle-readonly" type="button"
                     onClick={() => this.toggleHostMessages(host)}>
@@ -144,10 +155,10 @@ export class AppRoot {
 
     switch (e.detail) {
       default:
-        this.initStatus();
+        this.initWorkerState();
         break;
       case HubStatus.connected:
-        this.getStatus();
+        this.loadWorkerState();
         break;
     }
   }

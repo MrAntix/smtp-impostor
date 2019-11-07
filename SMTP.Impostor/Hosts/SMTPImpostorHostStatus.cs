@@ -1,6 +1,6 @@
-﻿namespace SMTP.Impostor.Sockets
+namespace SMTP.Impostor.Sockets
 {
-    public enum SMTPImpostorHostStates
+    public enum SMTPImpostorHostStatus
     {
         Stopped,
         Errored,

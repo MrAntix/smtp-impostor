@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 
-import status from './status/reducer';
+import worker from './state/reducer';
 
 export const rootReducer = combineReducers({
-  status
+  worker
 });
 
 export default rootReducer;

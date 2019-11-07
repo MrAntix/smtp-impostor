@@ -24,7 +24,9 @@ namespace SMTP.Impostor.Worker.Actions.State
 
             return new HostMessagesLoaded(
                 model.HostId,
-                result);
+                result.Index,
+                result.Total,
+                result.Messages.Map());
         }
     }
 }

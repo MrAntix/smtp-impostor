@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.WebSockets;
@@ -86,15 +86,31 @@ namespace SMTP.Impostor.Worker.Hubs
             }
         }
 
-        private object CreateMessageFrom(object model)
+        public async Task SendAsync(
+            object model,
+            IEnumerable<ISMTPImpostorHubClient> clients = null)
         {
-            return new SMTPImpostorHubMessage(
-                model.GetType().Name,
-                _serialization.Serialize(model)
+            await Send(
+                 model.GetType().Name,
+                 model,
+                 clients
                 );
         }
 
-        public async Task SendMessage(
+        public async Task Send(
+            string type,
+            object model,
+            IEnumerable<ISMTPImpostorHubClient> clients = null)
+        {
+            await SendMessageAsync(
+                new SMTPImpostorHubMessage(
+                    type,
+                    _serialization.Serialize(model)
+                    ),
+                clients);
+        }
+
+        public async Task SendMessageAsync(
             SMTPImpostorHubMessage message,
             IEnumerable<ISMTPImpostorHubClient> clients = null)
         {
@@ -118,6 +134,14 @@ namespace SMTP.Impostor.Worker.Hubs
                     }
                 }
             });
+        }
+
+        object CreateMessageFrom(object model)
+        {
+            return new SMTPImpostorHubMessage(
+                model.GetType().Name,
+                _serialization.Serialize(model)
+                );
         }
 
         async Task EnqueueMessage(Func<Task> taskGenerator)

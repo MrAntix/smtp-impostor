@@ -98,7 +98,7 @@ declare namespace LocalJSX {
     'url'?: string;
   }
   interface SmtpHost {
-    'onSearchHostMessages'?: (event: CustomEvent<{ host: IHost, criteria: ISearchHostMessagesCriteria }>) => void;
+    'onSearchHostMessages'?: (event: CustomEvent<{ hostId: string, criteria: ISearchHostMessagesCriteria }>) => void;
     'onStartHost'?: (event: CustomEvent<IHost>) => void;
     'onStopHost'?: (event: CustomEvent<IHost>) => void;
     'onUpdateHost'?: (event: CustomEvent<IHostUpdate>) => void;

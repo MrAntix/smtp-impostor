@@ -3,21 +3,19 @@ using SMTP.Impostor.Sockets;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {
-    public class HostStatus
+    public class HostState
     {
-        public HostStatus(
+        public HostState(
             Guid id,
             string name,
             string ip, int port,
-            int messagesCount,
             string storeType,
-            SMTPImpostorHostStates state)
+            SMTPImpostorHostStatus state)
         {
             Id = id;
             Name = name;
             IP = ip;
             Port = port;
-            MessagesCount = messagesCount;
             StoreType = storeType;
             State = state;
         }
@@ -26,8 +24,7 @@ namespace SMTP.Impostor.Worker.Actions.State
         public string Name { get; }
         public string IP { get; }
         public int Port { get; }
-        public int MessagesCount { get; }
         public string StoreType { get; }
-        public SMTPImpostorHostStates State { get; }
+        public SMTPImpostorHostStatus State { get; }
     }
 }

@@ -101,7 +101,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             {
                 var directory = new DirectoryInfo(path);
                 var query = directory.EnumerateFiles($"*{MESSAGE_EXTN}")
-                    .OrderBy(fi => fi.CreationTimeUtc)
+                    .OrderByDescending(fi => fi.CreationTimeUtc)
                     .AsEnumerable();
 
                 var totalCount = query.Count();

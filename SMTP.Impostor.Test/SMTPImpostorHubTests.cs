@@ -57,7 +57,7 @@ namespace SMTP.Impostor.Test
                 await hub.ConnectAsync(client);
             });
 
-            await hub.SendMessage(MESSAGE);
+            await hub.SendMessageAsync(MESSAGE);
 
             Assert.AreEqual(MESSAGE_JSON, client.Sent);
         }
@@ -79,7 +79,7 @@ namespace SMTP.Impostor.Test
                 await hub.ConnectAsync(clientB);
             });
 
-            await hub.SendMessage(MESSAGE, new[] { clientA });
+            await hub.SendMessageAsync(MESSAGE, new[] { clientA });
 
             Assert.AreEqual(MESSAGE_JSON, clientA.Sent);
             Assert.AreEqual(null, clientB.Sent);

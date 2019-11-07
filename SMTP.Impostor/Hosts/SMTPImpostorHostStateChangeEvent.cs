@@ -4,11 +4,11 @@ using SMTP.Impostor.Events;
 namespace SMTP.Impostor.Sockets
 {
     public class SMTPImpostorHostStateChangeEvent :
-         SMTPImpostorEventBase<SMTPImpostorHostStates>
+         SMTPImpostorEventBase<SMTPImpostorHostStatus>
     {
         public SMTPImpostorHostStateChangeEvent(
             Guid hostId,
-            SMTPImpostorHostStates state) : base(hostId, state)
+            SMTPImpostorHostStatus state) : base(hostId, state)
         { }
     }
 }

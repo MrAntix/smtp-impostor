@@ -1,5 +1,6 @@
-using SMTP.Impostor.Messages;
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {
@@ -7,13 +8,19 @@ namespace SMTP.Impostor.Worker.Actions.State
     {
         public HostMessagesLoaded(
             Guid hostId,
-            SMTPImpostorMessageStoreSearchResult result)
+            int index,
+            int total,
+            IEnumerable<MessageInfo> messages)
         {
             HostId = hostId;
-            Result = result;
+            Index = index;
+            Total = total;
+            Messages = messages.ToImmutableList();
         }
 
         public Guid HostId { get; }
-        public SMTPImpostorMessageStoreSearchResult Result { get; }
+        public int Index { get; }
+        public int Total { get; }
+        public IImmutableList<MessageInfo> Messages { get; }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -49,27 +50,20 @@ namespace SMTP.Impostor.Worker
                     var host = _impostor.Hosts[e.HostId];
                     await host.Messages.PutAsync(mre.Data);
 
-                    await _hub.SendMessage(
-                        new SMTPImpostorHubMessage(
-                            "MessageRecieved",
-                            _serialization.Serialize(new
-                            {
-                                mre.Data.Date,
-                                From = mre.Data.From.Address,
-                                mre.Data.Subject
-                            })
+                    await _hub.SendAsync(
+                        new HostMessageReceived(
+                            host.Settings.Id,
+                            mre.Data.Map()
                         ));
                     GC.Collect();
                 }
                 else if (e is SMTPImpostorHostStateChangeEvent hsce)
                 {
                     var status = await _executor
-                        .ExecuteAsync<GetStatusAction, Status>();
-                    await _hub.SendMessage(
-                        new SMTPImpostorHubMessage(
-                            "Status",
-                            _serialization.Serialize(status)
-                        ));
+                        .ExecuteAsync<LoadWorkerStateAction, WorkerState>();
+                    var hostState = status.Hosts
+                        .First(h => h.Id == e.HostId);
+                    await _hub.SendAsync(hostState);
 
                     await _hostsSettings.SaveAsync(status.ToSettings());
                 }
@@ -78,12 +72,8 @@ namespace SMTP.Impostor.Worker
                     || e is SMTPImpostorHostAddedEvent)
                 {
                     var status = await _executor
-                        .ExecuteAsync<GetStatusAction, Status>();
-                    await _hub.SendMessage(
-                        new SMTPImpostorHubMessage(
-                            "Status",
-                            _serialization.Serialize(status)
-                        ));
+                        .ExecuteAsync<LoadWorkerStateAction, WorkerState>();
+                    await _hub.SendAsync(status);
 
                     await _hostsSettings.SaveAsync(status.ToSettings());
                 }

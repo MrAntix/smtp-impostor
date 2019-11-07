@@ -2,15 +2,15 @@ using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {
-    public class GetStatusAction :
-        ActionBase<Status>
+    public class LoadWorkerStateAction :
+        ActionBase<WorkerState>
     {
-        public static string Name { get; } = GetName(typeof(GetStatusAction));
+        public static string Name { get; } = GetName(typeof(LoadWorkerStateAction));
 
         readonly ISMTPImpostorSettings _settings;
         readonly SMTPImpostor _impostor;
 
-        public GetStatusAction(
+        public LoadWorkerStateAction(
             ISMTPImpostorSettings settings,
             SMTPImpostor impostor)
         {
@@ -18,9 +18,9 @@ namespace SMTP.Impostor.Worker.Actions.State
             _impostor = impostor;
         }
 
-        public override Task<Status> ExecuteAsync()
+        public override Task<WorkerState> ExecuteAsync()
         {
-            var status = new Status(
+            var status = new WorkerState(
                     _impostor.Hosts.Values.Map(),
                     _settings.FileStoreRoot);
 

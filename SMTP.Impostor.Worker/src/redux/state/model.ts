@@ -1,4 +1,4 @@
-export interface IStatus {
+export interface IWorkerState {
   hosts: IHost[];
   fileStorePath: string;
 }
@@ -37,12 +37,6 @@ export interface ISearchHostMessagesCriteria {
   text: string;
   index: number;
   count: number;
-}
-
-export interface IHostMessagesSearchResult {
-  index: number;
-  total: number;
-  messages: IHostMesssageInfo[];
 }
 
 export const DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA: ISearchHostMessagesCriteria = {

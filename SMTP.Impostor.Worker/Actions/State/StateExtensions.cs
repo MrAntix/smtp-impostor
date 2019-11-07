@@ -4,16 +4,16 @@ using SMTP.Impostor.Hosts;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {
-    public static class StatusExtensions
+    public static class StateExtensions
     {
         public static IImmutableList<SMTPImpostorHostSettings> ToSettings(
-            this Status source)
+            this WorkerState source)
         {
             return source.Hosts?.Select(h => h.ToSettings()).ToImmutableList();
         }
 
         public static SMTPImpostorHostSettings ToSettings(
-            this HostStatus source)
+            this HostState source)
         {
             if (source is null) return null;
 
@@ -22,7 +22,7 @@ namespace SMTP.Impostor.Worker.Actions.State
                 source.IP, source.Port,
                 source.Name,
                 source.StoreType,
-                source.State == Sockets.SMTPImpostorHostStates.Started);
+                source.State == Sockets.SMTPImpostorHostStatus.Started);
         }
     }
 }

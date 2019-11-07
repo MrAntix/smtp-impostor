@@ -9,7 +9,7 @@ namespace SMTP.Impostor.Hosts
         IDisposable
     {
         SMTPImpostorHostSettings Settings { get; }
-        SMTPImpostorHostStates State { get; }
+        SMTPImpostorHostStatus State { get; }
 
         void Start();
         void Stop();

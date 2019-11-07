@@ -2,8 +2,8 @@ import { IHubMessage } from '../../impostor-hub';
 import { IHost, IHostUpdate, ISearchHostMessagesCriteria } from './model';
 import {
   Types,
-  GetStatus,
-  Status,
+  LoadWorkerState,
+  WorkerState,
   AddHost,
   RemoveHost,
   StartHost,
@@ -19,17 +19,17 @@ export const dispatch = (action: IHubMessage) => dispatch => {
   dispatch(action);
 };
 
-export const initStatus = () => dispatch => {
-  const action: Status = {
-    type: Types.STATUS,
+export const initWorkerState = () => dispatch => {
+  const action: WorkerState = {
+    type: Types.WORKER_STATE,
     model: getInitialState()
   };
   dispatch(action);
 };
 
-export const getStatus = () => dispatch => {
-  const action: GetStatus = {
-    type: Types.GET_STATUS,
+export const loadWorkerState = () => dispatch => {
+  const action: LoadWorkerState = {
+    type: Types.LOAD_WORKER_STATE,
     sendToHub: true
   };
   dispatch(action);
@@ -102,12 +102,12 @@ export const toggleHostMessages = (host: IHost, value?: boolean) => dispatch => 
   dispatch(action);
 };
 
-export const searchHostMessages = (host: IHost, criteria: ISearchHostMessagesCriteria) => dispatch => {
+export const searchHostMessages = (hostId: string, criteria: ISearchHostMessagesCriteria) => dispatch => {
   const action: SearchHostMessages = {
     type: Types.SEARCH_HOST_MESSAGES,
     sendToHub: true,
     model: {
-      hostId: host.id,
+      hostId,
       criteria
     }
   };

@@ -1,7 +1,7 @@
-import { IStatus } from './status';
+import { IWorkerState } from './state';
 
 export interface IAppState {
-  status: IStatus;
+  worker: IWorkerState;
 }
 
 export interface IAction {
