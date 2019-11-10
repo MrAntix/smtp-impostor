@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Stores.FileSystem.Messages
@@ -14,9 +15,12 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
     public class SMTPImpostorFileSystemMessagesStore : ISMTPImpostorMessagesStore
     {
         public const string MESSAGE_EXTN = ".eml";
+        public readonly string MESSAGE_FILTER = $"*{MESSAGE_EXTN}";
 
         readonly ILogger<ISMTPImpostorMessagesStore> _logger;
+        readonly Subject<ISMTPImpostorMessageEvent> _events;
         readonly IList<SMTPImpostorMessageInfo> _messageIndex;
+        readonly FileSystemWatcher _watcher;
 
         public SMTPImpostorFileSystemMessagesStore(
             ILogger<ISMTPImpostorMessagesStore> logger,
@@ -31,12 +35,28 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             Directory.CreateDirectory(StorePath);
 
             _logger.LogInformation($"Impostor file store \"{StorePath}\"");
+            _events = new Subject<ISMTPImpostorMessageEvent>();
 
             //TryOpenStorePath();
             _messageIndex = new List<SMTPImpostorMessageInfo>();
+            _watcher = new FileSystemWatcher(StorePath, MESSAGE_FILTER);
+            _watcher.Created += (sender, e) =>
+            {
+                var messageId = Path.GetFileNameWithoutExtension(e.FullPath);
+
+                _events.OnNext(new SMTPImpostorMessageAddedEvent(hostId, messageId));
+            };
+            _watcher.Deleted += async (sender, e) =>
+            {
+                var messageId = Path.GetFileNameWithoutExtension(e.FullPath);
+
+                _events.OnNext(new SMTPImpostorMessageRemovedEvent(hostId, messageId));
+            };
+            _watcher.EnableRaisingEvents = true;
         }
 
         public readonly string StorePath;
+        public IObservable<ISMTPImpostorMessageEvent> Events => _events;
 
         public bool TryOpenStorePath()
         {
@@ -61,23 +81,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         }
 
         async Task<SMTPImpostorMessage> ISMTPImpostorMessagesStore
-            .GetAsync(string messageId)
-        {
-            if (string.IsNullOrWhiteSpace(messageId))
-                throw new ArgumentNullException(nameof(messageId));
-
-            if (CheckMessagePath(out var path, false))
-            {
-                var messagePath = GetMessageFilePath(path, messageId);
-                if (File.Exists(messagePath))
-                {
-                    var content = await File.ReadAllTextAsync(messagePath);
-                    return SMTPImpostorMessage.FromContent(content);
-                }
-            }
-
-            return null;
-        }
+            .GetAsync(string messageId) => await GetAsync(messageId);
 
         async Task ISMTPImpostorMessagesStore
             .PutAsync(SMTPImpostorMessage message)
@@ -119,7 +123,9 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                         .Select(async fi =>
                         {
                             var content = await File.ReadAllTextAsync(fi.FullName);
-                            return SMTPImpostorMessage.FromContent(content);
+                            var messageId = Path.GetFileNameWithoutExtension(fi.FullName);
+
+                            return SMTPImpostorMessage.FromContent(content, messageId);
                         })
                     );
 
@@ -129,6 +135,41 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             }
 
             return SMTPImpostorMessageStoreSearchResult.Empty;
+        }
+
+        Task ISMTPImpostorMessagesStore.DeleteAsync(string messageId)
+        {
+            if (string.IsNullOrWhiteSpace(messageId))
+                throw new ArgumentNullException(nameof(messageId));
+
+            if (CheckMessagePath(out var path, false))
+            {
+                var messagePath = GetMessageFilePath(path, messageId);
+                if (File.Exists(messagePath))
+                {
+                    File.Delete(messagePath);
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
+        async Task<SMTPImpostorMessage> GetAsync(string messageId)
+        {
+            if (string.IsNullOrWhiteSpace(messageId))
+                throw new ArgumentNullException(nameof(messageId));
+
+            if (CheckMessagePath(out var path, false))
+            {
+                var messagePath = GetMessageFilePath(path, messageId);
+                if (File.Exists(messagePath))
+                {
+                    var content = await File.ReadAllTextAsync(messagePath);
+                    return SMTPImpostorMessage.FromContent(content, messageId);
+                }
+            }
+
+            return null;
         }
 
         string GetMessageFilePath(string path, string messageId)
@@ -148,6 +189,18 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             }
 
             return false;
+        }
+
+        bool _disposed = false;
+
+        void IDisposable.Dispose()
+        {
+            if (!_disposed)
+            {
+                _disposed = true;
+                _events.OnCompleted();
+                _watcher.Dispose();
+            }
         }
     }
 }

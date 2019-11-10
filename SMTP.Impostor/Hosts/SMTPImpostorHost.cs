@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Reactive.Subjects;
@@ -23,7 +23,8 @@ namespace SMTP.Impostor.Sockets
         TcpListener _listener;
         bool _listenerStarted = false;
 
-        Subject<ISMTPImpostorEvent> _events;
+        readonly Subject<ISMTPImpostorEvent> _events;
+        readonly IDisposable _messagesSubscription;
         IObservable<ISMTPImpostorEvent> ISMTPImpostorHost.Events => _events;
 
         public SMTPImpostorHost(
@@ -37,6 +38,7 @@ namespace SMTP.Impostor.Sockets
             Settings = settings ??
                 throw new ArgumentNullException(nameof(settings));
             Messages = messages;
+            _messagesSubscription = Messages.Events.Subscribe(e => _events.OnNext(e));
 
             StoppedEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStatus.Stopped);
             StartedEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStatus.Started);
@@ -118,18 +120,24 @@ namespace SMTP.Impostor.Sockets
         void ISMTPImpostorHost.Stop()
         {
             if (_listener != null)
+            {
                 _listener.Stop();
+                _listener = null;
+            }
             _listenerStarted = false;
 
             RaiseStateChange(StoppedEvent);
         }
 
+        bool _disposed = false;
+
         void IDisposable.Dispose()
         {
-            if (_events != null)
+            if (!_disposed)
             {
+                _disposed = true;
                 _events.OnCompleted();
-                _events = null;
+                _messagesSubscription.Dispose();
             }
 
             This.Stop();

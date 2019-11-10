@@ -16,8 +16,10 @@ export enum Types {
   TOGGLE_HOST_CONFIGURATION = 'ToggleHostConfiguration',
   TOGGLE_HOST_MESSAGES = 'ToggleHostMessages',
   SEARCH_HOST_MESSAGES = 'SearchHostMessages',
+  HOST_MESSAGES_LOADED = 'HostMessagesLoaded',
   HOST_MESSAGE_RECEIVED = 'HostMessageReceived',
-  HOST_MESSAGES_LOADED = 'HostMessagesLoaded'
+  HOST_MESSAGE_ADDED = 'HostMessageAdded',
+  HOST_MESSAGE_REMOVED = 'HostMessageRemoved'
 }
 
 export interface NullAction {
@@ -91,16 +93,6 @@ export interface SearchHostMessages {
   }
 }
 
-export interface HostMessageReceived {
-  type: Types.HOST_MESSAGE_RECEIVED;
-  model: {
-    hostId: string,
-    date: Date,
-    from: string,
-    subject: string
-  }
-}
-
 export interface HostMessagesLoaded {
   type: Types.HOST_MESSAGES_LOADED;
   model: {
@@ -111,10 +103,38 @@ export interface HostMessagesLoaded {
   }
 }
 
+export interface HostMessageReceived {
+  type: Types.HOST_MESSAGE_RECEIVED;
+  model: {
+    hostId: string,
+    date: Date,
+    from: string,
+    subject: string
+  }
+}
+
+export interface HostMessageAdded {
+  type: Types.HOST_MESSAGE_ADDED;
+  model: {
+    hostId: string,
+    messageId: string
+  }
+}
+
+export interface HostMessageRemoved {
+  type: Types.HOST_MESSAGE_REMOVED;
+  model: {
+    hostId: string,
+    messageId: string
+  }
+}
+
 export type ActionTypes =
   | NullAction
   | WorkerState
   | HostState
   | ToggleHostConfiguration
   | ToggleHostMessages
-  | HostMessagesLoaded;
+  | HostMessagesLoaded
+  | HostMessageAdded
+  | HostMessageRemoved;

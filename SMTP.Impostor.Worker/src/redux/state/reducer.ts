@@ -17,40 +17,49 @@ export default (state = getInitialState(), action: ActionTypes): IWorkerState =>
     case Types.HOST_STATE:
       return updateHost(state,
         action.model.id,
-        action.model);
+        () => action.model);
 
     case Types.TOGGLE_HOST_CONFIGURATION:
       return updateHost(state,
         action.model.hostId,
-        {
+        () => ({
           showConfiguration: action.model.value
-        });
+        }));
 
     case Types.TOGGLE_HOST_MESSAGES:
       return updateHost(state,
         action.model.hostId,
-        {
+        () => ({
           showMessages: action.model.value
-        });
+        }));
 
     case Types.HOST_MESSAGES_LOADED:
       return updateHost(state,
         action.model.hostId,
-        {
+        () => ({
           messagesIndex: action.model.index,
           messagesCount: action.model.total,
           messages: action.model.messages
-        })
+        }));
+        
+    case Types.HOST_MESSAGE_REMOVED:
+      console.info(action.model);
+      return updateHost(state,
+        action.model.hostId,
+        host => ({
+          messagesCount: host.messagesCount - 1,
+          messages: host.messages.filter(m => m.id != action.model.messageId)
+        }));
   }
 };
 
 function updateHost(
   state: IWorkerState,
-  hostId: string, update: Partial<IHost>): IWorkerState {
+  hostId: string, update: (host: IHost) => Partial<IHost>): IWorkerState {
   return {
     ...state,
     hosts: state.hosts.map(host => host.id === hostId
-      ? { ...host, ...update }
+      ? { ...host, ...update(host) }
       : host)
   }
 }

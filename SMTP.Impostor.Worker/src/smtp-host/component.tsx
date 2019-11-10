@@ -119,7 +119,7 @@ export class SMTPHostComponent {
       </div>
       <ul class="messages-list">
         {this.value.messages && this.value.messages
-          .map(message => <li class="message">
+          .map(message => <li class="message" data-id={message.id}>
             <div class="message-from">{message.from}</div>
             <div class="message-date">{new Date(message.date).toLocaleString()}</div>
             <div class="message-subject">{message.subject}</div>

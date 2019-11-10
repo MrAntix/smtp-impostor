@@ -15,7 +15,6 @@ namespace SMTP.Impostor.Worker
     public class SMTPImpostorWorkerService : BackgroundService
     {
         readonly ILogger<SMTPImpostorWorkerService> _logger;
-        readonly SMTPImpostorSerialization _serialization;
         readonly SMTPImpostor _impostor;
         readonly SMTPImpostorHubService _hub;
         readonly IActionExecutor _executor;
@@ -25,14 +24,12 @@ namespace SMTP.Impostor.Worker
 
         public SMTPImpostorWorkerService(
             ILogger<SMTPImpostorWorkerService> logger,
-            SMTPImpostorSerialization serialization,
             SMTPImpostor impostor,
             SMTPImpostorHubService hub,
             IActionExecutor executor,
             ISMTPImpostorHostSettingsStore hostsSettings)
         {
             _logger = logger;
-            _serialization = serialization;
             _impostor = impostor;
             _hub = hub;
             _executor = executor;
@@ -51,11 +48,20 @@ namespace SMTP.Impostor.Worker
                     await host.Messages.PutAsync(mre.Data);
 
                     await _hub.SendAsync(
-                        new HostMessageReceived(
-                            host.Settings.Id,
-                            mre.Data.Map()
-                        ));
-                    GC.Collect();
+                        new HostMessageReceived(host.Settings.Id, mre.Data.Map())
+                        );
+                }
+                else if (e is SMTPImpostorMessageRemovedEvent mde)
+                {
+                    await _hub.SendAsync(
+                        new HostMessageRemoved(mde.HostId, mde.MessageId)
+                        );
+                }
+                else if (e is SMTPImpostorMessageAddedEvent mae)
+                {
+                    await _hub.SendAsync(
+                        new HostMessageRemoved(mae.HostId, mae.MessageId)
+                        );
                 }
                 else if (e is SMTPImpostorHostStateChangeEvent hsce)
                 {

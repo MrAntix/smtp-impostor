@@ -15,12 +15,12 @@ namespace SMTP.Impostor.Worker.Actions.State
             _impostor = impostor;
         }
 
-        public override Task ExecuteAsync(HostUpdate update)
+        public override Task ExecuteAsync(HostUpdate request)
         {
-            var host = _impostor.Hosts[update.HostId];
+            var host = _impostor.Hosts[request.HostId];
 
-            var hostSettings = host.MapToSettings(update);
-            _impostor.UpdateHost(update.HostId, hostSettings);
+            var hostSettings = host.MapToSettings(request);
+            _impostor.UpdateHost(request.HostId, hostSettings);
 
             return Task.CompletedTask;
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Mail;
@@ -33,12 +33,12 @@ namespace SMTP.Impostor.Messages
         public IImmutableList<MailAddress> Cc { get; }
         public string Content { get; }
 
-        public static SMTPImpostorMessage FromContent(string content)
+        public static SMTPImpostorMessage FromContent(string content, string messageId = null)
         {
             var headers = GetHeaders(content);
 
             return new SMTPImpostorMessage(
-                headers.TryGetValue(SMTPImpostorMessageHeader.MESSAGE_ID) ?? Guid.NewGuid().ToString(),
+                headers.TryGetValue(SMTPImpostorMessageHeader.MESSAGE_ID) ?? messageId ?? Guid.NewGuid().ToString(),
                 headers,
                 headers.TryGetValue(SMTPImpostorMessageHeader.SUBJECT) ?? string.Empty,
                 headers.TryGetValue(SMTPImpostorMessageHeader.FROM)?.ToMailAddress(),
