@@ -107,8 +107,7 @@ export class AppRoot {
           <div class="hosts">
             <ul>
               {this.state.worker.hosts.map(host => (
-                <li key={host.id} class={{ "host": true, "host-open": host.showMessages }}
-                  onDblClick={() => this.toggleHostMessages(host)}>
+                <li key={host.id} class={{ "host": true, "host-open": host.showMessages }}>
                   <smtp-host
                     value={host}
                     showMessages={host.showMessages}
@@ -116,6 +115,7 @@ export class AppRoot {
                     onStartHost={e => this.startHost(e.detail.id)}
                     onStopHost={e => this.stopHost(e.detail.id)}
                     onUpdateHost={e => this.updateHost(e.detail)}
+                    onToggleHostMessages={e => this.toggleHostMessages(host, e.detail.value)}
                     onSearchHostMessages={e => this.searchHostMessages(e.detail.hostId, e.detail.criteria)}
                     onDeleteHostMessage={e => this.deleteHostMessage(e.detail.hostId, e.detail.messageId)}
                   />

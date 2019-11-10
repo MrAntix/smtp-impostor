@@ -17,16 +17,6 @@ export class SMTPHostComponent {
   @Prop({ reflect: true }) showConfiguration: boolean = false;
 
   @Method()
-  async toggleMessages(value?: boolean) {
-    this.showMessages = value == null ? !this.showMessages : !!value;
-  }
-
-  @Method()
-  async toggleConfiguration(value?: boolean) {
-    this.showConfiguration = value == null ? !this.showConfiguration : !!value;
-  }
-
-  @Method()
   async toggleState(start?: boolean) {
     start = start == null
       ? this.value.state !== HostStatus.Started
@@ -89,14 +79,17 @@ export class SMTPHostComponent {
             </div>
             <div class="control name">
               <label>Friendly Name</label>
-              <input
-                name="name"
-                value={this.value.name}
-                readOnly={!this.showConfiguration}
-                onChange={(e: any) =>
-                  this.updateHost.emit({ id: this.value.id, name: e.target.value })
-                }
-              />
+              {this.value.showConfiguration
+                ? <input
+                  name="name"
+                  value={this.value.name}
+                  readOnly={!this.showConfiguration}
+                  onChange={(e: any) =>
+                    this.updateHost.emit({ id: this.value.id, name: e.target.value })
+                  }
+                />
+                : <span onDblClick={() => this.toggleHostMessages.emit({ hostId: this.value.id, value: !this.value.showMessages })}>{this.value.name}</span>
+              }
               <small>{this.value.messagesCount}</small>
             </div>
           </div>
@@ -140,6 +133,7 @@ export class SMTPHostComponent {
   @Event() startHost: EventEmitter<IHost>;
   @Event() stopHost: EventEmitter<IHost>;
   @Event() updateHost: EventEmitter<IHostUpdate>;
+  @Event() toggleHostMessages: EventEmitter<{ hostId: string, value: boolean }>;
   @Event() searchHostMessages: EventEmitter<{ hostId: string, criteria: ISearchHostMessagesCriteria }>;
   @Event() deleteHostMessage: EventEmitter<{ hostId: string, messageId: string }>;
 }

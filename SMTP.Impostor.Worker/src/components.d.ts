@@ -41,8 +41,6 @@ export namespace Components {
     'searchMessages': (criteria: Partial<ISearchHostMessagesCriteria>, debounce?: number) => Promise<void>;
     'showConfiguration': boolean;
     'showMessages': boolean;
-    'toggleConfiguration': (value?: boolean) => Promise<void>;
-    'toggleMessages': (value?: boolean) => Promise<void>;
     'toggleState': (start?: boolean) => Promise<void>;
     'value': IHost;
   }
@@ -102,6 +100,7 @@ declare namespace LocalJSX {
     'onSearchHostMessages'?: (event: CustomEvent<{ hostId: string, criteria: ISearchHostMessagesCriteria }>) => void;
     'onStartHost'?: (event: CustomEvent<IHost>) => void;
     'onStopHost'?: (event: CustomEvent<IHost>) => void;
+    'onToggleHostMessages'?: (event: CustomEvent<{ hostId: string, value: boolean }>) => void;
     'onUpdateHost'?: (event: CustomEvent<IHostUpdate>) => void;
     'showConfiguration'?: boolean;
     'showMessages'?: boolean;
