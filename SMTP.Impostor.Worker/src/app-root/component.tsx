@@ -63,7 +63,6 @@ export class AppRoot {
       deleteHostMessage
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
-
       if (state.worker.hosts) {
         state.worker.hosts.forEach(host => {
           if (!host.messages)
@@ -108,7 +107,8 @@ export class AppRoot {
           <div class="hosts">
             <ul>
               {this.state.worker.hosts.map(host => (
-                <li key={host.id} class="host">
+                <li key={host.id} class={{ "host": true, "host-open": host.showMessages }}
+                  onDblClick={() => this.toggleHostMessages(host)}>
                   <smtp-host
                     value={host}
                     showMessages={host.showMessages}
@@ -119,25 +119,31 @@ export class AppRoot {
                     onSearchHostMessages={e => this.searchHostMessages(e.detail.hostId, e.detail.criteria)}
                     onDeleteHostMessage={e => this.deleteHostMessage(e.detail.hostId, e.detail.messageId)}
                   />
-                  <button class="toggle-readonly" type="button"
-                    onClick={() => this.toggleHostMessages(host)}>
-                    <app-icon type="triangle" rotate={host.showMessages ? 0 : 180} />
-                  </button>
-                  <button
-                    class="remove-host warning"
-                    onClick={e => {
-                      e.stopPropagation();
-                      this.removeHost(host.id);
-                    }}
-                  >
-                    <app-icon type="cog" />
-                  </button>
+                  <div class="host-actions">
+                    <button class="toggle-readonly" type="button"
+                      onClick={() => this.toggleHostMessages(host)}>
+                      <app-icon type="triangle" rotate={host.showMessages ? 0 : 180} />
+                    </button>
+                    {host.showMessages &&
+                      <button
+                        class="remove-host warning"
+                        onClick={e => {
+                          e.stopPropagation();
+                          this.removeHost(host.id);
+                        }}
+                      >
+                        <app-icon type="delete" />
+                      </button>
+                    }
+                  </div>
                 </li>
               ))}
             </ul>
-            <button class="add-host primary" onClick={() => this.addHost()}>
-              <app-icon type="plus" />
-            </button>
+            <div class="hosts-actions">
+              <button class="add-host primary" onClick={() => this.addHost()}>
+                <app-icon type="plus" />
+              </button>
+            </div>
           </div>
         )}
 

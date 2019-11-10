@@ -7,7 +7,7 @@
   --border-radius: 2px;
 
   --color: #444;
-  --background-color: #f3f3f3;
+  --background-color: #ddd;
   --input-color: #333;
   --input-background-color: #fff;
   --action-color: #ccc;
@@ -21,8 +21,10 @@
   --error-color: #c22;
   --error-color-alt: #eee;
 
-  --lowlight: rgba(0, 0, 0, .2);
-  --highlight: rgba(255, 255, 255, .4);
+  --lowlight: rgba(0, 0, 0, .05);
+  --lowlight-more: rgba(0, 0, 0, .1);
+  --highlight: rgba(255, 255, 255, .25);
+  --highlight-more: rgba(255, 255, 255, .5);
 
   --icon-size: .5em;
   --icon-spacing: .1em;
@@ -31,7 +33,16 @@
   --icon-outline-color: var(--icon-color, currentColor);
 }
 
-body {
-  color: var(--color);
-  background-color: var(--background-color);
+@media (prefers-color-scheme: dark) {
+  :root {
+
+    --color: #ddd;
+    --background-color: #444;
+
+    --highlight: rgba(0, 0, 0, .05);
+    --highlight-more: rgba(0, 0, 0, .1);
+    --lowlight: rgba(255, 255, 255, .25);
+    --lowlight-more: rgba(255, 255, 255, .5);
+
+  }
 }

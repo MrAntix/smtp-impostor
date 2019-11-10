@@ -21,8 +21,10 @@
   --host-error-color: var(--error-color, #c22);
   --host-error-color-alt: var(--error-color-alt, #eee);
 
-  --host-lowlight: var(--lowlight, rgba(0, 0, 0, .2));
-  --host-highlight: var(--highlight, rgba(255, 255, 255, .4));
+  --host-lowlight: var(--lowlight, rgba(0, 0, 0, .05));
+  --host-lowlight-more: var(--lowlight-more, rgba(0, 0, 0, .1));
+  --host-highlight: var(--highlight, rgba(255, 255, 255, .25));
+  --host-highlight-more: var(--highlight-more, rgba(255, 255, 255, .6));
 
   --host-button-padding: var(--host-padding) calc(var(--host-padding) * 2);
   --host-button-color: var(--host-action-color-alt);

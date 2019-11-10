@@ -6,7 +6,6 @@
   right: 0;
   bottom: 0;
   left: 0;
-  padding: var(--host-padding);
   display: flex;
   flex-direction: column;
 }
@@ -40,20 +39,25 @@
   padding: 0
 }
 
-.hosts .host:nth-child(even) {
-  background-color: rgba(0, 0, 0, .025);
-}
-
 .host {
   flex: 0 1 auto;
   display: flex;
   align-items: flex-start;
   max-height: 100%;
   overflow: hidden;
+  padding: var(--host-padding);
+  border-bottom: solid 1px var(--host-lowlight);
 }
 
-.add-host {
-  align-self: flex-end;
+.host-open {
+  background: linear-gradient(to bottom, var(--host-highlight-more), var(--host-highlight));
+  border-bottom: solid 1px var(--host-lowlight-more);
+}
+
+.host-actions {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 smtp-host {
@@ -70,6 +74,11 @@ main {
   overflow-y: auto;
 }
 
+.hosts-actions {
+  align-self: flex-end;
+  padding: var(--host-padding);
+}
+
 pre {
   font-size: .75em;
   color: rgba(0, 0, 0, .75);
@@ -78,6 +87,6 @@ pre {
 }
 
 impostor-hub {
-  padding: 1em 0;
+  padding: 1em var(--host-padding);
   align-self: flex-end;
 }

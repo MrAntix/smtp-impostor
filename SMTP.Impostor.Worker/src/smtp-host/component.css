@@ -136,10 +136,12 @@ input {
   display: flex;
   flex-wrap: wrap;
   padding: var(--host-padding);
+  border-top: solid 1px var(--host-lowlight);
+  border-radius: var(--host-border-radius);
 }
 
-.message:nth-child(odd) {
-  background-color: rgba(0, 0, 0, .05);
+.message:hover {
+  background-color: var(--host-highlight-more);
 }
 
 .message-from {
