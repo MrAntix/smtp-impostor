@@ -11,10 +11,6 @@
   display: none;
 }
 
-:host(:not([configure])) input {
-  background-color: transparent;
-}
-
 header {
   display: flex;
   flex: 1 0 auto;
@@ -36,6 +32,10 @@ input {
   flex-direction: column;
   justify-items: stretch;
   position: relative;
+}
+
+.control span {
+  padding: var(--host-padding) var(--host-padding) 0 var(--host-padding);
 }
 
 .control small {
@@ -119,6 +119,7 @@ input {
 
 .messages-toolbar {
   flex: 0 0 auto;
+  display: flex;
 }
 
 .messages-list {

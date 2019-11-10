@@ -39,6 +39,7 @@
   --host-input-padding: var(--host-padding);
   --host-input-color: var(--input-color);
   --host-input-background-color: var(--input-background-color);
+  --host-input-background-color-focus: var(--input-background-color-focus);
   --host-input-border: var(--host-border);
   --host-input-border-radius: var(--host-border-radius);
 
@@ -77,6 +78,12 @@ select {
   border: var(--host-input-border, none);
   border-radius: var(--host-input-border-radius, 2px);
   margin: var(--host-margin);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  background-color: var(--host-input-background-color-focus, var(--host-action-color-focus));
 }
 
 label {

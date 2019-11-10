@@ -9,7 +9,8 @@
   --color: #444;
   --background-color: #ddd;
   --input-color: #333;
-  --input-background-color: #fff;
+  --input-background-color: var(--highlight);
+  --input-background-color-focus: var(--highlight-more);
   --action-color: #ccc;
   --action-color-alt: #222;
   --primary-color: #369;
@@ -33,16 +34,3 @@
   --icon-outline-color: var(--icon-color, currentColor);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-
-    --color: #ddd;
-    --background-color: #444;
-
-    --highlight: rgba(0, 0, 0, .05);
-    --highlight-more: rgba(0, 0, 0, .1);
-    --lowlight: rgba(255, 255, 255, .25);
-    --lowlight-more: rgba(255, 255, 255, .5);
-
-  }
-}
