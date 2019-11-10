@@ -11,7 +11,8 @@ import {
   UpdateHost,
   ToggleHostConfiguration,
   ToggleHostMessages,
-  SearchHostMessages
+  SearchHostMessages,
+  DeleteHostMessage
 } from './types';
 import { getInitialState } from './reducer';
 
@@ -109,6 +110,19 @@ export const searchHostMessages = (hostId: string, criteria: ISearchHostMessages
     model: {
       hostId,
       criteria
+    }
+  };
+  dispatch(action);
+};
+
+
+export const deleteHostMessage = (hostId: string, messageId: string) => dispatch => {
+  const action: DeleteHostMessage = {
+    type: Types.DELETE_HOST_MESSAGE,
+    sendToHub: true,
+    model: {
+      hostId,
+      messageId
     }
   };
   dispatch(action);

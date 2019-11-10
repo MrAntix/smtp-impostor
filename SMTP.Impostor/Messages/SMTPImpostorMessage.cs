@@ -12,7 +12,7 @@ namespace SMTP.Impostor.Messages
         internal const string HEADERS_TERMINATOR = "\r\n\r\n";
         internal const string DATA_TERMINATOR = "\r\n.\r\n";
 
-        internal static readonly Regex UNFOLD = new Regex(@"\r\n\s+");
+        internal static readonly Regex UNFOLD = new Regex($@"{LINE_TERMINATOR}\s+");
 
         public SMTPImpostorMessage(
             string id,

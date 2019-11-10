@@ -19,7 +19,8 @@ export enum Types {
   HOST_MESSAGES_LOADED = 'HostMessagesLoaded',
   HOST_MESSAGE_RECEIVED = 'HostMessageReceived',
   HOST_MESSAGE_ADDED = 'HostMessageAdded',
-  HOST_MESSAGE_REMOVED = 'HostMessageRemoved'
+  HOST_MESSAGE_REMOVED = 'HostMessageRemoved',
+  DELETE_HOST_MESSAGE = 'DeleteHostMessage'
 }
 
 export interface NullAction {
@@ -90,6 +91,15 @@ export interface SearchHostMessages {
   model: {
     hostId: string,
     criteria: ISearchHostMessagesCriteria
+  }
+}
+
+export interface DeleteHostMessage {
+  type: Types.DELETE_HOST_MESSAGE;
+  sendToHub: true;
+  model: {
+    hostId: string,
+    messageId: string
   }
 }
 

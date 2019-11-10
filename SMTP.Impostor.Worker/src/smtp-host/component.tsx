@@ -121,7 +121,16 @@ export class SMTPHostComponent {
         {this.value.messages && this.value.messages
           .map(message => <li class="message" data-id={message.id}>
             <div class="message-from">{message.from}</div>
-            <div class="message-date">{new Date(message.date).toLocaleString()}</div>
+            <div class="message-date" >
+              {new Date(message.date).toLocaleString()}
+              <button class="delete-message warning" type="button"
+                onClick={() => this.deleteHostMessage.emit({
+                  hostId: this.value.id,
+                  messageId: message.id
+                })}>
+                <app-icon type="close"></app-icon>
+              </button>
+            </div>
             <div class="message-subject">{message.subject}</div>
           </li>)}
       </ul>
@@ -132,4 +141,5 @@ export class SMTPHostComponent {
   @Event() stopHost: EventEmitter<IHost>;
   @Event() updateHost: EventEmitter<IHostUpdate>;
   @Event() searchHostMessages: EventEmitter<{ hostId: string, criteria: ISearchHostMessagesCriteria }>;
+  @Event() deleteHostMessage: EventEmitter<{ hostId: string, messageId: string }>;
 }

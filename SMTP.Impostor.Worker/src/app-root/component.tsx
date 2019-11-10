@@ -16,7 +16,8 @@ import {
   updateHost,
   toggleHostConfiguration,
   toggleHostMessages,
-  searchHostMessages
+  searchHostMessages,
+  deleteHostMessage
 } from '../redux/state/actions';
 
 @Component({
@@ -43,6 +44,7 @@ export class AppRoot {
   toggleHostMessages: typeof toggleHostMessages;
   toggleHostConfiguration: typeof toggleHostConfiguration;
   searchHostMessages: typeof searchHostMessages;
+  deleteHostMessage: typeof deleteHostMessage;
 
   async componentWillLoad() {
     this.store.setStore(configureStore({}, () => this.hubAction()));
@@ -57,7 +59,8 @@ export class AppRoot {
       updateHost,
       toggleHostMessages,
       toggleHostConfiguration,
-      searchHostMessages
+      searchHostMessages,
+      deleteHostMessage
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
 
@@ -114,6 +117,7 @@ export class AppRoot {
                     onStopHost={e => this.stopHost(e.detail.id)}
                     onUpdateHost={e => this.updateHost(e.detail)}
                     onSearchHostMessages={e => this.searchHostMessages(e.detail.hostId, e.detail.criteria)}
+                    onDeleteHostMessage={e => this.deleteHostMessage(e.detail.hostId, e.detail.messageId)}
                   />
                   <button class="toggle-readonly" type="button"
                     onClick={() => this.toggleHostMessages(host)}>
