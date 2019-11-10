@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace SMTP.Impostor.Messages
 {
@@ -10,6 +11,8 @@ namespace SMTP.Impostor.Messages
         internal const string LINE_TERMINATOR = "\r\n";
         internal const string HEADERS_TERMINATOR = "\r\n\r\n";
         internal const string DATA_TERMINATOR = "\r\n.\r\n";
+
+        internal static readonly Regex UNFOLD = new Regex(@"\r\n\s+");
 
         public SMTPImpostorMessage(
             string id,
@@ -53,10 +56,9 @@ namespace SMTP.Impostor.Messages
             var headers = new List<SMTPImpostorMessageHeader>();
             if (!content.Contains(HEADERS_TERMINATOR)) return headers;
 
-            // get the headers part of the data an un-fold 
-            var rawHeaders = content.Head(HEADERS_TERMINATOR)
-                .Replace(LINE_TERMINATOR + "\t", string.Empty)
-                .Replace(LINE_TERMINATOR + " ", string.Empty);
+            // get the headers part of the data and un-fold 
+            var rawHeaders = UNFOLD.Replace(
+                content.Head(HEADERS_TERMINATOR), " ");
 
             // parse into collection
             foreach (var header in rawHeaders.Split('\n'))

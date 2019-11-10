@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
@@ -45,19 +46,21 @@ namespace SMTP.Impostor
 
         public static string TryGetValue(
             this IEnumerable<SMTPImpostorMessageHeader> message,
-            string name, string part = null)
+            string name, string part = null,
+            Func<string, string> process = null)
         {
-            var header = message.FirstOrDefault(
-                h => h.Name == name);
+            var header = message.FirstOrDefault(h => h.Name == name);
             if (header == null) return null;
 
-            if (part == null) return header.Value;
+            var value = part == null
+                ? header.Value
+                : header.Value.Split(";")
+                    .Select(p => p.Split("="))
+                    .Where(p => p[0].Trim() == part)
+                    .Select(p => p.ElementAtOrDefault(1))
+                    .FirstOrDefault();
 
-            return header.Value.Split(";")
-                .Select(p => p.Split("="))
-                .Where(p => p[0].Trim() == part)
-                .Select(p => p.ElementAtOrDefault(1))
-                .FirstOrDefault();
+            return process == null ? value : process(value);
         }
 
         public static Encoding TryGetEncoding(
