@@ -17,68 +17,15 @@ export class AppIconComponent {
       default:
         return <text>{type}</text>;
 
-      case 'arrow':
-        return <path d="M10.5,3 15,7.5 10.5,12 10.5,9 0,9 0,6 10.5,6Z" />;
-
-      case 'bowtie':
-        return <path d="M 0,0 15,15 15,0 0,15Z" />;
-
-      case 'circle':
-        return <circle cx="7.5" cy="7.5" r="7.5" />;
-
       case 'close':
         return (
           <path d="M 1,3 3,1 7.5,5.5 12,1 14,3 9.5,7.5 14,12 12,14 7.5,9.5 3,14 1,12 5.5,7.5 Z" />
-        );
-
-      case 'cog':
-        return (
-          <path d="M 1,3 3,1 7.5,5.5 12,1 14,3 9.5,7.5 14,12 12,14 7.5,9.5 3,14 1,12 5.5,7.5 Z" />
-        );
-
-      case 'collapse':
-        return (
-          <g>
-            <path d="M 7.5,6 2,0 13,0 Z" />
-            <path d="M 7.5,9 2,15 13,15 Z" />
-          </g>
-        );
-
-      case 'chevron':
-        return <path d="M 0,4 15,4 7.5,12 Z" />;
-
-      case 'chevron-dbl':
-        return (
-          <g>
-            <path d="M 0,0 15,0 7.5,7.5Z" />,
-            <path d="M 0,7.5 15,7.5 7.5,15Z" />
-          </g>
         );
 
       case 'delete':
         return (
           <path d="M 1,3 3,1 7.5,5.5 12,1 14,3 9.5,7.5 14,12 12,14 7.5,9.5 3,14 1,12 5.5,7.5 Z" />
         );
-
-      case 'ellipsis':
-        return (
-          <g>
-            <circle cx="1" cy="7.5" r="2" />
-            <circle cx="7.5" cy="7.5" r="2" />
-            <circle cx="14" cy="7.5" r="2" />
-          </g>
-        );
-
-      case 'expand':
-        return (
-          <g>
-            <path d="M 7.5,0 2,6 13,6 Z" />
-            <path d="M 7.5,15 2,9 13,9 Z" />
-          </g>
-        );
-
-      case 'minus':
-        return <path d="M 0,6 15,6 15,9 0,9Z" />;
 
       case 'paperclip':
         return (
@@ -103,20 +50,16 @@ export class AppIconComponent {
           <path d="M 6,0 9,0 9,6 15,6 15,9 9,9 9,15 6,15 6,9 0,9 0,6 6,6Z" />
         );
 
-      case 'rotate':
+      case 'search':
         return (
           <path
-            d="M5.5,3.5 4,5 4,0 9,0 7.5,1.5
-                A9.5,9.5 0 0,1 7.5,13.5
-                M7.5,13.5 9,15 4,15 4,10 5.5,11.5
-                A7,7 0 0,0 5.5,3.5"
+            d="M6,0 A1,1 0,0,0 6,12
+                  M6,12 A1,1 0,0,0 6,0
+                  M6,1.25 A1,1 0,0,1 6,10.75
+                  M6,10.75 A1,1 0,0,1 6,1.25
+                  M10,9 9,10 14,15 15,14"
           />
         );
-      case 'square':
-        return <path d="M1,1 14,1 14,14 1,14 Z" />;
-
-      case 'star':
-        return <path d="M7.5,0 12.5,15 0,5 15,5 2.5,15Z" />;
 
       case 'triangle':
         return <path d="M7.5,1 15,14 0,14 Z" />;

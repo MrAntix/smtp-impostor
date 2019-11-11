@@ -50,7 +50,7 @@
 }
 
 .host-open {
-  background: linear-gradient(to bottom, var(--host-highlight-more), var(--host-highlight));
+  background: linear-gradient(to bottom, var(--host-highlight), var(--host-highlight-more));
   border-bottom: solid 1px var(--host-lowlight-more);
 }
 

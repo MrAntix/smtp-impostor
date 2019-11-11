@@ -118,8 +118,21 @@ input {
 }
 
 .messages-toolbar {
+  position: relative;
   flex: 0 0 auto;
   display: flex;
+}
+
+.messages-toolbar app-icon {
+  position: absolute;
+  right: var(--host-padding);
+  bottom: var(--host-padding);
+  height: .8em;
+  width: .8em;
+}
+
+.messages-toolbar input{
+  padding-right: 2em;
 }
 
 .messages-list {
@@ -159,7 +172,7 @@ input {
 
 .message-subject {
   width: 100%;
-  font-size: 1.15em;
+  font-size: 1.1em;
   margin-right: 2em;
 }
 

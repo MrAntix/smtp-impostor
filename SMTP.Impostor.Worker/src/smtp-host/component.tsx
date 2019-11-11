@@ -109,6 +109,7 @@ export class SMTPHostComponent {
       <div class="messages-toolbar">
         <input onInput={(e: any) =>
           this.searchMessages({ text: e.target.value }, 500)} />
+        <app-icon type="search" />
       </div>
       <ul class="messages-list">
         {this.value.messages && this.value.messages

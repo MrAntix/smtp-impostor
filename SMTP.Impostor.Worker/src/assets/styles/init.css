@@ -34,3 +34,20 @@
   --icon-outline-color: var(--icon-color, currentColor);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+
+    --color: #ddd;
+    --background-color: #333;
+    --input-color: #eee;
+
+    --highlight: rgba(0, 0, 0, .2);
+    --highlight-more: rgba(0, 0, 0, .4);
+    --lowlight: rgba(255, 255, 255, .05);
+    --lowlight-more: rgba(255, 255, 255, .1);
+
+    --action-color: #222;
+    --action-color-alt: #eee;
+
+  }
+}
