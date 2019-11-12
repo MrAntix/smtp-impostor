@@ -36,7 +36,7 @@ namespace SMTP.Impostor.Messages
         public IImmutableList<MailAddress> Cc { get; }
         public string Content { get; }
 
-        public static SMTPImpostorMessage FromContent(string content, string messageId = null)
+        public static SMTPImpostorMessage Parse(string content, string messageId = null)
         {
             var headers = GetHeaders(content);
 
@@ -49,6 +49,18 @@ namespace SMTP.Impostor.Messages
                 headers.TryGetValue(SMTPImpostorMessageHeader.CC)?.ToMailAddresses(),
                 DateTimeOffset.Parse(headers.TryGetValue(SMTPImpostorMessageHeader.DATE)),
                 content);
+        }
+
+        public static SMTPImpostorMessageInfo ParseInfo(string content, string messageId = null)
+        {
+            var headers = GetHeaders(content);
+
+            return new SMTPImpostorMessageInfo(
+                headers.TryGetValue(SMTPImpostorMessageHeader.MESSAGE_ID) ?? messageId ?? Guid.NewGuid().ToString(),
+                headers.TryGetValue(SMTPImpostorMessageHeader.SUBJECT) ?? string.Empty,
+                headers.TryGetValue(SMTPImpostorMessageHeader.FROM)?.ToMailAddress(),
+                DateTimeOffset.Parse(headers.TryGetValue(SMTPImpostorMessageHeader.DATE))
+                );
         }
 
         internal static IEnumerable<SMTPImpostorMessageHeader> GetHeaders(string content)

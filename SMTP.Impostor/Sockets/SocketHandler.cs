@@ -166,7 +166,7 @@ namespace SMTP.Impostor.Sockets
                     var content = _data.ToString(0, _data.Length - _terminator.Length);
                     _data.Clear();
 
-                    var message = SMTPImpostorMessage.FromContent(content);
+                    var message = SMTPImpostorMessage.Parse(content);
                     // _logger.LogInformation("Session.Process Data: => {0}", data);
 
                     Write(ReplyCodes.Completed_250);

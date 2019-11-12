@@ -52,8 +52,8 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
                 _events.OnNext(new SMTPImpostorMessageAddedEvent(hostId, messageId));
 
-                var message = SMTPImpostorMessageInfo
-                    .FromContent(await GetMessageContentAsync(messageId), messageId);
+                var message = SMTPImpostorMessage
+                    .ParseInfo(await GetMessageContentAsync(messageId), messageId);
                 _index.Insert(0, message);
             };
             _watcher.Deleted += (sender, e) =>
@@ -192,7 +192,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                         var content = await File.ReadAllTextAsync(fi.FullName);
                         var messageId = Path.GetFileNameWithoutExtension(fi.FullName);
 
-                        var message = SMTPImpostorMessageInfo.FromContent(content, messageId);
+                        var message = SMTPImpostorMessage.ParseInfo(content, messageId);
 
                         _index.Add(message);
                     })
@@ -227,7 +227,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
         async Task<SMTPImpostorMessage> ISMTPImpostorMessagesStore
             .GetAsync(string messageId) => SMTPImpostorMessage
-                .FromContent(await GetMessageContentAsync(messageId), messageId);
+                .Parse(await GetMessageContentAsync(messageId), messageId);
 
         async Task ISMTPImpostorMessagesStore
             .PutAsync(SMTPImpostorMessage message) => await PutAsync(message);
