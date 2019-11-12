@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,8 +24,6 @@ namespace SMTP.Impostor.Worker
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "www";
@@ -52,11 +50,6 @@ namespace SMTP.Impostor.Worker
             app.UseRouting();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
 
             app.UseSMTPImpostorHub()
                 .UseSpa(spa =>

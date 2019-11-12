@@ -17,7 +17,8 @@ import {
   toggleHostConfiguration,
   toggleHostMessages,
   searchHostMessages,
-  deleteHostMessage
+  deleteHostMessage,
+  loadHostMessage
 } from '../redux/state/actions';
 
 @Component({
@@ -45,6 +46,7 @@ export class AppRoot {
   toggleHostConfiguration: typeof toggleHostConfiguration;
   searchHostMessages: typeof searchHostMessages;
   deleteHostMessage: typeof deleteHostMessage;
+  loadHostMessage: typeof loadHostMessage;
 
   async componentWillLoad() {
     this.store.setStore(configureStore({}, () => this.hubAction()));
@@ -60,7 +62,8 @@ export class AppRoot {
       toggleHostMessages,
       toggleHostConfiguration,
       searchHostMessages,
-      deleteHostMessage
+      deleteHostMessage,
+      loadHostMessage
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
       if (state.worker.hosts) {
@@ -75,7 +78,7 @@ export class AppRoot {
   }
 
   hubAction() {
-    return next => async (action: IAction) => {
+    return (next: any) => async (action: IAction) => {
       this.logger.debug('hubAction', { action });
 
       if (action.sendToHub) await this.hub.sendAsync(action);
@@ -87,6 +90,18 @@ export class AppRoot {
               action.model.hostId,
               DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA);
             break;
+
+          case Types.HOST_MESSAGE:
+            const blob = new Blob([action.model.content], { type: 'application/eml' });
+
+            const data = window.URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = data;
+            link.download = `${action.model.id}.eml`;
+            link.click();
+            // moo doesn't work, opens dialog
+
+            break
         }
 
         await next(action);
@@ -118,6 +133,7 @@ export class AppRoot {
                     onToggleHostMessages={e => this.toggleHostMessages(host, e.detail.value)}
                     onSearchHostMessages={e => this.searchHostMessages(e.detail.hostId, e.detail.criteria)}
                     onDeleteHostMessage={e => this.deleteHostMessage(e.detail.hostId, e.detail.messageId)}
+                    onOpenHostMessage={e => this.loadHostMessage(e.detail.hostId, e.detail.messageId)}
                   />
                   <div class="host-actions">
                     <button class="toggle-readonly" type="button"

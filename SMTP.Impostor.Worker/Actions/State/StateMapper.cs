@@ -44,22 +44,36 @@ namespace SMTP.Impostor.Worker.Actions.State
                 );
         }
 
-        public static IImmutableList<MessageInfo> Map(
+        public static IImmutableList<HostMessageInfo> Map(
             this IEnumerable<SMTPImpostorMessageInfo> source)
         {
             return source?.Select(Map).ToImmutableList();
         }
 
-        public static MessageInfo Map(
+        public static HostMessageInfo Map(
             this SMTPImpostorMessageInfo source)
         {
             if (source == null) return null;
 
-            return new MessageInfo(
+            return new HostMessageInfo(
                 source.Id,
                 source.Date,
                 source.From.ToString(),
                 source.Subject
+                );
+        }
+
+        public static HostMessage Map(
+            this SMTPImpostorMessage source)
+        {
+            if (source == null) return null;
+
+            return new HostMessage(
+                source.Id,
+                source.Date,
+                source.From.ToString(),
+                source.Subject,
+                source.Content
                 );
         }
     }

@@ -6,13 +6,13 @@ namespace SMTP.Impostor.Worker.Actions.State
     {
         public HostMessageReceived(
             Guid hostId,
-            MessageInfo message)
+            HostMessageInfo message)
         {
             HostId = hostId;
             Message = message;
         }
 
         public Guid HostId { get; }
-        public MessageInfo Message { get; }
+        public HostMessageInfo Message { get; }
      }
 }

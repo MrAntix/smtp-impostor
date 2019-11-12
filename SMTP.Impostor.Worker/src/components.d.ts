@@ -11,6 +11,9 @@ import {
   AppIcons,
 } from './app-icon/model';
 import {
+  AppIcons as AppIcons1,
+} from './app-icon';
+import {
   HubStatus,
   IHubMessage,
   IHubSocketProvider,
@@ -27,6 +30,11 @@ export namespace Components {
     'flipVertical': boolean;
     'rotate': number;
     'type': AppIcons;
+  }
+  interface AppInput {
+    'clearButton': boolean;
+    'iconType'?: AppIcons;
+    'value': string;
   }
   interface AppRoot {}
   interface ImpostorHub {
@@ -55,6 +63,12 @@ declare global {
     new (): HTMLAppIconElement;
   };
 
+  interface HTMLAppInputElement extends Components.AppInput, HTMLStencilElement {}
+  var HTMLAppInputElement: {
+    prototype: HTMLAppInputElement;
+    new (): HTMLAppInputElement;
+  };
+
   interface HTMLAppRootElement extends Components.AppRoot, HTMLStencilElement {}
   var HTMLAppRootElement: {
     prototype: HTMLAppRootElement;
@@ -74,6 +88,7 @@ declare global {
   };
   interface HTMLElementTagNameMap {
     'app-icon': HTMLAppIconElement;
+    'app-input': HTMLAppInputElement;
     'app-root': HTMLAppRootElement;
     'impostor-hub': HTMLImpostorHubElement;
     'smtp-host': HTMLSmtpHostElement;
@@ -87,6 +102,14 @@ declare namespace LocalJSX {
     'rotate'?: number;
     'type'?: AppIcons;
   }
+  interface AppInput {
+    'clearButton'?: boolean;
+    'iconType'?: AppIcons;
+    'onInputChange'?: (event: CustomEvent<string>) => void;
+    'onInputClear'?: (event: CustomEvent<void>) => void;
+    'onInputType'?: (event: CustomEvent<string>) => void;
+    'value'?: string;
+  }
   interface AppRoot {}
   interface ImpostorHub {
     'onMessageReceived'?: (event: CustomEvent<IHubMessage>) => void;
@@ -97,6 +120,7 @@ declare namespace LocalJSX {
   }
   interface SmtpHost {
     'onDeleteHostMessage'?: (event: CustomEvent<{ hostId: string, messageId: string }>) => void;
+    'onOpenHostMessage'?: (event: CustomEvent<{ hostId: string, messageId: string }>) => void;
     'onSearchHostMessages'?: (event: CustomEvent<{ hostId: string, criteria: ISearchHostMessagesCriteria }>) => void;
     'onStartHost'?: (event: CustomEvent<IHost>) => void;
     'onStopHost'?: (event: CustomEvent<IHost>) => void;
@@ -109,6 +133,7 @@ declare namespace LocalJSX {
 
   interface IntrinsicElements {
     'app-icon': AppIcon;
+    'app-input': AppInput;
     'app-root': AppRoot;
     'impostor-hub': ImpostorHub;
     'smtp-host': SmtpHost;
@@ -122,6 +147,7 @@ declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
       'app-icon': LocalJSX.AppIcon & JSXBase.HTMLAttributes<HTMLAppIconElement>;
+      'app-input': LocalJSX.AppInput & JSXBase.HTMLAttributes<HTMLAppInputElement>;
       'app-root': LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
       'impostor-hub': LocalJSX.ImpostorHub & JSXBase.HTMLAttributes<HTMLImpostorHubElement>;
       'smtp-host': LocalJSX.SmtpHost & JSXBase.HTMLAttributes<HTMLSmtpHostElement>;

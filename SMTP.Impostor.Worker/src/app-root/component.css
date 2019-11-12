@@ -34,15 +34,15 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   overflow: hidden;
   margin: 0;
   padding: 0
 }
 
 .host {
-  flex: 0 1 auto;
   display: flex;
-  align-items: flex-start;
+  justify-content: flex-start;
   max-height: 100%;
   overflow: hidden;
   padding: var(--host-padding);
@@ -62,7 +62,6 @@
 
 smtp-host {
   flex: 1 1 auto;
-  height: 100%;
 }
 
 main {

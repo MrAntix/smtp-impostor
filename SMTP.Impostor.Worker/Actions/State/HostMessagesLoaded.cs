@@ -10,7 +10,7 @@ namespace SMTP.Impostor.Worker.Actions.State
             Guid hostId,
             int index,
             int total,
-            IEnumerable<MessageInfo> messages)
+            IEnumerable<HostMessageInfo> messages)
         {
             HostId = hostId;
             Index = index;
@@ -21,6 +21,6 @@ namespace SMTP.Impostor.Worker.Actions.State
         public Guid HostId { get; }
         public int Index { get; }
         public int Total { get; }
-        public IImmutableList<MessageInfo> Messages { get; }
+        public IImmutableList<HostMessageInfo> Messages { get; }
     }
 }

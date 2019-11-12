@@ -1,0 +1,37 @@
+@import '../assets/styles/host.css';
+
+:host {
+  display: flex;
+}
+
+input {
+  flex: 1 1 auto;
+}
+
+:host([clear-button]) input {
+  padding-right: 1.5em;
+}
+
+:host([icon-type]) input {
+  padding-right: 2em;
+}
+
+:host([clear-button][icon-type]) input {
+  padding-right: 3.5em;
+}
+
+.clear {
+  background-color: transparent;
+  position: absolute;
+  right: 1.75em;
+  padding: var(--host-padding);
+}
+
+.icon {
+  position: absolute;
+  right: var(--host-padding);
+  bottom: var(--host-padding);
+  height: .8em;
+  width: .8em;
+  opacity: .6667;
+}

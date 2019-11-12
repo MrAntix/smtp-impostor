@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System.Linq;
+using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -9,6 +10,7 @@ namespace SMTP.Impostor.Worker.Hubs
     public static class SMTPImpostorHubConfiguration
     {
         const string HUB_PATH = "/hub";
+        const string DOWNLOAD_PATH = "/download";
 
         public static IServiceCollection AddSMTPImpostorHub(
             this IServiceCollection services)
@@ -33,6 +35,7 @@ namespace SMTP.Impostor.Worker.Hubs
             this IApplicationBuilder app)
         {
             var hub = app.ApplicationServices.GetRequiredService<SMTPImpostorHubService>();
+            var impostor = app.ApplicationServices.GetRequiredService<SMTPImpostor>();
 
             app.UseWebSockets()
                 .Map(HUB_PATH, hubApp =>
@@ -47,6 +50,20 @@ namespace SMTP.Impostor.Worker.Hubs
 
                         var webSocket = await context.WebSockets.AcceptWebSocketAsync();
                         await hub.ConnectAsync(SMTPImpostorHubClient.Wrap(webSocket));
+                    });
+                })
+                .Map(DOWNLOAD_PATH, downloadApp =>
+                {
+                    downloadApp.Use(async (context, next) =>
+                    {
+                        var host = impostor.Hosts.Values.First();
+                        var message = await host.Messages.GetAsync("2945dd3c-873b-4900-8ebd-b9360d2760c6");
+
+                        context.Response.ContentType = "application/eml";
+                        context.Response.Headers.Add("Content-Disposition", "inline; filename=\"message.txt\"");
+                        await context.Response.BodyWriter.WriteAsync(
+                            Encoding.UTF8.GetBytes(message.Content)
+                            );
                     });
                 });
 

@@ -2,9 +2,9 @@ using System;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {
-    public class MessageInfo
+    public class HostMessageInfo
     {
-        public MessageInfo(
+        public HostMessageInfo(
             string id,
             DateTimeOffset date,
             string from,

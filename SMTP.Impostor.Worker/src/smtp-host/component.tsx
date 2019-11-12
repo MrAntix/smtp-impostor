@@ -99,21 +99,26 @@ export class SMTPHostComponent {
             </button>
           </div>
         </header>
-        {this.value.showMessages && this.renderMessages()}
+        <main class="messages">
+          {this.showMessages && this.renderMessages()}
+        </main>
       </Host>
     );
   }
 
   renderMessages() {
-    return <main class="messages">
+    return [
       <div class="messages-toolbar">
-        <input onInput={(e: any) =>
-          this.searchMessages({ text: e.target.value }, 500)} />
-        <app-icon type="search" />
-      </div>
+        <app-input clear-button icon-type="search"
+          value={this.messagesSearchCriteria.text}
+          onInputType={(e: any) => this.searchMessages({ text: e.detail }, 500)}
+          onInputClear={() => this.searchMessages({ text: '' }, 0)}
+        />
+      </div>,
       <ul class="messages-list">
         {this.value.messages && this.value.messages
-          .map(message => <li class="message" data-id={message.id}>
+          .map(message => <li class="message" data-id={message.id}
+            onDblClick={() => this.openHostMessage.emit({ hostId: this.value.id, messageId: message.id })}>
             <div class="message-from">{message.from}</div>
             <div class="message-date" >
               {new Date(message.date).toLocaleString()}
@@ -128,7 +133,7 @@ export class SMTPHostComponent {
             <div class="message-subject">{message.subject}</div>
           </li>)}
       </ul>
-    </main>
+    ];
   }
 
   @Event() startHost: EventEmitter<IHost>;
@@ -137,4 +142,5 @@ export class SMTPHostComponent {
   @Event() toggleHostMessages: EventEmitter<{ hostId: string, value: boolean }>;
   @Event() searchHostMessages: EventEmitter<{ hostId: string, criteria: ISearchHostMessagesCriteria }>;
   @Event() deleteHostMessage: EventEmitter<{ hostId: string, messageId: string }>;
+  @Event() openHostMessage: EventEmitter<{ hostId: string, messageId: string }>;
 }

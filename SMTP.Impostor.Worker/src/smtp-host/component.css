@@ -2,7 +2,8 @@
 
 :host {
   display: flex;
-  flex-direction: columN;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 :host(:not([configure])) label,
@@ -13,7 +14,7 @@
 
 header {
   display: flex;
-  flex: 1 0 auto;
+  flex: 0 0 auto;
 }
 
 input {
@@ -112,6 +113,7 @@ input {
 }
 
 .messages {
+  flex: 0 1 auto;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -123,16 +125,8 @@ input {
   display: flex;
 }
 
-.messages-toolbar app-icon {
-  position: absolute;
-  right: var(--host-padding);
-  bottom: var(--host-padding);
-  height: .8em;
-  width: .8em;
-}
-
-.messages-toolbar input{
-  padding-right: 2em;
+.messages-toolbar app-input {
+  flex: 1 1 auto;
 }
 
 .messages-list {
@@ -161,19 +155,18 @@ input {
 .message-from {
   flex: 1 1 auto;
   font-size: .9em;
-  margin-bottom: calc(2 * var(--host-padding));
+  margin-right: auto;
 }
 
 .message-date {
   flex: 0 0 auto;
   font-size: .8em;
-  margin-left: auto;
 }
 
 .message-subject {
   width: 100%;
   font-size: 1.1em;
-  margin-right: 2em;
+  margin: var(--host-padding) 2em var(--host-padding) 0;
 }
 
 .delete-message {

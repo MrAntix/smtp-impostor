@@ -41,9 +41,8 @@ export default (state = getInitialState(), action: ActionTypes): IWorkerState =>
           messagesCount: action.model.total,
           messages: action.model.messages
         }));
-        
+
     case Types.HOST_MESSAGE_REMOVED:
-      console.info(action.model);
       return updateHost(state,
         action.model.hostId,
         host => ({

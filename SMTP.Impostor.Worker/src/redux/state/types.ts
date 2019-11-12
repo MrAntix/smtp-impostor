@@ -20,7 +20,9 @@ export enum Types {
   HOST_MESSAGE_RECEIVED = 'HostMessageReceived',
   HOST_MESSAGE_ADDED = 'HostMessageAdded',
   HOST_MESSAGE_REMOVED = 'HostMessageRemoved',
-  DELETE_HOST_MESSAGE = 'DeleteHostMessage'
+  DELETE_HOST_MESSAGE = 'DeleteHostMessage',
+  LOAD_HOST_MESSAGE = 'LoadHostMessage',
+  HOST_MESSAGE = 'HostMessage'
 }
 
 export interface NullAction {
@@ -103,6 +105,15 @@ export interface DeleteHostMessage {
   }
 }
 
+export interface LoadHostMessage {
+  type: Types.LOAD_HOST_MESSAGE;
+  sendToHub: true;
+  model: {
+    hostId: string,
+    messageId: string
+  }
+}
+
 export interface HostMessagesLoaded {
   type: Types.HOST_MESSAGES_LOADED;
   model: {
@@ -139,6 +150,18 @@ export interface HostMessageRemoved {
   }
 }
 
+export interface HostMessage {
+  type: Types.HOST_MESSAGE;
+  model: {
+    hostId: string,
+    id: string,
+    date: Date,
+    from: string,
+    subject: string,
+    content: string
+  }
+}
+
 export type ActionTypes =
   | NullAction
   | WorkerState
@@ -147,4 +170,5 @@ export type ActionTypes =
   | ToggleHostMessages
   | HostMessagesLoaded
   | HostMessageAdded
-  | HostMessageRemoved;
+  | HostMessageRemoved
+  | HostMessage;
