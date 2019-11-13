@@ -130,25 +130,24 @@ export class AppRoot {
                     onStartHost={e => this.startHost(e.detail.id)}
                     onStopHost={e => this.stopHost(e.detail.id)}
                     onUpdateHost={e => this.updateHost(e.detail)}
+                    onRemoveHost={e => this.removeHost(e.detail.id)}
+                    onToggleHostConfiguration={e => this.toggleHostConfiguration(host, e.detail.value)}
                     onToggleHostMessages={e => this.toggleHostMessages(host, e.detail.value)}
-                    onSearchHostMessages={e => this.searchHostMessages(e.detail.hostId, e.detail.criteria)}
-                    onDeleteHostMessage={e => this.deleteHostMessage(e.detail.hostId, e.detail.messageId)}
-                    onOpenHostMessage={e => this.loadHostMessage(e.detail.hostId, e.detail.messageId)}
+                    onSearchHostMessages={e => this.searchHostMessages(e.detail.id, e.detail.criteria)}
+                    onDeleteHostMessage={e => this.deleteHostMessage(e.detail.id, e.detail.messageId)}
+                    onOpenHostMessage={e => this.loadHostMessage(e.detail.id, e.detail.messageId)}
                   />
                   <div class="host-actions">
                     <button class="toggle-readonly" type="button"
                       onClick={() => this.toggleHostMessages(host)}>
-                      <app-icon type="triangle" rotate={host.showMessages ? 0 : 180} />
+                      <app-icon type="triangle" scale={.65} rotate={host.showMessages ? 0 : 180} />
                     </button>
                     {host.showMessages &&
                       <button
-                        class="remove-host warning"
-                        onClick={e => {
-                          e.stopPropagation();
-                          this.removeHost(host.id);
-                        }}
+                        class="remove-host"
+                        onClick={() => this.toggleHostConfiguration(host)}
                       >
-                        <app-icon type="delete" />
+                        <app-icon type="cog" scale={1.667} />
                       </button>
                     }
                   </div>

@@ -22,7 +22,7 @@
   --host-error-color-alt: var(--error-color-alt, #eee);
 
   --host-lowlight: var(--lowlight, rgba(0, 0, 0, .05));
-  --host-lowlight-more: var(--lowlight-more, rgba(0, 0, 0, .1));
+  --host-lowlight-more: var(--lowlight-more, rgba(0, 0, 0, .15));
   --host-highlight: var(--highlight, rgba(255, 255, 255, .25));
   --host-highlight-more: var(--highlight-more, rgba(255, 255, 255, .6));
 

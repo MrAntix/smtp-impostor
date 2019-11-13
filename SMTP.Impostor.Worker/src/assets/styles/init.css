@@ -23,12 +23,11 @@
   --error-color-alt: #eee;
 
   --lowlight: rgba(0, 0, 0, .05);
-  --lowlight-more: rgba(0, 0, 0, .1);
+  --lowlight-more: rgba(0, 0, 0, .15);
   --highlight: rgba(255, 255, 255, .25);
   --highlight-more: rgba(255, 255, 255, .5);
 
-  --icon-size: .5em;
-  --icon-spacing: .1em;
+  --icon-size: .7em;
   --icon-color: currentColor;
   --icon-outline-size: .0075em;
   --icon-outline-color: var(--icon-color, currentColor);

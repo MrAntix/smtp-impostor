@@ -30,8 +30,7 @@ input {
 .icon {
   position: absolute;
   right: var(--host-padding);
+  top: var(--host-padding);
   bottom: var(--host-padding);
-  height: .8em;
-  width: .8em;
-  opacity: .6667;
+  opacity: .8;
 }

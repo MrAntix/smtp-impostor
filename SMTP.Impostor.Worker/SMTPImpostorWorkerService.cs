@@ -63,7 +63,8 @@ namespace SMTP.Impostor.Worker
                         new HostMessageRemoved(mae.HostId, mae.MessageId)
                         );
                 }
-                else if (e is SMTPImpostorHostStateChangeEvent hsce)
+                else if (e is SMTPImpostorHostStateChangeEvent
+                    || e is SMTPImpostorHostUpdatedEvent)
                 {
                     var status = await _executor
                         .ExecuteAsync<LoadWorkerStateAction, WorkerState>();
@@ -74,7 +75,6 @@ namespace SMTP.Impostor.Worker
                     await _hostsSettings.SaveAsync(status.ToSettings());
                 }
                 else if (e is SMTPImpostorHostRemovedEvent
-                    || e is SMTPImpostorHostUpdatedEvent
                     || e is SMTPImpostorHostAddedEvent)
                 {
                     var status = await _executor

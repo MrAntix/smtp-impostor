@@ -8,15 +8,16 @@ import { AppIcons } from '../app-icon';
 })
 export class AppInputComponent {
 
-  @Prop() clearButton: boolean = false;
-  @Prop() iconType?: AppIcons = null;
+  @Prop({ reflect: true }) placeholder: string;
+  @Prop({ reflect: true }) clearButton: boolean = false;
+  @Prop({ reflect: true }) iconType?: AppIcons = null;
 
   @Prop() value: string = '';
 
   render() {
 
     return <Host>
-      <input value={this.value}
+      <input value={this.value} placeholder={this.placeholder}
         onInput={(e: any) => this.inputType.emit(e.target.value)}
         onChange={(e: any) => this.inputChange.emit(e.target.value)}
         onKeyDown={e => {

@@ -1,4 +1,6 @@
 import { Component, Prop, h, Host, Event, EventEmitter, Method } from '@stencil/core';
+import { Frag } from '../dom';
+
 import {
   IHost, HostStatus, IHostUpdate,
   ISearchHostMessagesCriteria, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA
@@ -44,7 +46,7 @@ export class SMTPHostComponent {
       console.log('searchMessages', this.messagesSearchCriteria);
 
       this.searchHostMessages.emit({
-        hostId: this.value.id,
+        id: this.value.id,
         criteria: this.messagesSearchCriteria
       });
     }, debounce);
@@ -56,42 +58,9 @@ export class SMTPHostComponent {
     return (
       <Host class={HostStatus[this.value.state].toLowerCase()}>
         <header>
-          <div class="settings">
-            <div class="control ip">
-              <label>IP Address</label>
-              <input
-                name="ip"
-                value={this.value.ip}
-                onChange={(e: any) =>
-                  this.updateHost.emit({ id: this.value.id, ip: e.target.value })
-                }
-              />
-            </div>
-            <div class="control port">
-              <label>Port</label>
-              <input
-                name="port"
-                value={this.value.port}
-                onChange={(e: any) =>
-                  this.updateHost.emit({ id: this.value.id, port: e.target.value })
-                }
-              />
-            </div>
-            <div class="control name">
-              <label>Friendly Name</label>
-              {this.value.showConfiguration
-                ? <input
-                  name="name"
-                  value={this.value.name}
-                  readOnly={!this.showConfiguration}
-                  onChange={(e: any) =>
-                    this.updateHost.emit({ id: this.value.id, name: e.target.value })
-                  }
-                />
-                : <span onDblClick={() => this.toggleHostMessages.emit({ hostId: this.value.id, value: !this.value.showMessages })}>{this.value.name}</span>
-              }
-              <small>{this.value.messagesCount}</small>
-            </div>
+          <div class="name" onDblClick={() => this.toggleHostMessages.emit({ id: this.value.id, value: !this.value.showMessages })}>
+            {this.value.name}
+            <small class="message-count">{this.value.messagesCount}</small>
           </div>
           <div class="actions">
             <button class="toggle-state" type="button" onClick={() => this.toggleState()}>
@@ -99,32 +68,82 @@ export class SMTPHostComponent {
             </button>
           </div>
         </header>
-        <main class="messages">
+        <div class="configuration">
+          {this.showConfiguration && this.renderConfiguration()}
+        </div>
+        <div class="messages">
           {this.showMessages && this.renderMessages()}
-        </main>
+        </div>
       </Host>
     );
   }
 
+  renderConfiguration() {
+    return <Frag>
+      <div class="control ip">
+        <label>IP Address</label>
+        <input
+          name="ip"
+          value={this.value.ip}
+          onChange={(e: any) =>
+            this.updateHost.emit({ id: this.value.id, ip: e.target.value })
+          }
+        />
+      </div>
+      <div class="control port">
+        <label>Port</label>
+        <input
+          name="port"
+          value={this.value.port}
+          onChange={(e: any) =>
+            this.updateHost.emit({ id: this.value.id, port: e.target.value })
+          }
+        />
+      </div>
+      <div class="control name">
+        <label>Friendly Name</label>
+        <input
+          name="name"
+          value={this.value.name}
+          readOnly={!this.showConfiguration}
+          onChange={(e: any) =>
+            this.updateHost.emit({ id: this.value.id, name: e.target.value })
+          }
+        />
+      </div>
+      <div class="actions">
+        <button class="ok primary"
+          onClick={() => this.toggleHostConfiguration.emit({ id: this.value.id, value: !this.showMessages })}>
+          <app-icon type="check" />
+        </button>
+        <button class="delete warning"
+          onClick={() => confirm('Delete this host?') && this.removeHost.emit(this.value)}>
+          <app-icon type="delete" /> Delete Host
+        </button>
+      </div>
+    </Frag >;
+  }
+
   renderMessages() {
-    return [
+    return <Frag>
       <div class="messages-toolbar">
         <app-input clear-button icon-type="search"
           value={this.messagesSearchCriteria.text}
+          placeholder="search messages"
           onInputType={(e: any) => this.searchMessages({ text: e.detail }, 500)}
           onInputClear={() => this.searchMessages({ text: '' }, 0)}
         />
-      </div>,
+      </div>
       <ul class="messages-list">
         {this.value.messages && this.value.messages
           .map(message => <li class="message" data-id={message.id}
-            onDblClick={() => this.openHostMessage.emit({ hostId: this.value.id, messageId: message.id })}>
+            onDblClick={() => this.openHostMessage.emit({ id: this.value.id, messageId: message.id })}>
             <div class="message-from">{message.from}</div>
             <div class="message-date" >
               {new Date(message.date).toLocaleString()}
               <button class="delete-message warning" type="button"
                 onClick={() => this.deleteHostMessage.emit({
-                  hostId: this.value.id,
+                  id: this.value.id,
                   messageId: message.id
                 })}>
                 <app-icon type="close"></app-icon>
@@ -133,14 +152,16 @@ export class SMTPHostComponent {
             <div class="message-subject">{message.subject}</div>
           </li>)}
       </ul>
-    ];
+    </Frag>;
   }
 
   @Event() startHost: EventEmitter<IHost>;
   @Event() stopHost: EventEmitter<IHost>;
   @Event() updateHost: EventEmitter<IHostUpdate>;
-  @Event() toggleHostMessages: EventEmitter<{ hostId: string, value: boolean }>;
-  @Event() searchHostMessages: EventEmitter<{ hostId: string, criteria: ISearchHostMessagesCriteria }>;
-  @Event() deleteHostMessage: EventEmitter<{ hostId: string, messageId: string }>;
-  @Event() openHostMessage: EventEmitter<{ hostId: string, messageId: string }>;
+  @Event() removeHost: EventEmitter<IHost>;
+  @Event() toggleHostConfiguration: EventEmitter<{ id: string, value: boolean }>;
+  @Event() toggleHostMessages: EventEmitter<{ id: string, value: boolean }>;
+  @Event() searchHostMessages: EventEmitter<{ id: string, criteria: ISearchHostMessagesCriteria }>;
+  @Event() deleteHostMessage: EventEmitter<{ id: string, messageId: string }>;
+  @Event() openHostMessage: EventEmitter<{ id: string, messageId: string }>;
 }

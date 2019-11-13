@@ -29,11 +29,13 @@ export namespace Components {
     'flipHorizontal': boolean;
     'flipVertical': boolean;
     'rotate': number;
+    'scale': number;
     'type': AppIcons;
   }
   interface AppInput {
     'clearButton': boolean;
     'iconType'?: AppIcons;
+    'placeholder': string;
     'value': string;
   }
   interface AppRoot {}
@@ -100,6 +102,7 @@ declare namespace LocalJSX {
     'flipHorizontal'?: boolean;
     'flipVertical'?: boolean;
     'rotate'?: number;
+    'scale'?: number;
     'type'?: AppIcons;
   }
   interface AppInput {
@@ -108,6 +111,7 @@ declare namespace LocalJSX {
     'onInputChange'?: (event: CustomEvent<string>) => void;
     'onInputClear'?: (event: CustomEvent<void>) => void;
     'onInputType'?: (event: CustomEvent<string>) => void;
+    'placeholder'?: string;
     'value'?: string;
   }
   interface AppRoot {}
@@ -119,12 +123,14 @@ declare namespace LocalJSX {
     'url'?: string;
   }
   interface SmtpHost {
-    'onDeleteHostMessage'?: (event: CustomEvent<{ hostId: string, messageId: string }>) => void;
-    'onOpenHostMessage'?: (event: CustomEvent<{ hostId: string, messageId: string }>) => void;
-    'onSearchHostMessages'?: (event: CustomEvent<{ hostId: string, criteria: ISearchHostMessagesCriteria }>) => void;
+    'onDeleteHostMessage'?: (event: CustomEvent<{ id: string, messageId: string }>) => void;
+    'onOpenHostMessage'?: (event: CustomEvent<{ id: string, messageId: string }>) => void;
+    'onRemoveHost'?: (event: CustomEvent<IHost>) => void;
+    'onSearchHostMessages'?: (event: CustomEvent<{ id: string, criteria: ISearchHostMessagesCriteria }>) => void;
     'onStartHost'?: (event: CustomEvent<IHost>) => void;
     'onStopHost'?: (event: CustomEvent<IHost>) => void;
-    'onToggleHostMessages'?: (event: CustomEvent<{ hostId: string, value: boolean }>) => void;
+    'onToggleHostConfiguration'?: (event: CustomEvent<{ id: string, value: boolean }>) => void;
+    'onToggleHostMessages'?: (event: CustomEvent<{ id: string, value: boolean }>) => void;
     'onUpdateHost'?: (event: CustomEvent<IHostUpdate>) => void;
     'showConfiguration'?: boolean;
     'showMessages'?: boolean;
