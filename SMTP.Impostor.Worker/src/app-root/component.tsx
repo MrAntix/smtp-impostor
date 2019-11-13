@@ -92,14 +92,14 @@ export class AppRoot {
             break;
 
           case Types.HOST_MESSAGE:
-            const blob = new Blob([action.model.content], { type: 'application/eml' });
+            const file = new File(
+              [action.model.content],
+              `${action.model.id}.eml`,
+              { type: 'message/rfc822' });
 
-            const data = window.URL.createObjectURL(blob);
-            var link = document.createElement('a');
-            link.href = data;
-            link.download = `${action.model.id}.eml`;
-            link.click();
-            // moo doesn't work, opens dialog
+            const url = URL.createObjectURL(file);
+            location.assign(url);
+            URL.revokeObjectURL(url);
 
             break
         }
