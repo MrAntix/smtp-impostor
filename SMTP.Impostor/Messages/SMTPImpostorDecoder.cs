@@ -8,39 +8,41 @@ namespace SMTP.Impostor.Messages
     {
         public static string FromQuotedWord(string input)
         {
-            var sb = new StringBuilder();
-
             if (!input.StartsWith("=?"))
                 return input;
 
             if (!input.EndsWith("?="))
                 return input;
 
-            // Get the name of the encoding but skip the leading =?
-            var encodingName = input.Substring(2, input.IndexOf("?", 2) - 2);
-            var enc = Encoding.ASCII;
-            if (!string.IsNullOrEmpty(encodingName))
+            var sb = new StringBuilder();
+            foreach (var part in input.Split(' '))
             {
-                enc = Encoding.GetEncoding(encodingName);
-            }
+                // Get the name of the encoding but skip the leading =?
+                var encodingName = part.Substring(2, part.IndexOf("?", 2) - 2);
+                var enc = Encoding.ASCII;
+                if (!string.IsNullOrEmpty(encodingName))
+                {
+                    enc = Encoding.GetEncoding(encodingName);
+                }
 
-            // Get the type of the encoding
-            var type = input[encodingName.Length + 3];
+                // Get the type of the encoding
+                var type = part[encodingName.Length + 3];
 
-            // Start after the name of the encoding and the other required parts
-            var startPosition = encodingName.Length + 5;
+                // Start after the name of the encoding and the other required parts
+                var startPosition = encodingName.Length + 5;
 
-            switch (char.ToLowerInvariant(type))
-            {
-                case 'q':
-                    sb.Append(FromQuotedPrintable(input, enc, startPosition, true));
-                    break;
-                case 'b':
-                    var baseString = input.Substring(startPosition, input.Length - startPosition - 2);
-                    var baseDecoded = Convert.FromBase64String(baseString);
-                    var intermediate = enc.GetString(baseDecoded);
-                    sb.Append(intermediate);
-                    break;
+                switch (char.ToLowerInvariant(type))
+                {
+                    case 'q':
+                        sb.Append(FromQuotedPrintable(part, enc, startPosition, true));
+                        break;
+                    case 'b':
+                        var baseString = part.Substring(startPosition, part.Length - startPosition - 2);
+                        var baseDecoded = Convert.FromBase64String(baseString);
+                        var intermediate = enc.GetString(baseDecoded);
+                        sb.Append(intermediate);
+                        break;
+                }
             }
             return sb.ToString();
         }
