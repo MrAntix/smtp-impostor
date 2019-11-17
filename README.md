@@ -63,6 +63,7 @@ ISMTPImpostorHost GetSMTPImpostorHost(
     var services = new ServiceCollection()
         .AddLogging()
         .AddSMTPImpostor()
+        .AddSMTPImpostorInMemoryMessagesStore()
         .BuildServiceProvider();
 
     var hostProvider = services.GetRequiredService<ISMTPImpostorHostProvider>();
