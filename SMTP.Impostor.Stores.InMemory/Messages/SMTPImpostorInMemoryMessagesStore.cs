@@ -1,0 +1,107 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using SMTP.Impostor.Messages;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Subjects;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+namespace SMTP.Impostor.Stores.InMemory.Messages
+{
+    public class SMTPImpostorInMemoryMessagesStore :
+        ISMTPImpostorMessagesStore
+    {
+        static object Lock = new object();
+        ILogger<ISMTPImpostorMessagesStore> _logger;
+
+        readonly Subject<ISMTPImpostorMessageEvent> _events;
+        readonly IList<SMTPImpostorMessage> _messages;
+
+        public SMTPImpostorInMemoryMessagesStore(
+            ILogger<ISMTPImpostorMessagesStore> logger)
+        {
+            _logger = logger ?? NullLogger<ISMTPImpostorMessagesStore>.Instance;
+
+            _logger.LogInformation($"Impostor in memory store");
+            _events = new Subject<ISMTPImpostorMessageEvent>();
+            _messages = new List<SMTPImpostorMessage>();
+        }
+
+        public IObservable<ISMTPImpostorMessageEvent> Events => _events;
+
+        Task<SMTPImpostorMessageStoreSearchResult> SearchAsync(
+            SMTPImpostorMessageStoreSearchCriteria criteria)
+        {
+            var query = _messages.ToArray().AsEnumerable();
+            var totalCount = query.Count();
+            if (criteria.Ids?.Any() ?? false)
+            {
+                query = query.Where(info =>
+                    criteria.Ids.Any(id => info.Id == id)
+                    );
+            }
+
+            if (!string.IsNullOrWhiteSpace(criteria.Text))
+            {
+                var text = Regex.Escape(SMTPImpostorMessage.TRIM.Replace(criteria.Text, ""));
+                var containsText = new Regex($"^{text}|({SMTPImpostorMessage.BREAK_CHARS}){text}", RegexOptions.IgnoreCase);
+
+                query = query.Where(info =>
+                        containsText.IsMatch(info.Subject)
+                        || containsText.IsMatch(info.From.ToString())
+                        );
+            }
+
+            return Task.FromResult(
+                    new SMTPImpostorMessageStoreSearchResult(
+                    criteria.Index, totalCount,
+                    query)
+                );
+        }
+
+        Task<SMTPImpostorMessage> GetMessageAsync(string messageId)
+        {
+            return Task.FromResult(
+                _messages.FirstOrDefault(m => m.Id == messageId)
+                );
+        }
+
+        Task PutAsync(SMTPImpostorMessage message)
+        {
+            _messages.Add(message);
+
+            return Task.CompletedTask;
+        }
+
+        Task DeleteAsync(string messageId)
+        {
+            lock (Lock)
+            {
+                var message = GetMessageAsync(messageId)
+                .GetAwaiter().GetResult();
+
+                if (message != null)
+                    _messages.Remove(message);
+                
+            }
+
+            return Task.CompletedTask;
+        }
+
+        async Task<SMTPImpostorMessageStoreSearchResult> ISMTPImpostorMessagesStore
+            .SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria) => await SearchAsync(criteria);
+
+        async Task<SMTPImpostorMessage> ISMTPImpostorMessagesStore
+            .GetAsync(string messageId) => await GetMessageAsync(messageId);
+
+        async Task ISMTPImpostorMessagesStore
+            .PutAsync(SMTPImpostorMessage message) => await PutAsync(message);
+
+        async Task ISMTPImpostorMessagesStore
+            .DeleteAsync(string messageId) => await DeleteAsync(messageId);
+
+        void IDisposable.Dispose() { }
+    }
+}

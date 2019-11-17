@@ -18,9 +18,6 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         public const string MESSAGE_EXTN = ".eml";
         public readonly string MESSAGE_FILTER = $"*{MESSAGE_EXTN}";
 
-        const string _breakChars = "[\\s\\.@]";
-        readonly Regex _trim = new Regex($"^{_breakChars}+", RegexOptions.Compiled);
-
         readonly ILogger<ISMTPImpostorMessagesStore> _logger;
         readonly Subject<ISMTPImpostorMessageEvent> _events;
         readonly List<SMTPImpostorMessageInfo> _index;
@@ -31,7 +28,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             ISMTPImpostorSettings settings,
             Guid hostId)
         {
-            _logger = logger ?? NullLogger<SMTPImpostorFileSystemMessagesStore>.Instance;
+            _logger = logger ?? NullLogger<ISMTPImpostorMessagesStore>.Instance;
             if (settings is null)
                 throw new ArgumentNullException(nameof(settings));
 
@@ -80,7 +77,6 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             {
                 var directory = new DirectoryInfo(path);
                 var query = _index.ToArray().AsEnumerable();
-
                 var totalCount = query.Count();
 
                 if (criteria.Ids?.Any() ?? false)
@@ -92,8 +88,8 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
                 if (!string.IsNullOrWhiteSpace(criteria.Text))
                 {
-                    var text = Regex.Escape(_trim.Replace(criteria.Text, ""));
-                    var containsText = new Regex($"^{text}|({_breakChars}){text}", RegexOptions.IgnoreCase);
+                    var text = Regex.Escape(SMTPImpostorMessage.TRIM.Replace(criteria.Text, ""));
+                    var containsText = new Regex($"^{text}|({SMTPImpostorMessage.BREAK_CHARS}){text}", RegexOptions.IgnoreCase);
 
                     query = query.Where(info =>
                             containsText.IsMatch(info.Subject)

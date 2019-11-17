@@ -14,6 +14,10 @@ namespace SMTP.Impostor.Messages
 
         internal static readonly Regex UNFOLD = new Regex($@"{LINE_TERMINATOR}\s+");
 
+
+        public const string BREAK_CHARS = "[\\s\\.@]";
+        public static readonly Regex TRIM = new Regex($"^{BREAK_CHARS}+", RegexOptions.Compiled);
+
         public SMTPImpostorMessage(
             string id,
             IEnumerable<SMTPImpostorMessageHeader> headers,

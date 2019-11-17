@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SMTP.Impostor.Hosts;
 using SMTP.Impostor.Messages;
+using SMTP.Impostor.Stores.InMemory.Messages;
 
 namespace SMTP.Impostor.Test
 {
@@ -90,6 +91,7 @@ namespace SMTP.Impostor.Test
             var services = new ServiceCollection()
                 .AddLogging()
                 .AddSMTPImpostor()
+                .AddSMTPImpostorInMemoryMessagesStore()
                 .BuildServiceProvider();
 
             var hostProvider = services.GetRequiredService<ISMTPImpostorHostProvider>();
