@@ -19,7 +19,7 @@ describe('smtp-host', () => {
 
     const onStartHost = await element.spyOnEvent('startHost');
 
-    const button = await page.find('smtp-host >>> button');
+    const button = await page.find('smtp-host >>> .toggle-state');
     await button.click();
 
     expect(onStartHost).toHaveReceivedEventDetail(host);
@@ -35,7 +35,7 @@ describe('smtp-host', () => {
 
     const onStopHost = await element.spyOnEvent('stopHost');
 
-    const button = await page.find('smtp-host >>> button');
+    const button = await page.find('smtp-host >>> .toggle-state');
     await button.click();
 
     expect(onStopHost).toHaveReceivedEventDetail(host);
@@ -48,6 +48,7 @@ describe('smtp-host', () => {
       const host = { state: HostStatus.Started };
 
       element.setProperty('value', host);
+      element.setProperty('showConfiguration', true);
       await page.waitForChanges();
 
       const onUpdateHost = await element.spyOnEvent('updateHost');
