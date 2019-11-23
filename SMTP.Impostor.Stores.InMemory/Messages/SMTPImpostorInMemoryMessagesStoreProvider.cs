@@ -18,10 +18,13 @@ namespace SMTP.Impostor.Stores.InMemory.Messages
         string ISMTPImpostorMessagesStoreProvider.Type => "FileSystem";
 
         ISMTPImpostorMessagesStore ISMTPImpostorMessagesStoreProvider
-            .Create(Guid hostId)
+            .Create(
+                Guid hostId,
+                SMTPImpostorMessagesStoreSettings settings)
         {
             return new SMTPImpostorInMemoryMessagesStore(
-                _logger);
+                _logger,
+                settings);
         }
     }
 }

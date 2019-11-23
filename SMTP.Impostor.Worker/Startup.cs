@@ -7,6 +7,8 @@ using SMTP.Impostor.Stores.FileSystem.HostSettings;
 using SMTP.Impostor.Stores.FileSystem.Messages;
 using SMTP.Impostor.Worker.Hubs;
 using SMTP.Impostor.Worker.Properties;
+using System;
+using Windows.UI.Notifications;
 
 namespace SMTP.Impostor.Worker
 {

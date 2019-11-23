@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Logging;
 using SMTP.Impostor.Messages;
 
@@ -21,12 +21,14 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         string ISMTPImpostorMessagesStoreProvider.Type => "FileSystem";
 
         ISMTPImpostorMessagesStore ISMTPImpostorMessagesStoreProvider
-            .Create(Guid hostId)
+            .Create(
+                Guid hostId,
+                SMTPImpostorMessagesStoreSettings settings)
         {
             return new SMTPImpostorFileSystemMessagesStore(
                 _logger,
-                _settings,
-                hostId);
+                hostId,
+                new SMTPImpostorFileSystemMessagesStoreSettings(settings, _settings.FileStoreRoot));
         }
     }
 }

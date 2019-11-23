@@ -15,15 +15,17 @@ namespace SMTP.Impostor.Stores.InMemory.Messages
     {
         static object Lock = new object();
         ILogger<ISMTPImpostorMessagesStore> _logger;
+        readonly SMTPImpostorMessagesStoreSettings _settings;
 
         readonly Subject<ISMTPImpostorMessageEvent> _events;
         readonly IList<SMTPImpostorMessage> _messages;
 
         public SMTPImpostorInMemoryMessagesStore(
-            ILogger<ISMTPImpostorMessagesStore> logger)
+            ILogger<ISMTPImpostorMessagesStore> logger,
+            SMTPImpostorMessagesStoreSettings settings)
         {
             _logger = logger ?? NullLogger<ISMTPImpostorMessagesStore>.Instance;
-
+            _settings = settings;
             _logger.LogInformation($"Impostor in memory store");
             _events = new Subject<ISMTPImpostorMessageEvent>();
             _messages = new List<SMTPImpostorMessage>();
@@ -71,6 +73,11 @@ namespace SMTP.Impostor.Stores.InMemory.Messages
         Task PutAsync(SMTPImpostorMessage message)
         {
             _messages.Add(message);
+            if (_settings.MaxMessages != null)
+                while (_messages.Count > _settings.MaxMessages)
+                {
+                    _messages.RemoveAt(0);
+                }
 
             return Task.CompletedTask;
         }
@@ -84,7 +91,7 @@ namespace SMTP.Impostor.Stores.InMemory.Messages
 
                 if (message != null)
                     _messages.Remove(message);
-                
+
             }
 
             return Task.CompletedTask;

@@ -15,6 +15,7 @@ export interface IHost {
   messages: IHostMesssageInfo[];
   messagesIndex: number;
   messagesCount: number;
+  maxMessages: number;
 }
 
 export interface IHostMesssageInfo {
@@ -31,6 +32,7 @@ export interface IHostUpdate {
   name?: string;
   ip?: string;
   port?: number;
+  maxMessages?: number;
 }
 
 export interface ISearchHostMessagesCriteria {

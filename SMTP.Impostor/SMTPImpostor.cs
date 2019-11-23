@@ -37,7 +37,7 @@ namespace SMTP.Impostor
             return new SMTPImpostorHost(
                 _loggerFactory.CreateLogger<SMTPImpostorHost>(),
                 settings,
-                _storeProviders[settings.StoreType ?? _settings.DefaultStoreType].Create(settings.Id)
+                _storeProviders[settings.StoreType ?? _settings.DefaultStoreType].Create(settings.Id, settings.Store)
                 );
         }
 

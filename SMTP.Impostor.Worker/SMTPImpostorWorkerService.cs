@@ -9,6 +9,8 @@ using SMTP.Impostor.Sockets;
 using SMTP.Impostor.Worker.Actions;
 using SMTP.Impostor.Worker.Actions.State;
 using SMTP.Impostor.Worker.Hubs;
+using Windows.UI.Notifications;
+using Windows.Data.Xml.Dom;
 
 namespace SMTP.Impostor.Worker
 {
@@ -19,6 +21,8 @@ namespace SMTP.Impostor.Worker
         readonly SMTPImpostorHubService _hub;
         readonly IActionExecutor _executor;
         readonly ISMTPImpostorHostSettingsStore _hostsSettings;
+        readonly ToastNotifier _notifier;
+        readonly ToastNotification _startNotification;
 
         IDisposable _impostorEvents;
 
@@ -34,6 +38,18 @@ namespace SMTP.Impostor.Worker
             _hub = hub;
             _executor = executor;
             _hostsSettings = hostsSettings;
+
+            if (Environment.UserInteractive)
+            {
+                try
+                {
+                    _notifier = ToastNotificationManager.CreateToastNotifier();
+                    _startNotification = Notify(
+                        "Worker is running",
+                        START_NOTIFICATION_ID, false);
+                }
+                catch (Exception) { } // ignore fails when running as console
+            }
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -93,9 +109,52 @@ namespace SMTP.Impostor.Worker
             }
         }
 
+        const string START_NOTIFICATION_ID = "SMTP_START_ID";
+
+        ToastNotification Notify(
+            string text, string id,
+            bool suppressPopup = false)
+        {
+            if (_notifier == null) return null;
+
+            var template = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText04);
+
+            var binding = template.GetElementsByTagName("binding").Item(0);
+            
+            var actions = template.CreateElement("actions");
+            binding.AppendChild(actions);
+
+            var action = template.CreateElement("action");
+            actions.AppendChild(action);
+            action.SetAttribute("content", "Open UI");
+            action.SetAttribute("arguments", "open");
+            action.SetAttribute("activationType", "background");
+
+            action = template.CreateElement("action");
+            actions.AppendChild(action);
+            action.SetAttribute("content", "Stop Worker");
+            action.SetAttribute("arguments", "stop");
+            action.SetAttribute("activationType", "background");
+
+            var textNodes = template.GetElementsByTagName("text");
+            textNodes.Item(0).InnerText = text;
+
+            var templateString = template.GetXml();
+
+            var notification = new ToastNotification(template);
+            notification.Tag = id;
+            notification.SuppressPopup = suppressPopup;
+
+            _notifier.Show(notification);
+
+            return notification;
+        }
+
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             _impostorEvents.Dispose();
+            if (_startNotification != null)
+                _notifier.Hide(_startNotification);
 
             return Task.CompletedTask;
         }

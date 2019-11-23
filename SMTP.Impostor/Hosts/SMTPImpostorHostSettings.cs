@@ -1,4 +1,5 @@
-﻿using System;
+using SMTP.Impostor.Messages;
+using System;
 using System.Collections.Immutable;
 
 namespace SMTP.Impostor.Hosts
@@ -12,7 +13,8 @@ namespace SMTP.Impostor.Hosts
             string ip = null, int? port = 25,
             string name = null,
             string storeType = null,
-            bool start = false)
+            bool start = false,
+            SMTPImpostorMessagesStoreSettings store = null)
         {
             Id = id ?? Guid.NewGuid();
             IP = ip ?? "127.0.0.1";
@@ -20,6 +22,7 @@ namespace SMTP.Impostor.Hosts
             StoreType = storeType;
             Name = string.IsNullOrWhiteSpace(name) ? $"{IP}:{Port}" : name;
             Start = start;
+            Store = store ?? SMTPImpostorMessagesStoreSettings.Default;
         }
 
         public Guid Id { get; }
@@ -28,6 +31,7 @@ namespace SMTP.Impostor.Hosts
         public string StoreType { get; }
         public string Name { get; }
         public bool Start { get; }
+        public SMTPImpostorMessagesStoreSettings Store { get; }
 
         public override string ToString()
         {

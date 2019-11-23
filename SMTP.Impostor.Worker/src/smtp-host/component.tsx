@@ -111,6 +111,17 @@ export class SMTPHostComponent {
           }
         />
       </div>
+      <div class="control name">
+        <label>Max Messages</label>
+        <input
+          name="maxMessages"
+          value={this.value.maxMessages}
+          readOnly={!this.showConfiguration}
+          onChange={(e: any) =>
+            this.updateHost.emit({ id: this.value.id, maxMessages: e.target.value })
+          }
+        />
+      </div>
       <div class="actions">
         <button class="ok primary"
           onClick={() => this.toggleHostConfiguration.emit({ id: this.value.id, value: !this.showMessages })}>

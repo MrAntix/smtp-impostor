@@ -12,6 +12,19 @@ using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Stores.FileSystem.Messages
 {
+    public class SMTPImpostorFileSystemMessagesStoreSettings
+    {
+        public SMTPImpostorFileSystemMessagesStoreSettings(
+            SMTPImpostorMessagesStoreSettings general,
+            string fileStoreRoot)
+        {
+            General = general;
+            FileStoreRoot = fileStoreRoot;
+        }
+
+        public SMTPImpostorMessagesStoreSettings General { get; }
+        public string FileStoreRoot { get; }
+    }
 
     public class SMTPImpostorFileSystemMessagesStore : ISMTPImpostorMessagesStore
     {
@@ -19,16 +32,19 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         public readonly string MESSAGE_FILTER = $"*{MESSAGE_EXTN}";
 
         readonly ILogger<ISMTPImpostorMessagesStore> _logger;
+        readonly SMTPImpostorFileSystemMessagesStoreSettings _settings;
+
         readonly Subject<ISMTPImpostorMessageEvent> _events;
         readonly List<SMTPImpostorMessageInfo> _index;
         readonly FileSystemWatcher _watcher;
 
         public SMTPImpostorFileSystemMessagesStore(
             ILogger<ISMTPImpostorMessagesStore> logger,
-            ISMTPImpostorSettings settings,
-            Guid hostId)
+            Guid hostId,
+            SMTPImpostorFileSystemMessagesStoreSettings settings)
         {
             _logger = logger ?? NullLogger<ISMTPImpostorMessagesStore>.Instance;
+            _settings = settings;
             if (settings is null)
                 throw new ArgumentNullException(nameof(settings));
 
@@ -52,8 +68,10 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                 var message = SMTPImpostorMessage
                     .ParseInfo(await GetMessageContentAsync(messageId), messageId);
                 _index.Insert(0, message);
+
+                await CheckMaxMessages();
             };
-            _watcher.Deleted += (sender, e) =>
+            _watcher.Deleted += async (sender, e) =>
             {
                 var messageId = Path.GetFileNameWithoutExtension(e.FullPath);
 
@@ -61,8 +79,20 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
                 var message = _index.FirstOrDefault(m => m.Id == messageId);
                 if (message != null) _index.Remove(message);
+
+                await CheckMaxMessages();
             };
             _watcher.EnableRaisingEvents = true;
+        }
+
+        async Task CheckMaxMessages()
+        {
+            if (_settings.General.MaxMessages != null
+                && _index.Count > _settings.General.MaxMessages)
+            {
+                var message = _index.LastOrDefault();
+                if (message != null) await DeleteAsync(message.Id);
+            }
         }
 
         public readonly string StorePath;

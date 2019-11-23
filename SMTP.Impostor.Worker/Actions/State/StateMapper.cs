@@ -25,7 +25,8 @@ namespace SMTP.Impostor.Worker.Actions.State
                 source.Settings.Name,
                 source.Settings.IP, source.Settings.Port,
                 source.Settings.StoreType,
-                source.State
+                source.State,
+                source.Settings.Store.MaxMessages
                 );
         }
 
@@ -40,7 +41,10 @@ namespace SMTP.Impostor.Worker.Actions.State
                 update.IP ?? source.Settings.IP, update.Port ?? source.Settings.Port,
                 update.Name ?? source.Settings.Name,
                 source.Settings.StoreType,
-                source.State == SMTPImpostorHostStatus.Started
+                source.State == SMTPImpostorHostStatus.Started,
+                new SMTPImpostorMessagesStoreSettings(
+                    update.MaxMessages ?? source.Settings.Store.MaxMessages
+                    )
                 );
         }
 
