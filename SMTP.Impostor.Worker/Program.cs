@@ -1,10 +1,9 @@
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace SMTP.Impostor.Worker
 {
@@ -21,9 +20,9 @@ namespace SMTP.Impostor.Worker
                 .UseWindowsService()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-                    config.SetBasePath(
-                        AppDomain.CurrentDomain.BaseDirectory);
+                    var path = AppDomain.CurrentDomain.BaseDirectory;
+                    config.SetBasePath(path);                                   // loads the appsettings
+                    hostingContext.HostingEnvironment.ContentRootPath = path;   // for webapp
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
