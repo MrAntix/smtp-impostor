@@ -1,10 +1,10 @@
-﻿using System;
-using SMTP.Impostor.Events;
+using System;
+using SMTP.Impostor.Hosts;
 
 namespace SMTP.Impostor.Sockets
 {
     public class SMTPImpostorHostAddedEvent :
-        SMTPImpostorEventBase
+        SMTPImpostorHostEventBase
     {
         public SMTPImpostorHostAddedEvent(
             Guid hostId) : base(hostId)

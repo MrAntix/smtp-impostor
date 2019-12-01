@@ -1,7 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using SMTP.Impostor.Messages;
 using SMTP.Impostor.Worker.Actions;
 
 namespace SMTP.Impostor.Test

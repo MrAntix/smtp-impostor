@@ -104,7 +104,12 @@ export class ImpostorHubComponent {
   }
 
   render() {
-    return <div>worker {HubStatus[this.status]}</div>;
+    if(this.status===HubStatus.connected){
+
+      return <button onClick={()=>this.shutdownWorker.emit()}>Shutdown</button>;
+    }
+
+    return <div>{HubStatus[this.status]}</div>;
   }
 
   setStatus(value: HubStatus) {
@@ -114,4 +119,5 @@ export class ImpostorHubComponent {
 
   @Event() statusChanged: EventEmitter<HubStatus>;
   @Event() messageReceived: EventEmitter<IHubMessage>;
+  @Event() shutdownWorker: EventEmitter<void>;
 }

@@ -13,7 +13,8 @@ import {
   ToggleHostMessages,
   SearchHostMessages,
   DeleteHostMessage,
-  LoadHostMessage
+  LoadHostMessage,
+  ShutdownWorker
 } from './types';
 import { getInitialState } from './reducer';
 
@@ -136,6 +137,14 @@ export const loadHostMessage = (hostId: string, messageId: string) => dispatch =
       hostId,
       messageId
     }
+  };
+  dispatch(action);
+};
+
+export const shutdownWorker = () => dispatch => {
+  const action: ShutdownWorker = {
+    type: Types.SHUTDOWN_WORKER,
+    sendToHub: true
   };
   dispatch(action);
 };

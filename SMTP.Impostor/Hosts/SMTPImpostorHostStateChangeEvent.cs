@@ -1,10 +1,10 @@
-﻿using System;
-using SMTP.Impostor.Events;
+using System;
+using SMTP.Impostor.Hosts;
 
 namespace SMTP.Impostor.Sockets
 {
     public class SMTPImpostorHostStateChangeEvent :
-         SMTPImpostorEventBase<SMTPImpostorHostStatus>
+         SMTPImpostorHostEventBase<SMTPImpostorHostStatus>
     {
         public SMTPImpostorHostStateChangeEvent(
             Guid hostId,

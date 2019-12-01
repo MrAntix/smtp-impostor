@@ -1,16 +1,16 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SMTP.Impostor.Events;
 using SMTP.Impostor.Messages;
 using SMTP.Impostor.Sockets;
 using SMTP.Impostor.Worker.Actions;
 using SMTP.Impostor.Worker.Actions.State;
 using SMTP.Impostor.Worker.Hubs;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.UI.Notifications;
-using Windows.Data.Xml.Dom;
 
 namespace SMTP.Impostor.Worker
 {
@@ -28,6 +28,7 @@ namespace SMTP.Impostor.Worker
 
         public SMTPImpostorWorkerService(
             ILogger<SMTPImpostorWorkerService> logger,
+            ISMTPImpostorWorkerSettings settings,
             SMTPImpostor impostor,
             SMTPImpostorHubService hub,
             IActionExecutor executor,
@@ -41,14 +42,20 @@ namespace SMTP.Impostor.Worker
 
             if (Environment.UserInteractive)
             {
-                try
+                if (Program.IsRunningAsUwp())
                 {
-                    _notifier = ToastNotificationManager.CreateToastNotifier();
-                    _startNotification = Notify(
-                        "Worker is running",
-                        START_NOTIFICATION_ID, false);
+                    try
+                    {
+                        _notifier = ToastNotificationManager.CreateToastNotifier();
+                        _startNotification = Notify(
+                            "Worker is running",
+                            START_NOTIFICATION_ID, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error sending UWP start notification");
+                    }
                 }
-                catch (Exception) { } // ignore fails when running as console
             }
         }
 
@@ -56,11 +63,16 @@ namespace SMTP.Impostor.Worker
         {
             _impostorEvents = _impostor.Events.Subscribe(async e =>
             {
-                _logger.LogInformation($"{e.HostId} {e.GetType().Name}");
+                _logger.LogInformation($"{e.GetType().Name}");
 
-                if (e is SMTPImpostorMessageReceivedEvent mre)
+                if (e is SMTPImpostorStoppedEvent)
                 {
-                    var host = _impostor.Hosts[e.HostId];
+                    await _hub.SendAsync(new WorkerState(null, null));
+                    await StopAsync(CancellationToken.None);
+                }
+                else if (e is SMTPImpostorMessageReceivedEvent mre)
+                {
+                    var host = _impostor.Hosts[mre.HostId];
                     await host.Messages.PutAsync(mre.Data);
 
                     await _hub.SendAsync(
@@ -79,13 +91,14 @@ namespace SMTP.Impostor.Worker
                         new HostMessageRemoved(mae.HostId, mae.MessageId)
                         );
                 }
-                else if (e is SMTPImpostorHostStateChangeEvent
-                    || e is SMTPImpostorHostUpdatedEvent)
+                else if (
+                    (e is SMTPImpostorHostStateChangeEvent || e is SMTPImpostorHostUpdatedEvent)
+                    && e is ISMTPImpostorHostEvent he)
                 {
                     var status = await _executor
                         .ExecuteAsync<LoadWorkerStateAction, WorkerState>();
                     var hostState = status.Hosts
-                        .First(h => h.Id == e.HostId);
+                        .First(h => h.Id == he.HostId);
                     await _hub.SendAsync(hostState);
 
                     await _hostsSettings.SaveAsync(status.ToSettings());
@@ -120,7 +133,7 @@ namespace SMTP.Impostor.Worker
             var template = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText04);
 
             var binding = template.GetElementsByTagName("binding").Item(0);
-            
+
             var actions = template.CreateElement("actions");
             binding.AppendChild(actions);
 
@@ -144,6 +157,8 @@ namespace SMTP.Impostor.Worker
             var notification = new ToastNotification(template);
             notification.Tag = id;
             notification.SuppressPopup = suppressPopup;
+            notification.ExpiresOnReboot = true;
+            notification.ExpirationTime = DateTimeOffset.Now.AddMilliseconds(10000);
 
             _notifier.Show(notification);
 
@@ -155,6 +170,8 @@ namespace SMTP.Impostor.Worker
             _impostorEvents.Dispose();
             if (_startNotification != null)
                 _notifier.Hide(_startNotification);
+
+            Environment.Exit(0);
 
             return Task.CompletedTask;
         }

@@ -18,7 +18,8 @@ import {
   toggleHostMessages,
   searchHostMessages,
   deleteHostMessage,
-  loadHostMessage
+  loadHostMessage,
+  shutdownWorker
 } from '../redux/state/actions';
 
 @Component({
@@ -47,6 +48,7 @@ export class AppRoot {
   searchHostMessages: typeof searchHostMessages;
   deleteHostMessage: typeof deleteHostMessage;
   loadHostMessage: typeof loadHostMessage;
+  shutdownWorker: typeof shutdownWorker;
 
   async componentWillLoad() {
     this.store.setStore(configureStore({}, () => this.hubAction()));
@@ -63,7 +65,8 @@ export class AppRoot {
       toggleHostConfiguration,
       searchHostMessages,
       deleteHostMessage,
-      loadHostMessage
+      loadHostMessage,
+      shutdownWorker
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
       if (state.worker.hosts) {
@@ -167,6 +170,7 @@ export class AppRoot {
         ref={el => (this.hub = el)}
         onStatusChanged={e => this.handleHubStatusChangedAsync(e)}
         onMessageReceived={e => this.dispatch(e.detail)}
+        onShutdownWorker={()=>this.shutdownWorker()}
       ></impostor-hub>
     </Host>;
   }

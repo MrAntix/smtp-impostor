@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
@@ -42,10 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <DataFiles Include="$(ProjectDir)www\**\*.*" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="src\assets\icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -57,8 +53,15 @@
     </None>
   </ItemGroup>
 
-  <Target Name="BuildUI" BeforeTargets="PrePublish">
+  <Target Name="InstallUI" BeforeTargets="BeforeRebuild">
     <Exec Command="npm install" />
+  </Target>
+
+  <ItemGroup>
+    <DataFiles Include="$(ProjectDir)www\**\*.*" />
+  </ItemGroup>
+
+  <Target Name="BuildUI" BeforeTargets="AfterBuild">
     <Exec Command="npm run build" />
     <Copy SourceFiles="@(DataFiles)" DestinationFiles="@(DataFiles->'$(TargetDir)www\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>

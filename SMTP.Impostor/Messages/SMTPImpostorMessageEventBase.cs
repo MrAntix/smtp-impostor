@@ -1,3 +1,4 @@
+using SMTP.Impostor.Hosts;
 using System;
 
 namespace SMTP.Impostor.Messages
@@ -17,21 +18,19 @@ namespace SMTP.Impostor.Messages
     }
 
     public abstract class SMTPImpostorMessageEventBase :
-        ISMTPImpostorMessageEvent
+        SMTPImpostorHostEventBase, ISMTPImpostorMessageEvent
     {
         public SMTPImpostorMessageEventBase(
             Guid hostId,
-            string messageId)
+            string messageId) : base(hostId)
         {
             Id = Guid.NewGuid();
             On = DateTimeOffset.UtcNow;
-            HostId = hostId;
             MessageId = messageId;
         }
 
         public Guid Id { get; }
         public DateTimeOffset On { get; }
-        public Guid HostId { get; }
         public string MessageId { get; }
     }
 

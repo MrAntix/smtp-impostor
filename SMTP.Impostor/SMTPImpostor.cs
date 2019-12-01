@@ -91,10 +91,11 @@ namespace SMTP.Impostor
             return null;
         }
 
-        void IDisposable.Dispose()
+        public void Shutdown()
         {
             if (Hosts != null)
             {
+                _events.OnNext(new SMTPImpostorStoppedEvent());
                 foreach (var host in Hosts.ToArray())
                 {
                     host.Value.Dispose();
@@ -102,5 +103,7 @@ namespace SMTP.Impostor
                 Hosts = null;
             }
         }
+
+        void IDisposable.Dispose() => Shutdown();
     }
 }
