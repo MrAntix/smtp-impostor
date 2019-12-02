@@ -61,7 +61,7 @@
     <DataFiles Include="$(ProjectDir)www\**\*.*" />
   </ItemGroup>
 
-  <Target Name="BuildUI" BeforeTargets="AfterBuild">
+  <Target Name="BuildUI" BeforeTargets="BeforeBuild">
     <Exec Command="npm run build" />
     <Copy SourceFiles="@(DataFiles)" DestinationFiles="@(DataFiles->'$(TargetDir)www\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
