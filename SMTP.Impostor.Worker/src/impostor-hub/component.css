@@ -1,4 +1,31 @@
 @import '../assets/styles/host.css';
 
 :host {
+  --host-worker-status-size: var(--worker-status-size, 1em);
+
+  display: inline-flex;
+}
+
+.status span {
+  display: inline-block;
+  width: var(--host-worker-status-size);
+  height: var(--host-worker-status-size);
+  overflow: hidden;
+  margin: var(--host-padding);
+  text-indent: 1000px;
+  border-radius: 50%;
+  background-color: var(--host-lowlight-more);
+}
+
+.status.status-1 span {
+  background-color: var(--host-warning-color);
+}
+
+.status.status-2 span {
+  background-color: var(--host-success-color);
+  cursor: pointer;
+}
+
+.status.status-3 span {
+  background-color: var(--host-error-color);
 }

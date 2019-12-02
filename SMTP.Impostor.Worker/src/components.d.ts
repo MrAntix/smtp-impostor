@@ -38,6 +38,11 @@ export namespace Components {
     'placeholder': string;
     'value': string;
   }
+  interface AppPopup {
+    'isOpen': boolean;
+    'modal': boolean;
+    'toggle': (open?: boolean) => Promise<void>;
+  }
   interface AppRoot {}
   interface ImpostorHub {
     'connectAsync': (url?: string) => Promise<void>;
@@ -71,6 +76,12 @@ declare global {
     new (): HTMLAppInputElement;
   };
 
+  interface HTMLAppPopupElement extends Components.AppPopup, HTMLStencilElement {}
+  var HTMLAppPopupElement: {
+    prototype: HTMLAppPopupElement;
+    new (): HTMLAppPopupElement;
+  };
+
   interface HTMLAppRootElement extends Components.AppRoot, HTMLStencilElement {}
   var HTMLAppRootElement: {
     prototype: HTMLAppRootElement;
@@ -91,6 +102,7 @@ declare global {
   interface HTMLElementTagNameMap {
     'app-icon': HTMLAppIconElement;
     'app-input': HTMLAppInputElement;
+    'app-popup': HTMLAppPopupElement;
     'app-root': HTMLAppRootElement;
     'impostor-hub': HTMLImpostorHubElement;
     'smtp-host': HTMLSmtpHostElement;
@@ -113,6 +125,11 @@ declare namespace LocalJSX {
     'onInputType'?: (event: CustomEvent<string>) => void;
     'placeholder'?: string;
     'value'?: string;
+  }
+  interface AppPopup {
+    'isOpen'?: boolean;
+    'modal'?: boolean;
+    'onToggled'?: (event: CustomEvent<boolean>) => void;
   }
   interface AppRoot {}
   interface ImpostorHub {
@@ -141,6 +158,7 @@ declare namespace LocalJSX {
   interface IntrinsicElements {
     'app-icon': AppIcon;
     'app-input': AppInput;
+    'app-popup': AppPopup;
     'app-root': AppRoot;
     'impostor-hub': ImpostorHub;
     'smtp-host': SmtpHost;
@@ -155,6 +173,7 @@ declare module "@stencil/core" {
     interface IntrinsicElements {
       'app-icon': LocalJSX.AppIcon & JSXBase.HTMLAttributes<HTMLAppIconElement>;
       'app-input': LocalJSX.AppInput & JSXBase.HTMLAttributes<HTMLAppInputElement>;
+      'app-popup': LocalJSX.AppPopup & JSXBase.HTMLAttributes<HTMLAppPopupElement>;
       'app-root': LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
       'impostor-hub': LocalJSX.ImpostorHub & JSXBase.HTMLAttributes<HTMLImpostorHubElement>;
       'smtp-host': LocalJSX.SmtpHost & JSXBase.HTMLAttributes<HTMLSmtpHostElement>;

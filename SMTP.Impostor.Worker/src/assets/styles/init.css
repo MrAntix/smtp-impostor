@@ -23,7 +23,7 @@
   --error-color-alt: #eee;
 
   --lowlight: rgba(0, 0, 0, .05);
-  --lowlight-more: rgba(0, 0, 0, .15);
+  --lowlight-more: rgba(0, 0, 0, .25);
   --highlight: rgba(255, 255, 255, .25);
   --highlight-more: rgba(255, 255, 255, .5);
 

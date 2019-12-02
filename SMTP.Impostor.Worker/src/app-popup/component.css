@@ -1,0 +1,52 @@
+@import '../assets/styles/host.css';
+
+:host {
+  position: relative;
+}
+
+.content {
+  position: absolute;
+  z-index: 1;
+
+  background-color: var(--host-background);
+  box-shadow: 0 0 10px var(--host-lowlight);
+
+  transition: transform ease .2s;
+  transform: translateY(10px);
+}
+
+:host([is-open]) .content {
+
+  transform: translateY(0);
+}
+
+:host(.left) .content {
+  right: 100%;
+}
+
+:host(.top) .content {
+  bottom: 100%;
+}
+
+:host(.bottom) .content {
+  top: 100%;
+}
+
+.overlay {
+  position: fixed;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--host-lowlight-more);
+  opacity: 0;
+  transition: opacity ease .2s;
+  pointer-events: none;
+}
+
+:host([is-open]) .overlay {
+  opacity: 1;
+  z-index: 1;
+  pointer-events: all;
+}
