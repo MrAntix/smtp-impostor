@@ -105,17 +105,17 @@ export class ImpostorHubComponent {
 
   render() {
     return <div class={`status status-${this.status}`}>
-      <app-popup class="top left">
-        <span>{HubStatus[this.status]}</span>
+      <app-popup position="right" shift="left">
+        <span class="icon">{HubStatus[this.status]}</span>
         <div slot="popup-content">
           {this.status === HubStatus.connected
             ?
-            <button
+            <button class="primary"
               onClick={() => this.shutdownWorker.emit()}
             >
-              Shutdown
+              Shutdown Worker
             </button>
-            : HubStatus[this.status]
+            : <span>Worker {HubStatus[this.status]}</span>
           }
         </div>
       </app-popup>

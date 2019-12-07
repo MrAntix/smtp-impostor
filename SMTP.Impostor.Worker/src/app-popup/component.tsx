@@ -1,5 +1,7 @@
 import { Component, Prop, h, Host, Event, EventEmitter, Method } from "@stencil/core";
 
+import { AppPopupPosition, AppPopupShift } from './model';
+
 @Component({
   tag: "app-popup",
   styleUrl: "component.css",
@@ -7,11 +9,11 @@ import { Component, Prop, h, Host, Event, EventEmitter, Method } from "@stencil/
 })
 export class AppPopupComponent {
 
-  @Prop({
-    reflect: true,
-    mutable: true
-  }) isOpen: boolean = false;
+  @Prop({ reflect: true, mutable: true }) isOpen: boolean = false;
   @Prop() modal: boolean = false;
+
+  @Prop({ reflect: true, mutable: true }) position: AppPopupPosition;
+  @Prop({ reflect: true, mutable: true }) shift?: AppPopupShift;
 
   @Method() async toggle(open?: boolean) {
     if (open == null) open = !this.isOpen;
@@ -27,11 +29,11 @@ export class AppPopupComponent {
       <slot />
       <div class="overlay"
         onClick={e => this.handleOverlayClicked(e)}></div>
-      {this.isOpen &&
-        <div class="content"
-          onClick={e => this.handleContentClicked(e)}>
-          <slot name="popup-content" />
-        </div>}
+
+      <div class="content"
+        onClick={e => this.handleContentClicked(e)}>
+        <slot name="popup-content" />
+      </div>
     </Host>
   }
 
@@ -53,3 +55,5 @@ export class AppPopupComponent {
 
   @Event() toggled: EventEmitter<boolean>;
 }
+
+

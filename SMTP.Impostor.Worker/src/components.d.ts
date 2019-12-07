@@ -14,6 +14,10 @@ import {
   AppIcons as AppIcons1,
 } from './app-icon';
 import {
+  AppPopupPosition,
+  AppPopupShift,
+} from './app-popup/model';
+import {
   HubStatus,
   IHubMessage,
   IHubSocketProvider,
@@ -41,6 +45,8 @@ export namespace Components {
   interface AppPopup {
     'isOpen': boolean;
     'modal': boolean;
+    'position': AppPopupPosition;
+    'shift'?: AppPopupShift;
     'toggle': (open?: boolean) => Promise<void>;
   }
   interface AppRoot {}
@@ -130,6 +136,8 @@ declare namespace LocalJSX {
     'isOpen'?: boolean;
     'modal'?: boolean;
     'onToggled'?: (event: CustomEvent<boolean>) => void;
+    'position'?: AppPopupPosition;
+    'shift'?: AppPopupShift;
   }
   interface AppRoot {}
   interface ImpostorHub {

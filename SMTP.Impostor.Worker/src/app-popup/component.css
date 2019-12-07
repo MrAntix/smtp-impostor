@@ -1,35 +1,187 @@
 @import '../assets/styles/host.css';
 
 :host {
+  display: inline-block;
   position: relative;
+
+  --host-call-size: calc(.75 * var(--host-padding));
+  --host-call-offset: calc(var(--host-padding) + var(--host-border-radius));
+  --host-content-offset: calc(var(--host-call-offset) + var(--host-call-size));
 }
 
 .content {
   position: absolute;
   z-index: 1;
 
-  background-color: var(--host-background);
+  background-color: var(--host-background-color);
   box-shadow: 0 0 10px var(--host-lowlight);
+  padding: var(--host-padding);
+  border-radius: var(--host-border-radius);
 
-  transition: transform ease .2s;
-  transform: translateY(10px);
+  transition: ease .4s;
+  transition-property: margin-top, opacity;
+  margin-top: var(--host-padding);
+  opacity: 0;
 }
 
 :host([is-open]) .content {
 
-  transform: translateY(0);
+  margin-top: 0;
+  opacity: 1;
 }
 
-:host(.left) .content {
-  right: 100%;
+.content::after {
+  content: " ";
+  position: absolute;
+  height: 0;
+  width: 0;
+  pointer-events: none;
+  border: solid transparent;
+  border-width: calc(.75 * var(--host-padding));
 }
 
-:host(.top) .content {
-  bottom: 100%;
+/* Position top */
+:host([position="top"]) .content {
+  bottom: calc(100% + var(--host-call-size));
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-:host(.bottom) .content {
-  top: 100%;
+:host([position="top"][shift="left"]) .content {
+  left: auto;
+  right: 50%;
+  transform: translateX(var(--host-content-offset));
+}
+
+:host([position="top"][shift="right"]) .content {
+  left: 50%;
+  transform: translateX(calc(-1 * var(--host-content-offset)));
+}
+
+:host([position="top"]) .content::after {
+  bottom: calc(-1 * var(--host-call-offset));
+  border-top-color: var(--host-background-color);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([position="top"][shift="left"]) .content::after {
+  left: auto;
+  transform: none;
+  right: var(--host-call-offset);
+}
+
+:host([position="top"][shift="right"]) .content::after {
+  transform: none;
+  left: var(--host-call-offset);
+}
+
+/* Position right */
+:host([position="right"]) .content {
+  left: calc(100% + var(--host-call-size));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host([position="right"][shift="left"]) .content {
+  top: auto;
+  bottom: 50%;
+  transform: translateY(var(--host-content-offset));
+}
+
+:host([position="right"][shift="right"]) .content {
+  top: 50%;
+  transform: translateY(calc(-1 * var(--host-content-offset)));
+}
+
+:host([position="right"]) .content::after {
+  left: calc(-1 * var(--host-call-offset));
+  border-right-color: var(--host-background-color);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host([position="right"][shift="left"]) .content::after {
+  top: auto;
+  transform: none;
+  bottom: var(--host-call-offset);
+}
+
+:host([position="right"][shift="right"]) .content::after {
+  transform: none;
+  top: var(--host-call-offset);
+}
+
+/* Position bottom */
+:host([position="bottom"]) .content {
+  top: calc(100% + var(--host-call-size));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([position="bottom"][shift="left"]) .content {
+  left: 50%;
+  transform: translateX(calc(-1 * var(--host-content-offset)));
+}
+
+:host([position="bottom"][shift="right"]) .content {
+  left: auto;
+  right: 50%;
+  transform: translateX(var(--host-content-offset));
+}
+
+:host([position="bottom"]) .content::after {
+  top: calc(-1 * var(--host-call-offset));
+  border-bottom-color: var(--host-background-color);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([position="bottom"][shift="left"]) .content::after {
+  transform: none;
+  left: var(--host-call-offset);
+}
+
+:host([position="bottom"][shift="right"]) .content::after {
+  transform: none;
+  left: auto;
+  right: var(--host-call-offset);
+}
+
+/* Position left */
+:host([position="left"]) .content {
+  right: calc(100% + var(--host-call-size));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host([position="left"][shift="left"]) .content {
+  top: 50%;
+  transform: translateY(calc(-1 * var(--host-content-offset)));
+}
+
+:host([position="left"][shift="right"]) .content {
+  top: auto;
+  bottom: 50%;
+  transform: translateY(var(--host-content-offset));
+}
+
+:host([position="left"]) .content::after {
+  right: calc(-1 * var(--host-call-offset));
+  border-left-color: var(--host-background-color);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host([position="left"][shift="left"]) .content::after {
+  transform: none;
+  top: var(--host-call-offset);
+}
+
+:host([position="left"][shift="right"]) .content::after {
+  top: auto;
+  transform: none;
+  bottom: var(--host-call-offset);
 }
 
 .overlay {

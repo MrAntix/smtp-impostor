@@ -1,31 +1,41 @@
 @import '../assets/styles/host.css';
 
 :host {
-  --host-worker-status-size: var(--worker-status-size, 1em);
+  --host-worker-status-size: var(--worker-status-size, .75em);
 
   display: inline-flex;
 }
 
-.status span {
+.status {
+  position: relative;
+  left: 3em;
+  bottom: .5em;
+}
+
+.status .icon {
+  position: relative;
   display: inline-block;
   width: var(--host-worker-status-size);
   height: var(--host-worker-status-size);
   overflow: hidden;
-  margin: var(--host-padding);
   text-indent: 1000px;
   border-radius: 50%;
   background-color: var(--host-lowlight-more);
 }
 
-.status.status-1 span {
+.status.status-1 .icon {
   background-color: var(--host-warning-color);
 }
 
-.status.status-2 span {
+.status.status-2 .icon {
   background-color: var(--host-success-color);
   cursor: pointer;
 }
 
-.status.status-3 span {
+.status.status-3 .icon {
   background-color: var(--host-error-color);
+}
+
+p {
+  padding: 0 0 var(--host-padding);
 }

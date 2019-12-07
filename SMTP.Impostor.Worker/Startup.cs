@@ -16,11 +16,11 @@ namespace SMTP.Impostor.Worker
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            Settings = configuration.Get<SMTPImpostorServerSettings>();
+            Settings = configuration.Get<Settings>();
         }
 
         public IConfiguration Configuration { get; }
-        public SMTPImpostorServerSettings Settings { get; }
+        public Settings Settings { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -34,7 +34,7 @@ namespace SMTP.Impostor.Worker
                 .AddSMTPImpostorFileSystemMessagesStore()
                 .AddSMTPImpostorFileSystemHostSettingsStore()
                 .AddSMTPImpostorHub()
-                .AddSMTPImpostorWorker(Settings.Worker);
+                .AddSMTPImpostorWorker(Settings.Impostor);
         }
 
         public void Configure(

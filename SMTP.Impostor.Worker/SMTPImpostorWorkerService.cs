@@ -42,14 +42,15 @@ namespace SMTP.Impostor.Worker
 
             if (Environment.UserInteractive)
             {
-                if (Program.IsRunningAsUwp())
+                if (UWPHelper.IsUwp())
                 {
                     try
                     {
                         _notifier = ToastNotificationManager.CreateToastNotifier();
-                        _startNotification = Notify(
-                            "Worker is running",
-                            START_NOTIFICATION_ID, false);
+                        UWPHelper.SendStartupMessage(_notifier, settings);
+                        //_startNotification = Notify(
+                        //    $"Worker is running", settings.StartupMessageLink,
+                        //    START_NOTIFICATION_ID, false);
                     }
                     catch (Exception ex)
                     {
@@ -61,6 +62,8 @@ namespace SMTP.Impostor.Worker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            await UWPHelper.TryAddPrimaryTile();
+
             _impostorEvents = _impostor.Events.Subscribe(async e =>
             {
                 _logger.LogInformation($"{e.GetType().Name}");
@@ -122,48 +125,6 @@ namespace SMTP.Impostor.Worker
             }
         }
 
-        const string START_NOTIFICATION_ID = "SMTP_START_ID";
-
-        ToastNotification Notify(
-            string text, string id,
-            bool suppressPopup = false)
-        {
-            if (_notifier == null) return null;
-
-            var template = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText04);
-
-            var binding = template.GetElementsByTagName("binding").Item(0);
-
-            var actions = template.CreateElement("actions");
-            binding.AppendChild(actions);
-
-            var action = template.CreateElement("action");
-            actions.AppendChild(action);
-            action.SetAttribute("content", "Open UI");
-            action.SetAttribute("arguments", "open");
-            action.SetAttribute("activationType", "background");
-
-            action = template.CreateElement("action");
-            actions.AppendChild(action);
-            action.SetAttribute("content", "Stop Worker");
-            action.SetAttribute("arguments", "stop");
-            action.SetAttribute("activationType", "background");
-
-            var textNodes = template.GetElementsByTagName("text");
-            textNodes.Item(0).InnerText = text;
-
-            var templateString = template.GetXml();
-
-            var notification = new ToastNotification(template);
-            notification.Tag = id;
-            notification.SuppressPopup = suppressPopup;
-            notification.ExpiresOnReboot = true;
-            notification.ExpirationTime = DateTimeOffset.Now.AddMilliseconds(10000);
-
-            _notifier.Show(notification);
-
-            return notification;
-        }
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {

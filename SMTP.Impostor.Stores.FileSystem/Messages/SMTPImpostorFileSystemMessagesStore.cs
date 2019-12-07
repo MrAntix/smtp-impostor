@@ -48,8 +48,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             if (settings is null)
                 throw new ArgumentNullException(nameof(settings));
 
-            StorePath = Path.Combine(settings.FileStoreRoot, hostId.ToString());
-            Directory.CreateDirectory(StorePath);
+            StorePath = CreateStorePath(settings.FileStoreRoot, hostId);
 
             _logger.LogInformation($"Impostor file store \"{StorePath}\"");
             _events = new Subject<ISMTPImpostorMessageEvent>();
@@ -83,6 +82,19 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                 await CheckMaxMessages();
             };
             _watcher.EnableRaisingEvents = true;
+        }
+
+        private string CreateStorePath(
+            string fileStoreRoot, Guid hostId)
+        {
+            var path = Path.Combine(
+                string.IsNullOrWhiteSpace(fileStoreRoot)
+                    ? SMTPImpostorSettings.Default.FileStoreRoot
+                    : fileStoreRoot,
+                hostId.ToString());
+            Directory.CreateDirectory(path);
+
+            return path;
         }
 
         async Task CheckMaxMessages()
