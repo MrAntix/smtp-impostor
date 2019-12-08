@@ -6,6 +6,7 @@
     <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <ApplicationIcon>src\assets\icon.ico</ApplicationIcon>
+    <Version>3.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -62,7 +63,7 @@
     <DataFiles Include="$(ProjectDir)www\**\*.*" />
   </ItemGroup>
 
-  <Target Name="BuildUI" BeforeTargets="BeforePackage">
+  <Target Name="BuildUI" BeforeTargets="BeforeBuild">
     <Exec Command="npm run build" />
     <Copy SourceFiles="@(DataFiles)" DestinationFiles="@(DataFiles->'$(TargetDir)www\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>

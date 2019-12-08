@@ -17,12 +17,12 @@ namespace SMTP.Impostor.Worker
     public class SMTPImpostorWorkerService : BackgroundService
     {
         readonly ILogger<SMTPImpostorWorkerService> _logger;
+        readonly ISMTPImpostorWorkerSettings _settings;
         readonly SMTPImpostor _impostor;
         readonly SMTPImpostorHubService _hub;
         readonly IActionExecutor _executor;
         readonly ISMTPImpostorHostSettingsStore _hostsSettings;
-        readonly ToastNotifier _notifier;
-        readonly ToastNotification _startNotification;
+        ToastNotifier _notifier;
 
         IDisposable _impostorEvents;
 
@@ -35,22 +35,25 @@ namespace SMTP.Impostor.Worker
             ISMTPImpostorHostSettingsStore hostsSettings)
         {
             _logger = logger;
+            _settings = settings;
             _impostor = impostor;
             _hub = hub;
             _executor = executor;
             _hostsSettings = hostsSettings;
+        }
 
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
             if (Environment.UserInteractive)
             {
                 if (UWPHelper.IsUwp())
                 {
                     try
                     {
+                        await UWPHelper.TryAddPrimaryTile();
+
                         _notifier = ToastNotificationManager.CreateToastNotifier();
-                        UWPHelper.SendStartupMessage(_notifier, settings);
-                        //_startNotification = Notify(
-                        //    $"Worker is running", settings.StartupMessageLink,
-                        //    START_NOTIFICATION_ID, false);
+                        UWPHelper.SendStartupMessage(_notifier, _settings);
                     }
                     catch (Exception ex)
                     {
@@ -58,11 +61,6 @@ namespace SMTP.Impostor.Worker
                     }
                 }
             }
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            await UWPHelper.TryAddPrimaryTile();
 
             _impostorEvents = _impostor.Events.Subscribe(async e =>
             {
@@ -129,8 +127,6 @@ namespace SMTP.Impostor.Worker
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             _impostorEvents.Dispose();
-            if (_startNotification != null)
-                _notifier.Hide(_startNotification);
 
             Environment.Exit(0);
 
