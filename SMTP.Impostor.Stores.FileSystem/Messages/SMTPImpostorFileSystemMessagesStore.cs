@@ -171,7 +171,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Could not get message content");
-                        await Task.Delay(1000);
+                        await Task.Delay(10);
                         return await TryGetMessageContentAsync(messageId);
                     }
                 }
