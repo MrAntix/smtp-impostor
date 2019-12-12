@@ -50,7 +50,7 @@
 }
 
 .host-open {
-  flex: 1 0 auto;
+  flex: 1 1 auto;
   background: linear-gradient(to bottom, var(--host-highlight), var(--host-highlight-more));
   border-bottom: solid 1px var(--host-lowlight-more);
 }
