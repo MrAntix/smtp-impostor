@@ -70,9 +70,8 @@ namespace SMTP.Impostor
             Hosts = Hosts.Add(hostId, host);
             _events.OnNext(new SMTPImpostorHostUpdatedEvent(hostId));
 
-            if (hostSettings.Start) host.Start();
-
             host.Events.Subscribe(e => _events.OnNext(e));
+            if (hostSettings.Start) host.Start();
 
             return host;
         }

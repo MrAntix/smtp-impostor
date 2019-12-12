@@ -92,7 +92,7 @@ export class SMTPHostComponent {
             <div class="message-from">{message.from}</div>
             <div class="message-date" >
               {new Date(message.date).toLocaleString()}
-              <button class="delete-message warning" type="button"
+              <button class="delete-message danger" type="button"
                 onClick={() => this.deleteHostMessage.emit({
                   id: this.value.id,
                   messageId: message.id

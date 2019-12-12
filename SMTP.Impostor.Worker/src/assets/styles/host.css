@@ -69,6 +69,11 @@ button.warning {
   background-color: var(--host-button-warning-background-color, var(--host-warning-color));
 }
 
+button.danger {
+  color: var(--host-button-error-color, var(--host-error-color-alt));
+  background-color: var(--host-button-error-background-color, var(--host-error-color));
+}
+
 input,
 textarea,
 select {
@@ -91,7 +96,7 @@ label {
   margin: var(--host-margin);
 }
 
-[slot="popup-header"]{
+[slot="popup-header"] {
   font-weight: 700;
 }
 

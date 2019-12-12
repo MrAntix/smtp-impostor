@@ -22,7 +22,10 @@ namespace SMTP.Impostor.Worker.Actions.State
                 source.IP, source.Port,
                 source.Name,
                 source.StoreType,
-                source.State == Sockets.SMTPImpostorHostStatus.Started);
+                source.State == Sockets.SMTPImpostorHostStatus.Started,
+                new Messages.SMTPImpostorMessagesStoreSettings(
+                    source.MaxMessages
+                    ));
         }
     }
 }
