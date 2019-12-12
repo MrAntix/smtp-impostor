@@ -4,14 +4,22 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Threading;
 
 namespace SMTP.Impostor.Worker
 {
     public class Program
     {
+        const string MUTEX_NAME = "SMTP.Impostor.Worker";
+
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            if (!Mutex.TryOpenExisting(MUTEX_NAME, out _))
+            {
+                var mutex = new Mutex(false, MUTEX_NAME);
+                CreateHostBuilder(args).Build().Run();
+                mutex.Close();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

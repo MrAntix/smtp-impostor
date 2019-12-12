@@ -42,7 +42,7 @@ namespace SMTP.Impostor.Worker
             _hostsSettings = hostsSettings;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken _)
         {
             if (Environment.UserInteractive)
             {
@@ -124,7 +124,7 @@ namespace SMTP.Impostor.Worker
         }
 
 
-        public override Task StopAsync(CancellationToken cancellationToken)
+        public override Task StopAsync(CancellationToken _)
         {
             _impostorEvents.Dispose();
 
