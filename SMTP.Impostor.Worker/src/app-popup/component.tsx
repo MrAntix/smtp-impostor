@@ -1,4 +1,4 @@
-import { Component, Prop, h, Host, Event, EventEmitter, Method } from "@stencil/core";
+import { Component, Prop, h, Host, Event, EventEmitter, Method, Element } from "@stencil/core";
 
 import { AppPopupPosition, AppPopupShift } from './model';
 
@@ -8,6 +8,7 @@ import { AppPopupPosition, AppPopupShift } from './model';
   shadow: true
 })
 export class AppPopupComponent {
+  @Element() element: HTMLElement;
 
   @Prop({ reflect: true, mutable: true }) isOpen: boolean = false;
   @Prop() modal: boolean = false;
@@ -23,6 +24,8 @@ export class AppPopupComponent {
   }
 
   render() {
+    const hasHeader = this.element.querySelectorAll('[slot="popup-header"]').length > 0
+    const hasFooter = this.element.querySelectorAll('[slot="popup-footer"]').length > 0
 
     return <Host
       onClick={e => this.handleClicked(e)}>
@@ -32,7 +35,16 @@ export class AppPopupComponent {
 
       <div class="content"
         onClick={e => this.handleContentClicked(e)}>
-        <slot name="popup-content" />
+        {hasHeader && <header class="header">
+          <slot name="popup-header" />
+        </header>}
+        <div class="body">
+          <slot name="popup-body" />
+        </div>
+        {hasFooter && <footer class="footer">
+          <slot name="popup-footer" />
+        </footer>
+        }
       </div>
     </Host>
   }

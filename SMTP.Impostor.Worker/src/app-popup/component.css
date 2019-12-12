@@ -9,35 +9,10 @@
   --host-content-offset: calc(var(--host-call-offset) + var(--host-call-size));
 }
 
-.content {
-  position: absolute;
-  z-index: 1;
-
-  background-color: var(--host-background-color);
-  box-shadow: 0 0 10px var(--host-lowlight);
-  padding: var(--host-padding);
-  border-radius: var(--host-border-radius);
-
-  transition: ease .4s;
-  transition-property: margin-top, opacity;
-  margin-top: var(--host-padding);
-  opacity: 0;
-}
-
 :host([is-open]) .content {
 
   margin-top: 0;
   opacity: 1;
-}
-
-.content::after {
-  content: " ";
-  position: absolute;
-  height: 0;
-  width: 0;
-  pointer-events: none;
-  border: solid transparent;
-  border-width: calc(.75 * var(--host-padding));
 }
 
 /* Position top */
@@ -201,4 +176,45 @@
   opacity: 1;
   z-index: 1;
   pointer-events: all;
+}
+
+.content {
+  position: absolute;
+  z-index: 1;
+
+  box-shadow: 0 0 30px var(--host-lowlight-more);
+  background-color: var(--host-background-color);
+  border-radius: var(--host-border-radius);
+
+  transition: ease .4s;
+  transition-property: margin-top, opacity;
+  margin-top: var(--host-padding);
+  opacity: 0;
+}
+
+.content::after {
+  content: " ";
+  position: absolute;
+  height: 0;
+  width: 0;
+  pointer-events: none;
+  border: solid transparent;
+  border-width: calc(.75 * var(--host-padding));
+}
+
+.header {
+  background-color: var(--host-highlight);
+  color: var(--host-primary-color);
+  padding: var(--host-padding);
+  border-bottom: solid 1px var(--host-lowlight);
+}
+
+.body {
+  padding: var(--host-padding);
+}
+
+.footer {
+  background-color: var(--host-lowlight);
+  padding: var(--host-padding);
+  border-top: solid 1px var(--host-highlight);
 }

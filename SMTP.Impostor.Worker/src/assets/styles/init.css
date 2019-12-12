@@ -33,6 +33,10 @@
   --icon-outline-color: var(--icon-color, currentColor);
 }
 
+:disabled {
+  filter: brightness(1.2) contrast(.5);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
 
@@ -47,6 +51,5 @@
 
     --action-color: #222;
     --action-color-alt: #eee;
-
   }
 }

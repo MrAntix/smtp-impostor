@@ -36,6 +36,11 @@
   background-color: var(--host-error-color);
 }
 
-p {
-  padding: 0 0 var(--host-padding);
+[slot="popup-header"]{
+  font-weight: 700;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
 }
