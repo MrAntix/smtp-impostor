@@ -99,9 +99,10 @@ namespace SMTP.Impostor.Worker
                     var status = await _executor
                         .ExecuteAsync<LoadWorkerStateAction, WorkerState>();
                     var hostState = status.Hosts
-                        .First(h => h.Id == he.HostId);
-                    await _hub.SendAsync(hostState);
+                        .FirstOrDefault(h => h.Id == he.HostId);
+                    if (hostState == null) return;
 
+                    await _hub.SendAsync(hostState);
                     await _hostsSettings.SaveAsync(status.ToSettings());
                 }
                 else if (e is SMTPImpostorHostRemovedEvent
