@@ -64,8 +64,11 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
                 _events.OnNext(new SMTPImpostorMessageAddedEvent(hostId, messageId));
 
+                var content = await TryGetMessageContentAsync(messageId);
+                if (content == null) return;
+
                 var message = SMTPImpostorMessage
-                    .ParseInfo(await GetMessageContentAsync(messageId), messageId);
+                    .ParseInfo(content, messageId);
                 _index.Insert(0, message);
 
                 await CheckMaxMessages();
@@ -151,7 +154,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                 );
         }
 
-        async Task<string> GetMessageContentAsync(string messageId)
+        async Task<string> TryGetMessageContentAsync(string messageId)
         {
             if (string.IsNullOrWhiteSpace(messageId))
                 throw new ArgumentNullException(nameof(messageId));
@@ -161,7 +164,16 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                 var messagePath = GetMessageFilePath(path, messageId);
                 if (File.Exists(messagePath))
                 {
-                    return await File.ReadAllTextAsync(messagePath);
+                    try
+                    {
+                        return await File.ReadAllTextAsync(messagePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Could not get message content");
+                        await Task.Delay(1000);
+                        return await TryGetMessageContentAsync(messageId);
+                    }
                 }
             }
 
@@ -265,7 +277,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
         async Task<SMTPImpostorMessage> ISMTPImpostorMessagesStore
             .GetAsync(string messageId) => SMTPImpostorMessage
-                .Parse(await GetMessageContentAsync(messageId), messageId);
+                .Parse(await TryGetMessageContentAsync(messageId), messageId);
 
         async Task ISMTPImpostorMessagesStore
             .PutAsync(SMTPImpostorMessage message) => await PutAsync(message);

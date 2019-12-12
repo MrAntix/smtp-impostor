@@ -14,8 +14,8 @@ import {
   startHost,
   stopHost,
   updateHost,
+  openHost,
   toggleHostConfiguration,
-  toggleHostMessages,
   searchHostMessages,
   deleteHostMessage,
   loadHostMessage,
@@ -43,7 +43,7 @@ export class AppRoot {
   startHost: typeof startHost;
   stopHost: typeof stopHost;
   updateHost: typeof updateHost;
-  toggleHostMessages: typeof toggleHostMessages;
+  openHost: typeof openHost;
   toggleHostConfiguration: typeof toggleHostConfiguration;
   searchHostMessages: typeof searchHostMessages;
   deleteHostMessage: typeof deleteHostMessage;
@@ -60,8 +60,8 @@ export class AppRoot {
       removeHost,
       startHost,
       stopHost,
+      openHost,
       updateHost,
-      toggleHostMessages,
       toggleHostConfiguration,
       searchHostMessages,
       deleteHostMessage,
@@ -125,33 +125,48 @@ export class AppRoot {
           <div class="hosts">
             <ul>
               {this.state.worker.hosts.map(host => (
-                <li key={host.id} class={{ "host": true, "host-open": host.showMessages }}>
+                <li key={host.id} class={{ "host": true, "host-open": this.state.worker.openHostId === host.id }}>
                   <smtp-host
                     value={host}
-                    showMessages={host.showMessages}
-                    showConfiguration={host.showConfiguration}
+                    showMessages={this.state.worker.openHostId === host.id}
                     onStartHost={e => this.startHost(e.detail.id)}
                     onStopHost={e => this.stopHost(e.detail.id)}
-                    onUpdateHost={e => this.updateHost(e.detail)}
-                    onRemoveHost={e => this.removeHost(e.detail.id)}
-                    onToggleHostConfiguration={e => this.toggleHostConfiguration(host, e.detail.value)}
-                    onToggleHostMessages={e => this.toggleHostMessages(host, e.detail.value)}
+                    onOpenHost={() => this.openHost(this.state.worker.openHostId === host.id ? null : host.id)}
                     onSearchHostMessages={e => this.searchHostMessages(e.detail.id, e.detail.criteria)}
                     onDeleteHostMessage={e => this.deleteHostMessage(e.detail.id, e.detail.messageId)}
                     onOpenHostMessage={e => this.loadHostMessage(e.detail.id, e.detail.messageId)}
                   />
                   <div class="host-actions">
                     <button class="toggle-readonly" type="button"
-                      onClick={() => this.toggleHostMessages(host)}>
-                      <app-icon type="triangle" scale={.65} rotate={host.showMessages ? 0 : 180} />
+                      onClick={() => this.openHost(this.state.worker.openHostId === host.id ? null : host.id)}>
+                      <app-icon type="triangle" scale={.65} rotate={this.state.worker.openHostId === host.id ? 0 : 180} />
                     </button>
-                    {host.showMessages &&
-                      <button
-                        class="remove-host"
-                        onClick={() => this.toggleHostConfiguration(host)}
-                      >
-                        <app-icon type="cog" scale={1.667} />
-                      </button>
+                    {this.state.worker.openHostId === host.id &&
+                      <app-popup position="left" shift="left">
+                        <button
+                          class="remove-host"
+                          onClick={() => this.toggleHostConfiguration(host)}
+                        >
+                          <app-icon type="cog" scale={1.667} />
+                        </button>
+                        <div slot="popup-header">Host Configuration</div>
+                        <smtp-host-configuration slot="popup-body"
+                          value={host}
+                          onUpdateHost={e => this.updateHost(e.detail)}
+                        />
+                        <div class="buttons" slot="popup-footer">
+                          <app-popup position="right">
+                            <button class="delete warning">
+                              <app-icon type="delete" /> Delete
+                            </button>
+                            <button slot="popup-body"
+                              class="confirm danger"
+                              onClick={() => this.removeHost(host.id)}>
+                              Confirm
+                              </button>
+                          </app-popup>
+                        </div>
+                      </app-popup>
                     }
                   </div>
                 </li>
@@ -170,7 +185,7 @@ export class AppRoot {
         ref={el => (this.hub = el)}
         onStatusChanged={e => this.handleHubStatusChangedAsync(e)}
         onMessageReceived={e => this.dispatch(e.detail)}
-        onShutdownWorker={()=>this.shutdownWorker()}
+        onShutdownWorker={() => this.shutdownWorker()}
       ></impostor-hub>
     </Host>;
   }

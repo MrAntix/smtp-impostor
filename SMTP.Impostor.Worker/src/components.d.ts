@@ -65,6 +65,9 @@ export namespace Components {
     'toggleState': (start?: boolean) => Promise<void>;
     'value': IHost;
   }
+  interface SmtpHostConfiguration {
+    'value': IHost;
+  }
 }
 
 declare global {
@@ -105,6 +108,12 @@ declare global {
     prototype: HTMLSmtpHostElement;
     new (): HTMLSmtpHostElement;
   };
+
+  interface HTMLSmtpHostConfigurationElement extends Components.SmtpHostConfiguration, HTMLStencilElement {}
+  var HTMLSmtpHostConfigurationElement: {
+    prototype: HTMLSmtpHostConfigurationElement;
+    new (): HTMLSmtpHostConfigurationElement;
+  };
   interface HTMLElementTagNameMap {
     'app-icon': HTMLAppIconElement;
     'app-input': HTMLAppInputElement;
@@ -112,6 +121,7 @@ declare global {
     'app-root': HTMLAppRootElement;
     'impostor-hub': HTMLImpostorHubElement;
     'smtp-host': HTMLSmtpHostElement;
+    'smtp-host-configuration': HTMLSmtpHostConfigurationElement;
   }
 }
 
@@ -150,16 +160,17 @@ declare namespace LocalJSX {
   }
   interface SmtpHost {
     'onDeleteHostMessage'?: (event: CustomEvent<{ id: string, messageId: string }>) => void;
+    'onOpenHost'?: (event: CustomEvent<{ id: string }>) => void;
     'onOpenHostMessage'?: (event: CustomEvent<{ id: string, messageId: string }>) => void;
-    'onRemoveHost'?: (event: CustomEvent<IHost>) => void;
     'onSearchHostMessages'?: (event: CustomEvent<{ id: string, criteria: ISearchHostMessagesCriteria }>) => void;
     'onStartHost'?: (event: CustomEvent<IHost>) => void;
     'onStopHost'?: (event: CustomEvent<IHost>) => void;
-    'onToggleHostConfiguration'?: (event: CustomEvent<{ id: string, value: boolean }>) => void;
-    'onToggleHostMessages'?: (event: CustomEvent<{ id: string, value: boolean }>) => void;
-    'onUpdateHost'?: (event: CustomEvent<IHostUpdate>) => void;
     'showConfiguration'?: boolean;
     'showMessages'?: boolean;
+    'value'?: IHost;
+  }
+  interface SmtpHostConfiguration {
+    'onUpdateHost'?: (event: CustomEvent<IHostUpdate>) => void;
     'value'?: IHost;
   }
 
@@ -170,6 +181,7 @@ declare namespace LocalJSX {
     'app-root': AppRoot;
     'impostor-hub': ImpostorHub;
     'smtp-host': SmtpHost;
+    'smtp-host-configuration': SmtpHostConfiguration;
   }
 }
 
@@ -185,6 +197,7 @@ declare module "@stencil/core" {
       'app-root': LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
       'impostor-hub': LocalJSX.ImpostorHub & JSXBase.HTMLAttributes<HTMLImpostorHubElement>;
       'smtp-host': LocalJSX.SmtpHost & JSXBase.HTMLAttributes<HTMLSmtpHostElement>;
+      'smtp-host-configuration': LocalJSX.SmtpHostConfiguration & JSXBase.HTMLAttributes<HTMLSmtpHostConfigurationElement>;
     }
   }
 }

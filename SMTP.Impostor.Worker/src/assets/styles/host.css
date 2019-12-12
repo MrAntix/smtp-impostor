@@ -90,3 +90,12 @@ label {
   padding: var(--host-label-padding);
   margin: var(--host-margin);
 }
+
+[slot="popup-header"]{
+  font-weight: 700;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+}

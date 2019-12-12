@@ -44,13 +44,13 @@
   flex: 0 0 auto;
   display: flex;
   justify-content: flex-start;
-  max-height: 100%;
   overflow: hidden;
   padding: var(--host-padding);
   border-bottom: solid 1px var(--host-lowlight);
 }
 
 .host-open {
+  flex: 1 0 auto;
   background: linear-gradient(to bottom, var(--host-highlight), var(--host-highlight-more));
   border-bottom: solid 1px var(--host-lowlight-more);
 }
@@ -87,4 +87,8 @@ pre {
 
 impostor-hub {
   height: 1.25em;
+}
+
+.buttons app-popup {
+  margin-right: auto;
 }

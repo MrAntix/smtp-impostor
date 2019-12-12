@@ -11,10 +11,10 @@ export enum Types {
   REMOVE_HOST = 'RemoveHost',
   START_HOST = 'Starthost',
   STOP_HOST = 'StopHost',
+  OPEN_HOST = 'OpenHost',
   UPDATE_HOST = 'UpdateHost',
   HOST_STATE = 'HostState',
   TOGGLE_HOST_CONFIGURATION = 'ToggleHostConfiguration',
-  TOGGLE_HOST_MESSAGES = 'ToggleHostMessages',
   SEARCH_HOST_MESSAGES = 'SearchHostMessages',
   HOST_MESSAGES_LOADED = 'HostMessagesLoaded',
   HOST_MESSAGE_RECEIVED = 'HostMessageReceived',
@@ -73,6 +73,11 @@ export interface StopHost {
   model: { hostId: string };
 }
 
+export interface OpenHost {
+  type: Types.OPEN_HOST;
+  model: { hostId: string };
+}
+
 export interface HostState {
   type: Types.HOST_STATE;
   model: IHost;
@@ -80,11 +85,6 @@ export interface HostState {
 
 export interface ToggleHostConfiguration {
   type: Types.TOGGLE_HOST_CONFIGURATION;
-  model: { hostId: string, value: boolean };
-}
-
-export interface ToggleHostMessages {
-  type: Types.TOGGLE_HOST_MESSAGES;
   model: { hostId: string, value: boolean };
 }
 
@@ -173,7 +173,7 @@ export type ActionTypes =
   | WorkerState
   | HostState
   | ToggleHostConfiguration
-  | ToggleHostMessages
+  | OpenHost
   | HostMessagesLoaded
   | HostMessageAdded
   | HostMessageRemoved

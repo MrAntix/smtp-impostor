@@ -1,5 +1,6 @@
 export interface IWorkerState {
   hosts: IHost[];
+  openHostId?: string,
   fileStorePath: string;
 }
 
@@ -11,7 +12,6 @@ export interface IHost {
   state?: HostStatus;
   start: boolean;
   showConfiguration: boolean;
-  showMessages: boolean;
   messages: IHostMesssageInfo[];
   messagesIndex: number;
   messagesCount: number;

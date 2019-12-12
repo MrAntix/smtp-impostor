@@ -10,7 +10,7 @@ import {
   StopHost,
   UpdateHost,
   ToggleHostConfiguration,
-  ToggleHostMessages,
+  OpenHost,
   SearchHostMessages,
   DeleteHostMessage,
   LoadHostMessage,
@@ -94,12 +94,11 @@ export const toggleHostConfiguration = (host: IHost, value?: boolean) => dispatc
   dispatch(action);
 };
 
-export const toggleHostMessages = (host: IHost, value?: boolean) => dispatch => {
-  const action: ToggleHostMessages = {
-    type: Types.TOGGLE_HOST_MESSAGES,
+export const openHost = (hostId: string) => dispatch => {
+  const action: OpenHost = {
+    type: Types.OPEN_HOST,
     model: {
-      hostId: host.id,
-      value: value == null ? !host.showMessages : !!value
+      hostId
     }
   };
   dispatch(action);

@@ -14,7 +14,7 @@ namespace SMTP.Impostor.Worker
 
         public static void Main(string[] args)
         {
-                if (!Mutex.TryOpenExisting(MUTEX_NAME, out _))
+            if (!Mutex.TryOpenExisting(MUTEX_NAME, out _))
             {
                 var mutex = new Mutex(false, MUTEX_NAME);
                 CreateHostBuilder(args).Build().Run();

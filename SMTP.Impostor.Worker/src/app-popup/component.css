@@ -9,12 +9,6 @@
   --host-content-offset: calc(var(--host-call-offset) + var(--host-call-size));
 }
 
-:host([is-open]) .content {
-
-  margin-top: 0;
-  opacity: 1;
-}
-
 /* Position top */
 :host([position="top"]) .content {
   bottom: calc(100% + var(--host-call-size));
@@ -180,7 +174,7 @@
 
 .content {
   position: absolute;
-  z-index: 1;
+  z-index: -1;
 
   box-shadow: 0 0 30px var(--host-lowlight-more);
   background-color: var(--host-background-color);
@@ -190,6 +184,12 @@
   transition-property: margin-top, opacity;
   margin-top: var(--host-padding);
   opacity: 0;
+}
+
+:host([is-open]) .content {
+  z-index: 1;
+  margin-top: 0;
+  opacity: 1;
 }
 
 .content::after {

@@ -35,12 +35,3 @@
 .status.status-3 .icon {
   background-color: var(--host-error-color);
 }
-
-[slot="popup-header"]{
-  font-weight: 700;
-}
-
-.buttons {
-  display: flex;
-  justify-content: flex-end;
-}

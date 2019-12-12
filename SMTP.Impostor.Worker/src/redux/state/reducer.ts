@@ -3,6 +3,7 @@ import { ActionTypes, Types } from './types';
 
 export const getInitialState = (): IWorkerState => ({
   hosts: null,
+  openHostId: null,
   fileStorePath: null
 });
 
@@ -26,12 +27,11 @@ export default (state = getInitialState(), action: ActionTypes): IWorkerState =>
           showConfiguration: action.model.value
         }));
 
-    case Types.TOGGLE_HOST_MESSAGES:
-      return updateHost(state,
-        action.model.hostId,
-        () => ({
-          showMessages: action.model.value
-        }));
+    case Types.OPEN_HOST:
+      return {
+        ...state,
+        openHostId: action.model.hostId
+      }
 
     case Types.HOST_MESSAGES_LOADED:
       return updateHost(state,
