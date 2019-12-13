@@ -21,7 +21,6 @@ export class AppInputComponent {
         onInput={(e: any) => this.inputType.emit(e.target.value)}
         onChange={(e: any) => this.inputChange.emit(e.target.value)}
         onKeyDown={e => {
-          console.log(e.key);
           e.key === 'Escape' && this.inputClear.emit();
         }
         } />

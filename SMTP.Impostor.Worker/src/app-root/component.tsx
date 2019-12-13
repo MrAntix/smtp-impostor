@@ -71,12 +71,6 @@ export class AppRoot {
       shutdownWorker
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
-      if (state.worker.hosts) {
-        state.worker.hosts.forEach(host => {
-          if (!host.messages)
-            this.searchHostMessages(host.id, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA);
-        });
-      }
 
       return { state };
     });
@@ -100,12 +94,14 @@ export class AppRoot {
               });
               this.newHostId = null;
             }
+
             break;
 
           case Types.HOST_MESSAGE_RECEIVED:
-            this.searchHostMessages(
-              action.model.hostId,
-              DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA);
+            if (this.state.worker.openHostId === action.model.hostId)
+              this.searchHostMessages(
+                action.model.hostId,
+                DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA);
             break;
 
           case Types.HOST_MESSAGE:

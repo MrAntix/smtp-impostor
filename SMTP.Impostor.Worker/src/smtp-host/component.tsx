@@ -33,7 +33,7 @@ export class SMTPHostComponent {
 
   @Method()
   async searchMessages(
-    criteria: Partial<ISearchHostMessagesCriteria>,
+    criteria: Partial<ISearchHostMessagesCriteria> = {},
     debounce: number = 0) {
 
     this.messagesSearchCriteria = {
@@ -75,6 +75,11 @@ export class SMTPHostComponent {
   }
 
   renderMessages() {
+    if (this.value.messages == null) {
+      this.value.messages = [];
+      this.searchMessages();
+    }
+
     return <Frag>
       <div class="messages-toolbar">
         <app-input clear-button icon-type="search"

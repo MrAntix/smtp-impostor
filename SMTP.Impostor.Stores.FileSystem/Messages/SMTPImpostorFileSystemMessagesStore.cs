@@ -278,6 +278,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             return false;
         }
 
+        int ISMTPImpostorMessagesStore.Count => _index.Count;
         async Task<SMTPImpostorMessageStoreSearchResult> ISMTPImpostorMessagesStore
             .SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria) => await SearchAsync(criteria);
 

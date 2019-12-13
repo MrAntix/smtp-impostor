@@ -26,6 +26,7 @@ namespace SMTP.Impostor.Worker.Actions.State
                 source.Settings.IP, source.Settings.Port,
                 source.Settings.StoreType,
                 source.State,
+                source.Messages.Count,
                 source.Settings.Store.MaxMessages
                 );
         }

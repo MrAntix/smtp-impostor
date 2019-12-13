@@ -11,6 +11,7 @@ namespace SMTP.Impostor.Worker.Actions.State
             string ip, int port,
             string storeType,
             SMTPImpostorHostStatus state,
+            int messagesCount,
             int maxMessages)
         {
             Id = id;
@@ -19,6 +20,7 @@ namespace SMTP.Impostor.Worker.Actions.State
             Port = port;
             StoreType = storeType;
             State = state;
+            MessagesCount = messagesCount;
             MaxMessages = maxMessages;
         }
 
@@ -28,6 +30,7 @@ namespace SMTP.Impostor.Worker.Actions.State
         public int Port { get; }
         public string StoreType { get; }
         public SMTPImpostorHostStatus State { get; }
+        public int MessagesCount { get; }
         public int MaxMessages { get; }
     }
 }

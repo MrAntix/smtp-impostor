@@ -8,7 +8,6 @@ export const getInitialState = (): IWorkerState => ({
 });
 
 export default (state = getInitialState(), action: ActionTypes): IWorkerState => {
-  console.log('status.reducer', action);
   switch (action.type) {
     default: return state;
 

@@ -59,7 +59,7 @@ export namespace Components {
     'url': string;
   }
   interface SmtpHost {
-    'searchMessages': (criteria: Partial<ISearchHostMessagesCriteria>, debounce?: number) => Promise<void>;
+    'searchMessages': (criteria?: Partial<ISearchHostMessagesCriteria>, debounce?: number) => Promise<void>;
     'showConfiguration': boolean;
     'showMessages': boolean;
     'toggleState': (start?: boolean) => Promise<void>;
