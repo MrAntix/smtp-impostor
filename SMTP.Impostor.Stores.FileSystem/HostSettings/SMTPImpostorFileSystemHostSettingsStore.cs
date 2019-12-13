@@ -45,7 +45,7 @@ namespace SMTP.Impostor.Stores.FileSystem.HostSettings
 
             try
             {
-                await Task.Delay(10000, _cancel.Token);
+                await Task.Delay(500, _cancel.Token);
                 await Delegates.RetryAsync(
                     async () => await File.WriteAllTextAsync(FilePath, json),
                     _logger);
