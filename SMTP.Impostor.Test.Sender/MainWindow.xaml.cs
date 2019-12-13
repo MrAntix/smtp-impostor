@@ -19,7 +19,6 @@ namespace SMTP.Impostor.Test.Sender
             SendButton.IsEnabled = false;
             try
             {
-                Status.Content = "sending, please wait...";
                 using var client = new SmtpClient(IPControl.Text, int.Parse(PortControl.Text));
 
                 var count = int.Parse(SendCountControl.Text);
@@ -27,6 +26,8 @@ namespace SMTP.Impostor.Test.Sender
 
                 for (var i = 1; i <= count; i++)
                 {
+                    Status.Content = $"sending {i}, please wait...";
+
                     using var mailMessage = new MailMessage
                     {
                         From = new MailAddress(FromControl.Text),

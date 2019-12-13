@@ -60,14 +60,21 @@ namespace SMTP.Impostor.Worker.Hubs
                                 .DeserializeObject<SMTPImpostorHubMessage>(data);
                             _messages.OnNext(message);
 
-                            var result = await _executor.ExecuteAsync(message.Type, message.Data);
-                            if (result != null
-                                && result != ActionNull.Instance)
+                            try
                             {
-                                await client.SendAsync(
-                                    _serialization.Serialize(
-                                        CreateMessageFrom(result)
-                                    ));
+                                var result = await _executor.ExecuteAsync(message.Type, message.Data);
+                                if (result != null
+                                    && result != ActionNull.Instance)
+                                {
+                                    await client.SendAsync(
+                                        _serialization.Serialize(
+                                            CreateMessageFrom(result)
+                                        ));
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, $"Executor failed\n{data}");
                             }
                         }
                     }

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SMTP.Impostor.Hosts;
 
 namespace SMTP.Impostor.Stores.FileSystem.HostSettings
@@ -9,11 +11,14 @@ namespace SMTP.Impostor.Stores.FileSystem.HostSettings
     public class SMTPImpostorFileSystemHostSettingsStore : ISMTPImpostorHostSettingsStore
     {
         readonly SMTPImpostorSerialization _serialization;
+        readonly ILogger<SMTPImpostorFileSystemHostSettingsStore> _logger;
 
         public SMTPImpostorFileSystemHostSettingsStore(
-            SMTPImpostorSerialization serialization)
+            SMTPImpostorSerialization serialization,
+            ILogger<SMTPImpostorFileSystemHostSettingsStore> logger)
         {
             _serialization = serialization;
+            _logger = logger;
             FilePath = Path.Combine(Path.GetTempPath(), "Impostor", "settings.json");
         }
 
@@ -29,11 +34,25 @@ namespace SMTP.Impostor.Stores.FileSystem.HostSettings
                 : _serialization.Deserialize<IImmutableList<SMTPImpostorHostSettings>>(json);
         }
 
-        async Task ISMTPImpostorHostSettingsStore.SaveAsync(IEnumerable<SMTPImpostorHostSettings> value)
+        CancellationTokenSource _cancel;
+        async Task ISMTPImpostorHostSettingsStore
+            .SaveAsync(IEnumerable<SMTPImpostorHostSettings> value)
         {
             var json = _serialization.Serialize(value);
 
-            await File.WriteAllTextAsync(FilePath, json);
+            if (_cancel != null) _cancel.Cancel();
+            _cancel = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(10000, _cancel.Token);
+                await Delegates.RetryAsync(
+                    async () => await File.WriteAllTextAsync(FilePath, json),
+                    _logger);
+            }
+            catch (TaskCanceledException) { }
+
+            _cancel = null;
         }
     }
 }

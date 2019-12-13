@@ -52,9 +52,9 @@ export class SMTPHostConfigurationComponent {
         <label>Max Messages</label>
         <input
           name="maxMessages"
-          value={this.value.maxMessages}
+          value={this.value.maxMessages || ''}
           onChange={(e: any) =>
-            this.updateHost.emit({ id: this.value.id, maxMessages: e.target.value })
+            this.updateHost.emit({ id: this.value.id, maxMessages: e.target.value || 0 })
           }
         />
       </div>

@@ -53,3 +53,8 @@ export enum HostStatus {
   Started,
   Receiving
 }
+
+export function hostIsRunning(host: IHost): boolean {
+  return host.state === HostStatus.Started
+    || host.state === HostStatus.Receiving;
+}

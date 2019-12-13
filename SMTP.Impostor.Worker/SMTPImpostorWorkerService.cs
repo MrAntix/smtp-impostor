@@ -65,63 +65,69 @@ namespace SMTP.Impostor.Worker
             _impostorEvents = _impostor.Events.Subscribe(async e =>
             {
                 _logger.LogInformation($"{e.GetType().Name}");
+                try
+                {
+                    if (e is SMTPImpostorStoppedEvent)
+                    {
+                        await _hub.SendAsync(new WorkerState(null, null));
+                        await StopAsync(CancellationToken.None);
+                    }
+                    else if (e is SMTPImpostorMessageReceivedEvent mre)
+                    {
+                        var host = _impostor.Hosts[mre.HostId];
+                        await host.Messages.PutAsync(mre.Data);
 
-                if (e is SMTPImpostorStoppedEvent)
-                {
-                    await _hub.SendAsync(new WorkerState(null, null));
-                    await StopAsync(CancellationToken.None);
-                }
-                else if (e is SMTPImpostorMessageReceivedEvent mre)
-                {
-                    var host = _impostor.Hosts[mre.HostId];
-                    await host.Messages.PutAsync(mre.Data);
+                        await _hub.SendAsync(
+                            new HostMessageReceived(host.Settings.Id, mre.Data.Map())
+                            );
+                    }
+                    else if (e is SMTPImpostorMessageRemovedEvent mde)
+                    {
+                        await _hub.SendAsync(
+                            new HostMessageRemoved(mde.HostId, mde.MessageId)
+                            );
+                    }
+                    else if (e is SMTPImpostorMessageAddedEvent mae)
+                    {
+                        await _hub.SendAsync(
+                            new HostMessageAdded(mae.HostId, mae.MessageId)
+                            );
+                    }
+                    else if (
+                        (e is SMTPImpostorHostStateChangeEvent || e is SMTPImpostorHostUpdatedEvent)
+                        && e is ISMTPImpostorHostEvent he)
+                    {
+                        var status = await _executor
+                            .ExecuteAsync<LoadWorkerStateAction, WorkerState>();
+                        var hostState = status.Hosts
+                            .FirstOrDefault(h => h.Id == he.HostId);
+                        if (hostState == null) return;
 
-                    await _hub.SendAsync(
-                        new HostMessageReceived(host.Settings.Id, mre.Data.Map())
-                        );
-                }
-                else if (e is SMTPImpostorMessageRemovedEvent mde)
-                {
-                    await _hub.SendAsync(
-                        new HostMessageRemoved(mde.HostId, mde.MessageId)
-                        );
-                }
-                else if (e is SMTPImpostorMessageAddedEvent mae)
-                {
-                    await _hub.SendAsync(
-                        new HostMessageRemoved(mae.HostId, mae.MessageId)
-                        );
-                }
-                else if (
-                    (e is SMTPImpostorHostStateChangeEvent || e is SMTPImpostorHostUpdatedEvent)
-                    && e is ISMTPImpostorHostEvent he)
-                {
-                    var status = await _executor
-                        .ExecuteAsync<LoadWorkerStateAction, WorkerState>();
-                    var hostState = status.Hosts
-                        .FirstOrDefault(h => h.Id == he.HostId);
-                    if (hostState == null) return;
+                        await _hub.SendAsync(hostState);
+                        await _hostsSettings.SaveAsync(status.ToSettings());
+                    }
+                    else if (e is SMTPImpostorHostRemovedEvent
+                        || e is SMTPImpostorHostAddedEvent)
+                    {
+                        var status = await _executor
+                            .ExecuteAsync<LoadWorkerStateAction, WorkerState>();
+                        await _hub.SendAsync(status);
 
-                    await _hub.SendAsync(hostState);
-                    await _hostsSettings.SaveAsync(status.ToSettings());
+                        await _hostsSettings.SaveAsync(status.ToSettings());
+                    }
                 }
-                else if (e is SMTPImpostorHostRemovedEvent
-                    || e is SMTPImpostorHostAddedEvent)
+                catch (Exception ex)
                 {
-                    var status = await _executor
-                        .ExecuteAsync<LoadWorkerStateAction, WorkerState>();
-                    await _hub.SendAsync(status);
-
-                    await _hostsSettings.SaveAsync(status.ToSettings());
+                    _logger.LogError(ex, "Event Error");
                 }
             });
 
             var settings = await _hostsSettings.LoadAsync();
-
-            foreach (var hostSetttings in settings)
-            {
-                _impostor.AddHost(hostSetttings);
-            }
+            if (settings != null)
+                foreach (var hostSetttings in settings)
+                {
+                    _impostor.AddHost(hostSetttings);
+                }
         }
 
 

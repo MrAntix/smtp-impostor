@@ -3,7 +3,7 @@ import { Frag } from '../dom';
 
 import {
   IHost, HostStatus,
-  ISearchHostMessagesCriteria, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA
+  ISearchHostMessagesCriteria, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA, hostIsRunning
 } from '../redux';
 
 @Component({
@@ -21,7 +21,7 @@ export class SMTPHostComponent {
   @Method()
   async toggleState(start?: boolean) {
     start = start == null
-      ? this.value.state !== HostStatus.Started
+      ? !hostIsRunning(this.value)
       : !!start;
 
     if (start) this.startHost.emit(this.value)
@@ -64,7 +64,7 @@ export class SMTPHostComponent {
           </div>
           <div class="actions">
             <button class="toggle-state" type="button" onClick={() => this.toggleState()}>
-              <span>{this.value.state == HostStatus.Stopped ? "Start" : "Stop"}</span>
+              <span>{hostIsRunning(this.value) ? "Stop" : "Start"}</span>
             </button>
           </div>
         </header>

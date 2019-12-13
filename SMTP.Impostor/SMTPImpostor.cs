@@ -14,16 +14,19 @@ namespace SMTP.Impostor
 {
     public class SMTPImpostor : ISMTPImpostorHostProvider, IDisposable
     {
+        readonly ILogger<SMTPImpostor> _logger;
         readonly ILoggerFactory _loggerFactory;
         readonly ISMTPImpostorSettings _settings;
         readonly IImmutableDictionary<string, ISMTPImpostorMessagesStoreProvider> _storeProviders;
         readonly Subject<ISMTPImpostorEvent> _events;
 
         public SMTPImpostor(
+            ILogger<SMTPImpostor> logger,
             ILoggerFactory loggerFactory,
             ISMTPImpostorSettings settings,
             IEnumerable<ISMTPImpostorMessagesStoreProvider> storeProviders)
         {
+            _logger = logger;
             _loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
             _settings = settings;
             _events = new Subject<ISMTPImpostorEvent>();
@@ -71,7 +74,10 @@ namespace SMTP.Impostor
             _events.OnNext(new SMTPImpostorHostUpdatedEvent(hostId));
 
             host.Events.Subscribe(e => _events.OnNext(e));
-            if (hostSettings.Start) host.Start();
+            if (hostSettings.Start)
+                Delegates.Retry(
+                    () => host.Start(),
+                    _logger);
 
             return host;
         }

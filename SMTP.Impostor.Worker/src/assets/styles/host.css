@@ -53,6 +53,7 @@ button {
   border: var(--host-button-border, none);
   border-radius: var(--host-button-border-radius, 2px);
   margin: var(--host-margin);
+  user-select: none; 
 }
 
 button app-icon {
