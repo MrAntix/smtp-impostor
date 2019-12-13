@@ -13,7 +13,10 @@ export default (state = getInitialState(), action: ActionTypes): IWorkerState =>
     default: return state;
 
     case Types.WORKER_STATE:
-      return action.model;
+      return {
+        ...action.model,
+        openHostId: state.openHostId
+      };
 
     case Types.HOST_STATE:
       return updateHost(state,

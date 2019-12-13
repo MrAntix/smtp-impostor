@@ -43,7 +43,6 @@ export class SMTPHostComponent {
 
     if (this.messagesSearchTimer) clearTimeout(this.messagesSearchTimer);
     this.messagesSearchTimer = setTimeout(() => {
-      console.log('searchMessages', this.messagesSearchCriteria);
 
       this.searchHostMessages.emit({
         id: this.value.id,

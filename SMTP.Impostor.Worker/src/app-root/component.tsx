@@ -21,6 +21,7 @@ import {
   loadHostMessage,
   shutdownWorker
 } from '../redux/state/actions';
+import { newId } from '../global';
 
 @Component({
   tag: 'app-root',
@@ -49,6 +50,7 @@ export class AppRoot {
   deleteHostMessage: typeof deleteHostMessage;
   loadHostMessage: typeof loadHostMessage;
   shutdownWorker: typeof shutdownWorker;
+  newHostId: string;
 
   async componentWillLoad() {
     this.store.setStore(configureStore({}, () => this.hubAction()));
@@ -82,12 +84,24 @@ export class AppRoot {
 
   hubAction() {
     return (next: any) => async (action: IAction) => {
-      this.logger.debug('hubAction', { action });
+      this.logger.debug('hubAction', action.type, { action });
 
       if (action.sendToHub) await this.hub.sendAsync(action);
       else {
 
         switch (action.type) {
+          case Types.WORKER_STATE:
+
+            if (this.newHostId) {
+              const hostId = this.newHostId;
+              requestAnimationFrame(() => {
+                this.openHost(hostId);
+                this.toggleHostConfiguration(hostId, true);
+              });
+              this.newHostId = null;
+            }
+            break;
+
           case Types.HOST_MESSAGE_RECEIVED:
             this.searchHostMessages(
               action.model.hostId,
@@ -104,7 +118,7 @@ export class AppRoot {
             location.assign(url);
             URL.revokeObjectURL(url);
 
-            break
+            break;
         }
 
         await next(action);
@@ -141,11 +155,13 @@ export class AppRoot {
                       onClick={() => this.openHost(this.state.worker.openHostId === host.id ? null : host.id)}>
                       <app-icon type="triangle" scale={.65} rotate={this.state.worker.openHostId === host.id ? 0 : 180} />
                     </button>
+                    {host.showConfiguration}
                     {this.state.worker.openHostId === host.id &&
-                      <app-popup position="left" shift="left">
+                      <app-popup position="left" shift="left"
+                        isOpen={host.showConfiguration}>
                         <button
                           class="remove-host"
-                          onClick={() => this.toggleHostConfiguration(host)}
+                          onClick={() => this.toggleHostConfiguration(host.id, true)}
                         >
                           <app-icon type="cog" scale={1.667} />
                         </button>
@@ -173,7 +189,10 @@ export class AppRoot {
               ))}
             </ul>
             <div class="hosts-actions">
-              <button class="add-host primary" onClick={() => this.addHost()}>
+              <button class="add-host primary" onClick={() => {
+                this.newHostId = newId();
+                this.addHost({ id: this.newHostId });
+              }}>
                 <app-icon type="plus" />
               </button>
             </div>

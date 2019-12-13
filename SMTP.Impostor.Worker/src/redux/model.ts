@@ -9,3 +9,7 @@ export interface IAction {
   sendToHub?: true;
   model?: any;
 }
+
+export interface IDispatch {
+  (action: IAction): void;
+}

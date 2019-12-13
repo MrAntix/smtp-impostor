@@ -46,7 +46,7 @@ export interface WorkerState {
 export interface AddHost {
   type: Types.ADD_HOST;
   sendToHub: true;
-  model: IHost;
+  model: Partial<IHost>;
 }
 
 export interface UpdateHost {
