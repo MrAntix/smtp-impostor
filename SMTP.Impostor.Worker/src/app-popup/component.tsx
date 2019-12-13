@@ -30,11 +30,9 @@ export class AppPopupComponent {
     return <Host
       onClick={e => this.handleClicked(e)}>
       <slot />
-      <div class="overlay"
-        onClick={e => this.handleOverlayClicked(e)}></div>
+      <div class="overlay"></div>
 
-      <div class="content"
-        onClick={e => this.handleContentClicked(e)}>
+      <div class="content">
         {hasHeader && <header class="header">
           <slot name="popup-header" />
         </header>}
@@ -52,17 +50,17 @@ export class AppPopupComponent {
   handleClicked(e: Event): void {
     e.stopPropagation();
 
-    this.toggle();
-  }
+    if (this.isOpen) {
+      if (this.modal) return;
 
-  handleOverlayClicked(e: Event): void {
-    e.stopPropagation();
+      const overlayElement = this.element.shadowRoot.querySelector('.overlay');
+      if (!e.composedPath().some(et => et == overlayElement)) return;
 
-    if (!this.modal) this.toggle(false);
-  }
+      this.toggle(false);
+      return;
+    }
 
-  handleContentClicked(e: Event): void {
-    e.stopPropagation();
+    this.toggle(true);
   }
 
   @Event() toggled: EventEmitter<boolean>;
