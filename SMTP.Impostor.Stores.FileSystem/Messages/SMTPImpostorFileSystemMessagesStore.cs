@@ -298,6 +298,7 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
             {
                 _disposed = true;
                 _events.OnCompleted();
+                _watcher.EnableRaisingEvents = false;
                 _watcher.Dispose();
             }
         }

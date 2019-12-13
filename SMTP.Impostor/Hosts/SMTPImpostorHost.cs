@@ -138,6 +138,7 @@ namespace SMTP.Impostor.Sockets
                 _disposed = true;
                 _events.OnCompleted();
                 _messagesSubscription.Dispose();
+                Messages.Dispose();
             }
 
             This.Stop();
