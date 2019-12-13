@@ -86,7 +86,7 @@ namespace SMTP.Impostor
         {
             if (Hosts.TryGetValue(hostId, out var host))
             {
-                host.Stop();
+                host.Dispose();
                 Hosts = Hosts.Remove(hostId);
                 _events.OnNext(new SMTPImpostorHostRemovedEvent(hostId));
 
