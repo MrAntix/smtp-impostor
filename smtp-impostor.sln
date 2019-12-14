@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{520E
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 		ui-screenshot.png = ui-screenshot.png
+		ui-video.mp4 = ui-video.mp4
 		ui-video.png = ui-video.png
 	EndProjectSection
 EndProject
