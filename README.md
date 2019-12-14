@@ -23,6 +23,7 @@ worker written in c# [dotnet core 3](https://dotnet.microsoft.com/download/dotne
 once running the admin ui (wip) is available through a browser ```https://localhost:62525```, you can install it as a web app if you are using a browser that supports [progressive web apps (pwa)](https://en.wikipedia.org/wiki/Progressive_web_applications)
 
 <img src="ui-screenshot.png" alt="SMTP Impostor UI"/>
+<img src="ui-video.png" alt="SMTP Impostor UI"/>
 
 ### using in unit tests
 
