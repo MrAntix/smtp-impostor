@@ -112,12 +112,19 @@ export class ImpostorHubComponent {
           Status:&nbsp;{HubStatus[this.status]}
         </div>
         <div slot="popup-footer" class="buttons">
-          <button class="primary"
-            disabled={this.status !== HubStatus.connected}
-            onClick={() => this.shutdownWorker.emit()}
-          >
-            Shutdown
+          {this.status !== HubStatus.connected ?
+            <button class="primary"
+              onClick={() => this.startupWorker.emit()}
+            >
+              Start
             </button>
+            :
+            <button class="primary"
+              onClick={() => this.shutdownWorker.emit()}
+            >
+              Shutdown
+            </button>
+          }
         </div>
       </app-popup>
     </div>;
@@ -130,5 +137,6 @@ export class ImpostorHubComponent {
 
   @Event() statusChanged: EventEmitter<HubStatus>;
   @Event() messageReceived: EventEmitter<IHubMessage>;
+  @Event() startupWorker: EventEmitter<void>;
   @Event() shutdownWorker: EventEmitter<void>;
 }

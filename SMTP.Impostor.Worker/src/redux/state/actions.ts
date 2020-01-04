@@ -14,7 +14,8 @@ import {
   SearchHostMessages,
   DeleteHostMessage,
   LoadHostMessage,
-  ShutdownWorker
+  ShutdownWorker,
+  StartupWorker
 } from './types';
 import { getInitialState } from './reducer';
 import { IDispatch } from '../model';
@@ -137,6 +138,13 @@ export const loadHostMessage = (hostId: string, messageId: string) => (dispatch:
       hostId,
       messageId
     }
+  };
+  dispatch(action);
+};
+
+export const startupWorker = () => (dispatch: IDispatch) => {
+  const action: StartupWorker = {
+    type: Types.STARTUP_WORKER
   };
   dispatch(action);
 };

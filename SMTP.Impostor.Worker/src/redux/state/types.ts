@@ -23,6 +23,7 @@ export enum Types {
   DELETE_HOST_MESSAGE = 'DeleteHostMessage',
   LOAD_HOST_MESSAGE = 'LoadHostMessage',
   HOST_MESSAGE = 'HostMessage',
+  STARTUP_WORKER = 'StartupWorker',
   SHUTDOWN_WORKER = 'ShutdownWorker'
 }
 
@@ -166,6 +167,10 @@ export interface HostMessage {
 export interface ShutdownWorker {
   type: Types.SHUTDOWN_WORKER,
   sendToHub: true
+}
+
+export interface StartupWorker {
+  type: Types.STARTUP_WORKER
 }
 
 export type ActionTypes =

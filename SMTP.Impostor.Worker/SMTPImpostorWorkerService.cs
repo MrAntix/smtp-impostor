@@ -16,15 +16,19 @@ namespace SMTP.Impostor.Worker
 {
     public class SMTPImpostorWorkerService : BackgroundService
     {
+        const string MUTEX_NAME = "SMTP.Impostor.Worker";
+
         readonly ILogger<SMTPImpostorWorkerService> _logger;
         readonly ISMTPImpostorWorkerSettings _settings;
         readonly SMTPImpostor _impostor;
+
         readonly SMTPImpostorHubService _hub;
         readonly IActionExecutor _executor;
         readonly ISMTPImpostorHostSettingsStore _hostsSettings;
         ToastNotifier _notifier;
 
         IDisposable _impostorEvents;
+        static Mutex _mutex;
 
         public SMTPImpostorWorkerService(
             ILogger<SMTPImpostorWorkerService> logger,
@@ -50,8 +54,6 @@ namespace SMTP.Impostor.Worker
                 {
                     try
                     {
-                        await UWPHelper.TryAddPrimaryTile();
-
                         _notifier = ToastNotificationManager.CreateToastNotifier();
                         UWPHelper.SendStartupMessage(_notifier, _settings);
                     }
@@ -62,6 +64,13 @@ namespace SMTP.Impostor.Worker
                 }
             }
 
+            if (Mutex.TryOpenExisting(MUTEX_NAME, out var __))
+            {
+                await StopAsync(CancellationToken.None);
+                return;
+            }
+
+            _mutex = new Mutex(false, MUTEX_NAME);
             _impostorEvents = _impostor.Events.Subscribe(async e =>
             {
                 _logger.LogInformation($"{e.GetType().Name}");
@@ -70,7 +79,7 @@ namespace SMTP.Impostor.Worker
                     if (e is SMTPImpostorStoppedEvent)
                     {
                         await _hub.SendAsync(new WorkerState(null, null));
-                        await StopAsync(CancellationToken.None);
+                        await StopAsync(CancellationToken.None);                        
                     }
                     else if (e is SMTPImpostorMessageReceivedEvent mre)
                     {
@@ -130,10 +139,18 @@ namespace SMTP.Impostor.Worker
                 }
         }
 
-
         public override Task StopAsync(CancellationToken _)
         {
-            _impostorEvents.Dispose();
+            if (_mutex != null)
+            {
+                _mutex.Close();
+                _mutex = null;
+            }
+            if (_impostorEvents != null)
+            {
+                _impostorEvents.Dispose();
+                _impostorEvents = null;
+            }
 
             Environment.Exit(0);
 

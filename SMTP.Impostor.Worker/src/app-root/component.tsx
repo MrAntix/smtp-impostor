@@ -19,6 +19,7 @@ import {
   searchHostMessages,
   deleteHostMessage,
   loadHostMessage,
+  startupWorker,
   shutdownWorker
 } from '../redux/state/actions';
 import { newId } from '../global';
@@ -49,6 +50,7 @@ export class AppRoot {
   searchHostMessages: typeof searchHostMessages;
   deleteHostMessage: typeof deleteHostMessage;
   loadHostMessage: typeof loadHostMessage;
+  startupWorker: typeof startupWorker;
   shutdownWorker: typeof shutdownWorker;
   newHostId: string;
 
@@ -68,6 +70,7 @@ export class AppRoot {
       searchHostMessages,
       deleteHostMessage,
       loadHostMessage,
+      startupWorker,
       shutdownWorker
     });
     this.store.mapStateToProps(this, (state: IAppState) => {
@@ -84,6 +87,11 @@ export class AppRoot {
       else {
 
         switch (action.type) {
+          case Types.STARTUP_WORKER:
+            location.href='smtp-impostor:://start';
+
+            break;
+
           case Types.WORKER_STATE:
 
             if (this.newHostId) {
@@ -200,6 +208,7 @@ export class AppRoot {
         ref={el => (this.hub = el)}
         onStatusChanged={e => this.handleHubStatusChangedAsync(e)}
         onMessageReceived={e => this.dispatch(e.detail)}
+        onStartupWorker={() => this.startupWorker()}
         onShutdownWorker={() => this.shutdownWorker()}
       ></impostor-hub>
     </Host>;

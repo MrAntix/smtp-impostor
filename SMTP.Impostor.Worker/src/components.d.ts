@@ -153,6 +153,7 @@ declare namespace LocalJSX {
   interface ImpostorHub {
     'onMessageReceived'?: (event: CustomEvent<IHubMessage>) => void;
     'onShutdownWorker'?: (event: CustomEvent<void>) => void;
+    'onStartupWorker'?: (event: CustomEvent<void>) => void;
     'onStatusChanged'?: (event: CustomEvent<HubStatus>) => void;
     'socketProvider'?: IHubSocketProvider;
     'status'?: HubStatus;

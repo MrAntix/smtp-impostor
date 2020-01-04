@@ -62,7 +62,7 @@ namespace SMTP.Impostor.Worker
             var content = new ToastContent
             {
                 Actions = new ToastActionsCustom
-                {                    
+                {
                     Buttons = {
                         new ToastButtonDismiss(),
                         new ToastButton("Open UI", OPEN_UI_ACTION)
@@ -91,16 +91,34 @@ namespace SMTP.Impostor.Worker
 
             var notification = new ToastNotification(doc);
             notification.Tag = START_NOTIFICATION_ID;
-            //notification.ExpirationTime = DateTimeOffset.Now.AddMinutes(5);
+            notification.ExpiresOnReboot = true;
+            notification.ExpirationTime = DateTimeOffset.Now.AddMinutes(1);
 
             notification.Activated += async (_, o) =>
-             {
-                 var args = o as ToastActivatedEventArgs;
-                 if (args.Arguments == OPEN_UI_ACTION)
-                     await LaunchLink(settings.StartupMessageLink);
-             };
+            {
+                var args = o as ToastActivatedEventArgs;
+                if (args.Arguments == OPEN_UI_ACTION)
+                    await LaunchLink(settings.StartupMessageLink);
+            };
 
             notifier.Show(notification);
+            //Schedule(notifier, doc);
+        }
+
+        static void Schedule(
+            ToastNotifier notifier, XmlDocument doc)
+        {
+            var notification = new ScheduledToastNotification(doc, DateTimeOffset.Now.AddMinutes(1));
+            notification.Tag = START_NOTIFICATION_ID;
+            notification.ExpirationTime = DateTimeOffset.Now.AddMinutes(2);
+            notification.SuppressPopup = true;
+
+            notifier.AddToSchedule(notification);
+            notifier.ScheduledToastNotificationShowing += (_, a) =>
+            {
+                notifier.RemoveFromSchedule(notification);
+                Schedule(notifier, doc);
+            };
         }
 
         public static async Task LaunchLink(string link)

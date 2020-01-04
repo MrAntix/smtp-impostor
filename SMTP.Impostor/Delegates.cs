@@ -77,5 +77,10 @@ namespace SMTP.Impostor
 
             throw new Exception("Retry exception");
         }
+
+        public static void Repeat(Action p, TimeSpan timeSpan)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
