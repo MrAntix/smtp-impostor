@@ -55,7 +55,7 @@
     </None>
   </ItemGroup>
 
-  <Target Name="InstallUI" BeforeTargets="BeforeRebuild">
+  <Target Name="InstallUI" BeforeTargets="BeforeBuild" Condition="'$(Configuration)' == 'Release' ">
     <Exec Command="npm install" />
   </Target>
 
