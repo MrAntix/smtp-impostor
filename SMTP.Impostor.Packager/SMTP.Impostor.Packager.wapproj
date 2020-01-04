@@ -118,6 +118,9 @@
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SMTP.Impostor.Test.Sender\SMTP.Impostor.Test.Sender.csproj">
+      <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
     <ProjectReference Include="..\SMTP.Impostor.Worker\SMTP.Impostor.Worker.csproj">
       <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
     </ProjectReference>
