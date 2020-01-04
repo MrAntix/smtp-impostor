@@ -29,3 +29,5 @@ UserInterfaceState.xcuserstate
 .vs
 bin/
 obj/
+/SMTP.Impostor.Packager/AppPackages
+/SMTP.Impostor.Packager/BundleArtifacts

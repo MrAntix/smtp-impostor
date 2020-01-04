@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -10,7 +10,7 @@
   <Identity
     Name="AntixSoftwareLimited.SMTPImpostor"
     Publisher="CN=955742D8-5DA8-4E2F-8A9A-4E7C1CB1CC85"
-    Version="3.0.0.0" />
+    Version="3.0.1.0" />
 
   <Properties>
     <DisplayName>SMTP Impostor</DisplayName>
