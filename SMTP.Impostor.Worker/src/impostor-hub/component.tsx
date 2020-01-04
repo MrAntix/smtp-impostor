@@ -1,7 +1,7 @@
 import { Component, h, Prop, Event, EventEmitter, Method } from '@stencil/core';
 import {
   IHubSocketProvider, hubSocketProvider, IHubSocket,
-  HubStatus, IHubMessage
+  HubStatus, IHubMessage, hubStatusDisplay
 } from './model';
 
 const RECONNECT_INIT = 200;
@@ -109,18 +109,24 @@ export class ImpostorHubComponent {
         <span class="icon">{HubStatus[this.status]}</span>
         <div slot="popup-header">Worker</div>
         <div slot="popup-body">
-          Status:&nbsp;{HubStatus[this.status]}
+          Status:&nbsp;{hubStatusDisplay(this.status)}
         </div>
         <div slot="popup-footer" class="buttons">
-          {this.status !== HubStatus.connected ?
-            <button class="primary"
-              onClick={() => this.startupWorker.emit()}
+          {this.status === HubStatus.disconnected
+            ? <button class="primary"
+              onClick={() => {
+                this.startupWorker.emit();
+                this.status = HubStatus.working;
+              }}
             >
               Start
             </button>
-            :
-            <button class="primary"
-              onClick={() => this.shutdownWorker.emit()}
+            : <button class="primary"
+              disabled={this.status === HubStatus.working}
+              onClick={() => {
+                this.shutdownWorker.emit();
+                this.status = HubStatus.working;
+              }}
             >
               Shutdown
             </button>
