@@ -23,6 +23,14 @@
   background-repeat: no-repeat;
 }
 
+.intro {
+  padding: var(--host-padding);
+  align-items: center;
+  margin: auto;
+  max-width: 15em;
+  color: var(--primary-color);
+}
+
 .hosts {
   flex: 1 1 auto;
   display: flex;

@@ -88,7 +88,7 @@ export class AppRoot {
 
         switch (action.type) {
           case Types.STARTUP_WORKER:
-            location.href='smtp-impostor:://start';
+            location.href = 'smtp-impostor:://start';
 
             break;
 
@@ -133,14 +133,11 @@ export class AppRoot {
   render() {
     return <Host>
       <main>
-        <stencil-router>
-          <stencil-route-switch scrollTopOffset={0}>
-            <stencil-route url="/" component="app-home" exact={true} />
-          </stencil-route-switch>
-        </stencil-router>
-
-        {this.state.worker.hosts && (
-          <div class="hosts">
+        {!this.state.worker.hosts
+          ? <div class="intro">
+            <strong>Welcome, start the worker service below to begin catching emails</strong>
+          </div>
+          : <div class="hosts">
             <ul>
               {this.state.worker.hosts.map(host => (
                 <li key={host.id} class={{ "host": true, "host-open": this.state.worker.openHostId === host.id }}>
@@ -201,7 +198,7 @@ export class AppRoot {
               </button>
             </div>
           </div>
-        )}
+        }
 
       </main>
       <impostor-hub

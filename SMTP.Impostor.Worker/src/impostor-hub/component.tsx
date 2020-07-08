@@ -105,7 +105,7 @@ export class ImpostorHubComponent {
 
   render() {
     return <div class={`status status-${this.status}`}>
-      <app-popup position="top" shift="right">
+      <app-popup is-open position="top" shift="right">
         <span class="icon">{HubStatus[this.status]}</span>
         <div slot="popup-header">Worker</div>
         <div slot="popup-body">
