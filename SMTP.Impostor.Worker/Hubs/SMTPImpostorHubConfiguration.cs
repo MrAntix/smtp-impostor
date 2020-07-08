@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SMTP.Impostor.Worker.Actions;
@@ -61,7 +62,7 @@ namespace SMTP.Impostor.Worker.Hubs
 
                         context.Response.ContentType = "application/eml";
                         context.Response.Headers.Add("Content-Disposition", "inline; filename=\"message.txt\"");
-                        await context.Response.BodyWriter.WriteAsync(
+                        await context.Response.Body.WriteAsync(
                             Encoding.UTF8.GetBytes(message.Content)
                             );
                     });
