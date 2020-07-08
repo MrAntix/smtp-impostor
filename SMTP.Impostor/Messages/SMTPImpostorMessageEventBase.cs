@@ -24,13 +24,9 @@ namespace SMTP.Impostor.Messages
             Guid hostId,
             string messageId) : base(hostId)
         {
-            Id = Guid.NewGuid();
-            On = DateTimeOffset.UtcNow;
             MessageId = messageId;
         }
 
-        public Guid Id { get; }
-        public DateTimeOffset On { get; }
         public string MessageId { get; }
     }
 
