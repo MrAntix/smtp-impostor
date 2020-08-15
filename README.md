@@ -1,4 +1,4 @@
-<img src="SMTP.Impostor.Worker/src/assets/icon-256x256.png?raw=true" align="right" alt="SMTP Impostor Icon"/>
+<img src="SMTP.Impostor.Web/src/assets/icon-256x256.png?raw=true" align="right" alt="SMTP Impostor Icon"/>
 
 # smtp-impostor v3.0
 
