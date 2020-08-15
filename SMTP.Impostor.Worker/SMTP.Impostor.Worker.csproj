@@ -5,7 +5,7 @@
     <OutputType>WinExe</OutputType>
     <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <ApplicationIcon>assets\icon.ico</ApplicationIcon>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
     <Version>3.0.0</Version>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <AssemblyName>SMTP.Impostor.Host</AssemblyName>
@@ -43,9 +43,5 @@
     <None Update="settings.*.json">
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Assets\" />
   </ItemGroup>
 </Project>

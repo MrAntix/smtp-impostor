@@ -15,10 +15,10 @@
   "dependencies": {},
   "license": "MIT",
   "devDependencies": {
-    "@stencil/core": "^1.16.0",
+    "@stencil/core": "^1.17.3",
     "@stencil/redux": "^0.1.2",
     "@stencil/router": "^1.0.1",
-    "@types/jest": "^26.0.4",
+    "@types/jest": "25.2.3",
     "@types/puppeteer": "2.0.1",
     "barrelsby": "^2.2.0",
     "convert-svg-to-png": "^0.5.0",
