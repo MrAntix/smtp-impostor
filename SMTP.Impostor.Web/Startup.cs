@@ -3,12 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SMTP.Impostor.Stores.FileSystem.HostSettings;
-using SMTP.Impostor.Stores.FileSystem.Messages;
-using SMTP.Impostor.Worker.Hubs;
-using SMTP.Impostor.Worker.Properties;
+using SMTP.Impostor.Web.Properties;
 
-namespace SMTP.Impostor.Worker
+namespace SMTP.Impostor.Web
 {
     public class Startup
     {
@@ -24,17 +21,11 @@ namespace SMTP.Impostor.Worker
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "www";
-            });
-
             services
-                .AddSMTPImpostor(Settings.Impostor)
-                .AddSMTPImpostorFileSystemMessagesStore()
-                .AddSMTPImpostorFileSystemHostSettingsStore()
-                .AddSMTPImpostorHub()
-                .AddSMTPImpostorWorker(Settings.Impostor);
+                .AddSpaStaticFiles(configuration =>
+                {
+                    configuration.RootPath = "wwwroot";
+                });
         }
 
         public void Configure(
@@ -45,14 +36,13 @@ namespace SMTP.Impostor.Worker
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            app.UseSMTPImpostorHub()
-                .UseSpa(spa =>
+            app.UseSpa(spa =>
                 {
                     spa.Options.SourcePath = "src";
                 });

@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{520E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMTP.Impostor.Stores.InMemory", "SMTP.Impostor.Stores.InMemory\SMTP.Impostor.Stores.InMemory.csproj", "{7FB08F94-BB3D-4F90-B156-17A22B4F9100}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMTP.Impostor.Web", "SMTP.Impostor.Web\SMTP.Impostor.Web.csproj", "{7D3A13CB-309C-46B8-A228-36CFE886B300}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -204,6 +206,26 @@ Global
 		{7FB08F94-BB3D-4F90-B156-17A22B4F9100}.Release|x64.Build.0 = Release|Any CPU
 		{7FB08F94-BB3D-4F90-B156-17A22B4F9100}.Release|x86.ActiveCfg = Release|Any CPU
 		{7FB08F94-BB3D-4F90-B156-17A22B4F9100}.Release|x86.Build.0 = Release|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Debug|ARM.Build.0 = Debug|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Debug|x64.ActiveCfg = Debug|x64
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Debug|x64.Build.0 = Debug|x64
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Debug|x86.ActiveCfg = Debug|x86
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Debug|x86.Build.0 = Debug|x86
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Release|ARM.ActiveCfg = Release|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Release|ARM.Build.0 = Release|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Release|ARM64.Build.0 = Release|Any CPU
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Release|x64.ActiveCfg = Release|x64
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Release|x64.Build.0 = Release|x64
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Release|x86.ActiveCfg = Release|x86
+		{7D3A13CB-309C-46B8-A228-36CFE886B300}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

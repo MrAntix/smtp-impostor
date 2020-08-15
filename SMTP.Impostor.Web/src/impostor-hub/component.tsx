@@ -18,7 +18,7 @@ export class ImpostorHubComponent {
   reconnectIn = 200;
 
   @Prop() socketProvider: IHubSocketProvider = hubSocketProvider;
-  @Prop() url: string = `wss://${location.host}/hub`;
+  @Prop() url: string = `ws://localhost:62525/hub`;
   @Prop() status: HubStatus = HubStatus.disconnected;
 
   @Method() async connectAsync(

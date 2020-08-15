@@ -1,12 +1,12 @@
 {
   "profiles": {
-    "SMTP.Impostor.Worker": {
+    "SMTP.Impostor.Web": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:62525"
+      "applicationUrl": "https://localhost:5031;http://localhost:5030"
     }
   }
 }

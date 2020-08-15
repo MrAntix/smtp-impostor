@@ -1,0 +1,107 @@
+@import './init.css';
+
+:host {
+  --host-unit: var(--unit, 12px);
+  --host-padding: var(--padding, calc(var(--host-unit) / 2));
+  --host-margin: var(--margin);
+  --host-border-width: var(--border-width);
+  --host-border: var(--border, solid var(--host-border-width) var(--host-color));
+  --host-border-radius: var(--border-radius, 2px);
+
+  --host-color: var(--color, #444);
+  --host-background-color: var(--background-color, #f6f6f6);
+  --host-action-color: var(--action-color, #ccc);
+  --host-action-color-alt: var(--action-color-alt, #222);
+  --host-primary-color: var(--primary-color, #369);
+  --host-primary-color-alt: var(--primary-color-alt, #eee);
+  --host-success-color: var(--success-color, #494);
+  --host-success-color-alt: var(--success-color-alt, #eee);
+  --host-warning-color: var(--warning-color, #c82);
+  --host-warning-color-alt: var(--warning-color-alt, #eee);
+  --host-error-color: var(--error-color, #c22);
+  --host-error-color-alt: var(--error-color-alt, #eee);
+
+  --host-lowlight: var(--lowlight, rgba(0, 0, 0, .05));
+  --host-lowlight-more: var(--lowlight-more, rgba(0, 0, 0, .15));
+  --host-highlight: var(--highlight, rgba(255, 255, 255, .25));
+  --host-highlight-more: var(--highlight-more, rgba(255, 255, 255, .6));
+
+  --host-button-padding: var(--host-padding) calc(var(--host-padding) * 2);
+  --host-button-color: var(--host-action-color-alt);
+  --host-button-background-color: var(--host-action-color);
+  --host-button-border: var(--host-border);
+  --host-button-border-radius: var(--host-border-radius);
+  --host-button-primary-color: var(--host-primary-color-alt);
+  --host-button-primary-background-color: var(--host-primary-color);
+  --host-button-warning-color: var(--host-warning-color-alt);
+  --host-button-warning-background-color: var(--host-warning-color);
+
+  --host-input-padding: var(--host-padding);
+  --host-input-color: var(--input-color);
+  --host-input-background-color: var(--input-background-color);
+  --host-input-background-color-focus: var(--input-background-color-focus);
+  --host-input-border: var(--host-border);
+  --host-input-border-radius: var(--host-border-radius);
+
+  --host-label-padding: calc(var(--host-unit) / 2) calc(var(--host-unit) / 2) calc(var(--host-unit) / 4) calc(var(--host-unit) / 2);
+}
+
+button {
+  padding: var(--host-button-padding);
+  color: var(--host-button-color, var(--host-action-color-alt));
+  background-color: var(--host-button-background-color, var(--host-action-color));
+  border: var(--host-button-border, none);
+  border-radius: var(--host-button-border-radius, 2px);
+  margin: var(--host-margin);
+  user-select: none; 
+}
+
+button app-icon {
+  margin: -.25em;
+}
+
+button.primary {
+  color: var(--host-button-primary-color, var(--host-primary-color-alt));
+  background-color: var(--host-button-primary-background-color, var(--host-primary-color));
+}
+
+button.warning {
+  color: var(--host-button-warning-color, var(--host-warning-color-alt));
+  background-color: var(--host-button-warning-background-color, var(--host-warning-color));
+}
+
+button.danger {
+  color: var(--host-button-error-color, var(--host-error-color-alt));
+  background-color: var(--host-button-error-background-color, var(--host-error-color));
+}
+
+input,
+textarea,
+select {
+  padding: var(--host-input-padding);
+  color: var(--host-input-color, var(--host-action-color-alt));
+  background-color: var(--host-input-background-color, var(--host-action-color));
+  border: var(--host-input-border, none);
+  border-radius: var(--host-input-border-radius, 2px);
+  margin: var(--host-margin);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  background-color: var(--host-input-background-color-focus, var(--host-action-color-focus));
+}
+
+label {
+  padding: var(--host-label-padding);
+  margin: var(--host-margin);
+}
+
+[slot="popup-header"] {
+  font-weight: 700;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+}
