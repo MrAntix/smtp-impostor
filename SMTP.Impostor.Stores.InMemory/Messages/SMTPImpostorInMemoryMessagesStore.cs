@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using SMTP.Impostor.Messages;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Subjects;
 using System.Text.RegularExpressions;
@@ -31,6 +32,7 @@ namespace SMTP.Impostor.Stores.InMemory.Messages
             _messages = new List<SMTPImpostorMessage>();
         }
 
+        public IImmutableList<SMTPImpostorMessage> Messages => _messages.ToImmutableList();
         public IObservable<ISMTPImpostorMessageEvent> Events => _events;
 
         Task<SMTPImpostorMessageStoreSearchResult> SearchAsync(
@@ -73,7 +75,7 @@ namespace SMTP.Impostor.Stores.InMemory.Messages
         Task PutAsync(SMTPImpostorMessage message)
         {
             _messages.Add(message);
-            if (_settings.MaxMessages != null)
+            if (_settings.MaxMessages != 0)
                 while (_messages.Count > _settings.MaxMessages)
                 {
                     _messages.RemoveAt(0);
