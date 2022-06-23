@@ -41,27 +41,6 @@ describe('smtp-host', () => {
     expect(onStopHost).toHaveReceivedEventDetail(host);
   });
 
-  ['ip', 'port', 'name'].forEach(inputName => {
-    it(`updateHost ${inputName}`, async () => {
-      const page = await setup();
-      const element = await page.find('smtp-host');
-      const host = { state: HostStatus.Started };
-
-      element.setProperty('value', host);
-      element.setProperty('showConfiguration', true);
-      await page.waitForChanges();
-
-      const onUpdateHost = await element.spyOnEvent('updateHost');
-
-      const input = await page.find(`smtp-host >>> input[name='${inputName}']`);
-      await input.type(inputName);
-
-      await page.keyboard.press('Tab');
-
-      expect(onUpdateHost).toHaveReceivedEventDetail({ [inputName]: inputName });
-    });
-  })
-
   async function setup(): Promise<E2EPage> {
     const page = await newE2EPage();
     await page.setContent('<smtp-host></smtp-host>');

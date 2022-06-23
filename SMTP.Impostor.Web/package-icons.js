@@ -2,7 +2,7 @@ const { convertFile } = require('convert-svg-to-png');
 const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 const fs = require('fs');
-const toIco = require('to-ico');
+const toIco = require('png-to-ico');
 
 (async () => {
   await convertToPNG('icon', 24);
@@ -19,7 +19,7 @@ const toIco = require('to-ico');
   await convertToPNG('sender-icon', 256);
   await convertToICO('sender-icon', [24, 48, 96, 256]);
 
-  await imagemin(['./www/assets/*.png'], './www/assets/', {
+  await imagemin(['./wwwroot/assets/*.png'], './wwwroot/assets/', {
     plugins: [
       imageminPngquant()
     ]
@@ -28,7 +28,7 @@ const toIco = require('to-ico');
 
 async function convertToPNG(name, width, height, output) {
   height = height || width;
-  output = output || `./www/assets/${name}-${width}x${height}.png`;
+  output = output || `./wwwroot/assets/${name}-${width}x${height}.png`;
 
   await convertFile(`./src/assets/${name}.svg`, {
     width,
@@ -41,10 +41,10 @@ async function convertToPNG(name, width, height, output) {
 
 async function convertToICO(name, sizes) {
   const files = sizes.map(size =>
-    fs.readFileSync(`./www/assets/${name}-${size}x${size}.png`),
+    fs.readFileSync(`./wwwroot/assets/${name}-${size}x${size}.png`),
   );
 
-  const output = `./www/assets/${name}.ico`;
+  const output = `./wwwroot/assets/${name}.ico`;
 
   toIco(files).then(buf => {
     fs.writeFileSync(output, buf);

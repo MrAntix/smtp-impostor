@@ -4,7 +4,6 @@
 
 export * from './components';
 export * from './app-icon/index';
-export * from './dom/index';
 export * from './global/index';
 export * from './impostor-hub/index';
 export * from './redux/index';

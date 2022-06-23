@@ -1,5 +1,4 @@
-import { Component, Prop, h, Event, EventEmitter } from '@stencil/core';
-import { Frag } from '../dom';
+import { Component, Prop, h, Host, Event, EventEmitter } from '@stencil/core';
 
 import {
   IHost, IHostUpdate
@@ -8,16 +7,17 @@ import {
 @Component({
   tag: 'smtp-host-configuration',
   styleUrl: 'component.css',
-  shadow: true
+  shadow: { delegatesFocus: true }
 })
 export class SMTPHostConfigurationComponent {
   logger = globalThis.getLogger('SMTPHostConfigurationComponent');
 
   @Prop() value: IHost = null;
 
-
   render() {
-    return <Frag>
+    if (!this.value) return '(host not set)';
+
+    return <Host>
       <div class="control ip">
         <label>IP Address</label>
         <input
@@ -58,7 +58,7 @@ export class SMTPHostConfigurationComponent {
           }
         />
       </div>
-    </Frag >;
+    </Host>;
   }
 
   @Event() updateHost: EventEmitter<IHostUpdate>;

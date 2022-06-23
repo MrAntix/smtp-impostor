@@ -1,6 +1,6 @@
-import { Component, h, State, Prop, Host } from '@stencil/core';
+import { Component, h, State, Host } from '@stencil/core';
 import '@stencil/redux';
-import { Store } from '@stencil/redux';
+import { store } from '@stencil/redux';
 
 import { IAppState, IAction, configureStore, DEFAULT_SEARCH_HOST_MESSAGES_CRITERIA, Types } from '../redux';
 
@@ -33,8 +33,6 @@ export class AppRoot {
   logger = globalThis.getLogger('AppRoot');
   hub: HTMLImpostorHubElement;
 
-  @Prop({ context: 'store' }) store: Store;
-
   @State() state: IAppState;
 
   dispatch: typeof dispatch;
@@ -55,8 +53,8 @@ export class AppRoot {
   newHostId: string;
 
   async componentWillLoad() {
-    this.store.setStore(configureStore({}, () => this.hubAction()));
-    this.store.mapDispatchToProps(this, {
+    store.setStore(configureStore({}, () => this.hubAction()));
+    store.mapDispatchToProps(this, {
       dispatch,
       initWorkerState,
       loadWorkerState,
@@ -73,7 +71,7 @@ export class AppRoot {
       startupWorker,
       shutdownWorker
     });
-    this.store.mapStateToProps(this, (state: IAppState) => {
+    store.mapStateToProps(this, (state: IAppState) => {
 
       return { state };
     });

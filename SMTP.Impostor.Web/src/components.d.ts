@@ -20,7 +20,7 @@ export namespace Components {
     }
     interface AppInput {
         "clearButton": boolean;
-        "iconType"?: AppIcons;
+        "iconType"?: AppIcons1;
         "placeholder": string;
         "value": string;
     }
@@ -51,6 +51,26 @@ export namespace Components {
     interface SmtpHostConfiguration {
         "value": IHost;
     }
+}
+export interface AppInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLAppInputElement;
+}
+export interface AppPopupCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLAppPopupElement;
+}
+export interface ImpostorHubCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLImpostorHubElement;
+}
+export interface SmtpHostCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLSmtpHostElement;
+}
+export interface SmtpHostConfigurationCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLSmtpHostConfigurationElement;
 }
 declare global {
     interface HTMLAppIconElement extends Components.AppIcon, HTMLStencilElement {
@@ -115,44 +135,44 @@ declare namespace LocalJSX {
     }
     interface AppInput {
         "clearButton"?: boolean;
-        "iconType"?: AppIcons;
-        "onInputChange"?: (event: CustomEvent<string>) => void;
-        "onInputClear"?: (event: CustomEvent<void>) => void;
-        "onInputType"?: (event: CustomEvent<string>) => void;
+        "iconType"?: AppIcons1;
+        "onInputChange"?: (event: AppInputCustomEvent<string>) => void;
+        "onInputClear"?: (event: AppInputCustomEvent<void>) => void;
+        "onInputType"?: (event: AppInputCustomEvent<string>) => void;
         "placeholder"?: string;
         "value"?: string;
     }
     interface AppPopup {
         "isOpen"?: boolean;
         "modal"?: boolean;
-        "onToggled"?: (event: CustomEvent<boolean>) => void;
+        "onToggled"?: (event: AppPopupCustomEvent<boolean>) => void;
         "position"?: AppPopupPosition;
         "shift"?: AppPopupShift;
     }
     interface AppRoot {
     }
     interface ImpostorHub {
-        "onMessageReceived"?: (event: CustomEvent<IHubMessage>) => void;
-        "onShutdownWorker"?: (event: CustomEvent<void>) => void;
-        "onStartupWorker"?: (event: CustomEvent<void>) => void;
-        "onStatusChanged"?: (event: CustomEvent<HubStatus>) => void;
+        "onMessageReceived"?: (event: ImpostorHubCustomEvent<IHubMessage>) => void;
+        "onShutdownWorker"?: (event: ImpostorHubCustomEvent<void>) => void;
+        "onStartupWorker"?: (event: ImpostorHubCustomEvent<void>) => void;
+        "onStatusChanged"?: (event: ImpostorHubCustomEvent<HubStatus>) => void;
         "socketProvider"?: IHubSocketProvider;
         "status"?: HubStatus;
         "url"?: string;
     }
     interface SmtpHost {
-        "onDeleteHostMessage"?: (event: CustomEvent<{ id: string, messageId: string }>) => void;
-        "onOpenHost"?: (event: CustomEvent<{ id: string }>) => void;
-        "onOpenHostMessage"?: (event: CustomEvent<{ id: string, messageId: string }>) => void;
-        "onSearchHostMessages"?: (event: CustomEvent<{ id: string, criteria: ISearchHostMessagesCriteria }>) => void;
-        "onStartHost"?: (event: CustomEvent<IHost>) => void;
-        "onStopHost"?: (event: CustomEvent<IHost>) => void;
+        "onDeleteHostMessage"?: (event: SmtpHostCustomEvent<{ id: string, messageId: string }>) => void;
+        "onOpenHost"?: (event: SmtpHostCustomEvent<{ id: string }>) => void;
+        "onOpenHostMessage"?: (event: SmtpHostCustomEvent<{ id: string, messageId: string }>) => void;
+        "onSearchHostMessages"?: (event: SmtpHostCustomEvent<{ id: string, criteria: ISearchHostMessagesCriteria }>) => void;
+        "onStartHost"?: (event: SmtpHostCustomEvent<IHost>) => void;
+        "onStopHost"?: (event: SmtpHostCustomEvent<IHost>) => void;
         "showConfiguration"?: boolean;
         "showMessages"?: boolean;
         "value"?: IHost;
     }
     interface SmtpHostConfiguration {
-        "onUpdateHost"?: (event: CustomEvent<IHostUpdate>) => void;
+        "onUpdateHost"?: (event: SmtpHostConfigurationCustomEvent<IHostUpdate>) => void;
         "value"?: IHost;
     }
     interface IntrinsicElements {

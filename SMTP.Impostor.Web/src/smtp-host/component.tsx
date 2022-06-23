@@ -1,5 +1,4 @@
-import { Component, Prop, h, Host, Event, EventEmitter, Method } from '@stencil/core';
-import { Frag } from '../dom';
+import { Component, Prop, h, Host, Fragment, Event, EventEmitter, Method } from '@stencil/core';
 
 import {
   IHost, HostStatus,
@@ -54,24 +53,22 @@ export class SMTPHostComponent {
   render() {
     if (this.value == null) return '(host not set)';
 
-    return (
-      <Host class={HostStatus[this.value.state].toLowerCase()}>
-        <header>
-          <div class="name" onDblClick={() => this.openHost.emit({ id: this.value.id })}>
-            {this.value.name}
-            <small class="message-count">{this.value.messagesCount}</small>
-          </div>
-          <div class="actions">
-            <button class="toggle-state" type="button" onClick={() => this.toggleState()}>
-              <span>{hostIsRunning(this.value) ? "Stop" : "Start"}</span>
-            </button>
-          </div>
-        </header>
-        <div class="messages">
-          {this.showMessages && this.renderMessages()}
+    return <Host class={HostStatus[this.value.state].toLowerCase()}>
+      <header>
+        <div class="name" onDblClick={() => this.openHost.emit({ id: this.value.id })}>
+          {this.value.name}
+          <small class="message-count">{this.value.messagesCount}</small>
         </div>
-      </Host>
-    );
+        <div class="actions">
+          <button class="toggle-state" type="button" onClick={() => this.toggleState()}>
+            <span>{hostIsRunning(this.value) ? "Stop" : "Start"}</span>
+          </button>
+        </div>
+      </header>
+      <div class="messages">
+        {this.showMessages && this.renderMessages()}
+      </div>
+    </Host>;
   }
 
   renderMessages() {
@@ -80,7 +77,7 @@ export class SMTPHostComponent {
       this.searchMessages();
     }
 
-    return <Frag>
+    return <Fragment>
       <div class="messages-toolbar">
         <app-input clear-button icon-type="search"
           value={this.messagesSearchCriteria.text}
@@ -107,7 +104,7 @@ export class SMTPHostComponent {
             <div class="message-subject">{message.subject}</div>
           </li>)}
       </ul>
-    </Frag>;
+    </Fragment>;
   }
 
   @Event() startHost: EventEmitter<IHost>;
