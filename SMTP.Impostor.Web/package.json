@@ -25,7 +25,7 @@
     "imagemin-pngquant": "^9.0.2",
     "jest": "^27.0.3",
     "jest-cli": "^27.4.5",
-    "png-to-ico": "^2.1.4",
+    "png-to-ico": "^2.1.8",
     "redux": "^4.2.0",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.4.1",
