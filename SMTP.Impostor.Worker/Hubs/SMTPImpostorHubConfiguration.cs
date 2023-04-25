@@ -41,7 +41,7 @@ namespace SMTP.Impostor.Worker.Hubs
             app.UseWebSockets()
                 .Map(HUB_PATH, hubApp =>
                 {
-                    hubApp.Use(async (context, next) =>
+                    hubApp.Run(async (context) =>
                     {
                         if (!context.WebSockets.IsWebSocketRequest)
                         {
@@ -51,11 +51,12 @@ namespace SMTP.Impostor.Worker.Hubs
 
                         var webSocket = await context.WebSockets.AcceptWebSocketAsync();
                         await hub.ConnectAsync(SMTPImpostorHubClient.Wrap(webSocket));
+
                     });
                 })
                 .Map(DOWNLOAD_PATH, downloadApp =>
                 {
-                    downloadApp.Use(async (context, next) =>
+                    downloadApp.Run(async (context) =>
                     {
                         var host = impostor.Hosts.Values.First();
                         var message = await host.Messages.GetAsync("2945dd3c-873b-4900-8ebd-b9360d2760c6");
