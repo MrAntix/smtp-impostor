@@ -55,7 +55,7 @@
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-    <PackageCertificateThumbprint>03A648540258BA5F76E3AE7D5C7625F8B218CAC9</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>3A9703E704CCFF2D08FFFFB60AAD690E0C509F41</PackageCertificateThumbprint>
     <EntryPointProjectUniqueName>..\SMTP.Impostor.Worker\SMTP.Impostor.Worker.csproj</EntryPointProjectUniqueName>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
@@ -151,6 +151,7 @@
     <Content Include="Images\Wide310x150Logo.scale-150.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
     <Content Include="Images\Wide310x150Logo.scale-400.png" />
+    <None Include="SMTP.Impostor.Packager_TemporaryKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
