@@ -47,15 +47,12 @@ namespace SMTP.Impostor.Worker
 
             //app.UseHttpsRedirection();
 
-            app.UseRouting();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+            app.UseRouting();
 
             app.UseSMTPImpostorHub()
-                .UseSpa(spa =>
-                {
-                    spa.Options.SourcePath = "src";
-                });
+                .UseSpa(_ => { });
         }
     }
 }

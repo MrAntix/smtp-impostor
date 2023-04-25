@@ -10,6 +10,11 @@ import { AppIcons as AppIcons1 } from "./app-icon";
 import { AppPopupPosition, AppPopupShift } from "./app-popup/model";
 import { HubStatus, IHubMessage, IHubSocketProvider } from "./impostor-hub/model";
 import { IHost, IHostUpdate, ISearchHostMessagesCriteria } from "./redux";
+export { AppIcons } from "./app-icon/model";
+export { AppIcons as AppIcons1 } from "./app-icon";
+export { AppPopupPosition, AppPopupShift } from "./app-popup/model";
+export { HubStatus, IHubMessage, IHubSocketProvider } from "./impostor-hub/model";
+export { IHost, IHostUpdate, ISearchHostMessagesCriteria } from "./redux";
 export namespace Components {
     interface AppIcon {
         "flipHorizontal": boolean;
