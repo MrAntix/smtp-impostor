@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29319.158
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{F48749AF-754E-4AB0-84C4-7B2409C9E95E}"
 	ProjectSection(SolutionItems) = preProject
@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".deploy", ".deploy", "{8566
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{520E0C4A-3063-42C5-831C-D88E51687A62}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnetcore.yml = .github\workflows\dotnetcore.yml
 		README.md = README.md
 		ui-screenshot.png = ui-screenshot.png
 		ui-video.mp4 = ui-video.mp4
@@ -41,6 +42,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMTP.Impostor.Stores.InMemory", "SMTP.Impostor.Stores.InMemory\SMTP.Impostor.Stores.InMemory.csproj", "{7FB08F94-BB3D-4F90-B156-17A22B4F9100}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMTP.Impostor.Web", "SMTP.Impostor.Web\SMTP.Impostor.Web.csproj", "{7D3A13CB-309C-46B8-A228-36CFE886B300}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{FB276AA2-F57E-4661-8E11-29E7A09C9AD1}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnetcore.yml = .github\workflows\dotnetcore.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -229,6 +235,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FB276AA2-F57E-4661-8E11-29E7A09C9AD1} = {520E0C4A-3063-42C5-831C-D88E51687A62}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8B09F505-E9B6-4755-A971-0454577880A7}
