@@ -7,6 +7,7 @@ namespace SMTP.Impostor.Messages
     {
         int Count { get; }
         Task<SMTPImpostorMessage> GetAsync(string messageId);
+        Task LaunchAsync(string messageId);
         Task PutAsync(SMTPImpostorMessage message);
         Task<SMTPImpostorMessageStoreSearchResult> SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria);
         Task DeleteAsync(string messageId);

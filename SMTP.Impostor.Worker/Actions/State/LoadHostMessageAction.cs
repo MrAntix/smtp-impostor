@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {
     public class LoadHostMessageAction:
-        ActionBase<HostMessageIdentity, HostMessage>
+        VoidActionBase<HostMessageIdentity>
     {
         public static string Name { get; } = GetName(typeof(DeleteHostMessageAction));
 
@@ -15,14 +15,12 @@ namespace SMTP.Impostor.Worker.Actions.State
             _impostor = impostor;
         }
 
-        public override async Task<HostMessage> ExecuteAsync(
+        public override async Task ExecuteAsync(
             HostMessageIdentity request)
         {
             var host = _impostor.Hosts[request.HostId];
 
-            var message = await host.Messages.GetAsync(request.MessageId);
-
-            return message.Map();
+            await host.Messages.LaunchAsync(request.MessageId);
         }
     }
 }

@@ -84,13 +84,37 @@ declare global {
         prototype: HTMLAppIconElement;
         new (): HTMLAppIconElement;
     };
+    interface HTMLAppInputElementEventMap {
+        "inputType": string;
+        "inputChange": string;
+        "inputClear": void;
+    }
     interface HTMLAppInputElement extends Components.AppInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLAppInputElementEventMap>(type: K, listener: (this: HTMLAppInputElement, ev: AppInputCustomEvent<HTMLAppInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLAppInputElementEventMap>(type: K, listener: (this: HTMLAppInputElement, ev: AppInputCustomEvent<HTMLAppInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLAppInputElement: {
         prototype: HTMLAppInputElement;
         new (): HTMLAppInputElement;
     };
+    interface HTMLAppPopupElementEventMap {
+        "toggled": boolean;
+    }
     interface HTMLAppPopupElement extends Components.AppPopup, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLAppPopupElementEventMap>(type: K, listener: (this: HTMLAppPopupElement, ev: AppPopupCustomEvent<HTMLAppPopupElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLAppPopupElementEventMap>(type: K, listener: (this: HTMLAppPopupElement, ev: AppPopupCustomEvent<HTMLAppPopupElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLAppPopupElement: {
         prototype: HTMLAppPopupElement;
@@ -102,19 +126,60 @@ declare global {
         prototype: HTMLAppRootElement;
         new (): HTMLAppRootElement;
     };
+    interface HTMLImpostorHubElementEventMap {
+        "statusChanged": HubStatus;
+        "messageReceived": IHubMessage;
+        "startupWorker": void;
+        "shutdownWorker": void;
+    }
     interface HTMLImpostorHubElement extends Components.ImpostorHub, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLImpostorHubElementEventMap>(type: K, listener: (this: HTMLImpostorHubElement, ev: ImpostorHubCustomEvent<HTMLImpostorHubElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLImpostorHubElementEventMap>(type: K, listener: (this: HTMLImpostorHubElement, ev: ImpostorHubCustomEvent<HTMLImpostorHubElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLImpostorHubElement: {
         prototype: HTMLImpostorHubElement;
         new (): HTMLImpostorHubElement;
     };
+    interface HTMLSmtpHostElementEventMap {
+        "startHost": IHost;
+        "stopHost": IHost;
+        "openHost": { id: string };
+        "searchHostMessages": { id: string, criteria: ISearchHostMessagesCriteria };
+        "deleteHostMessage": { id: string, messageId: string };
+        "openHostMessage": { id: string, messageId: string };
+    }
     interface HTMLSmtpHostElement extends Components.SmtpHost, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLSmtpHostElementEventMap>(type: K, listener: (this: HTMLSmtpHostElement, ev: SmtpHostCustomEvent<HTMLSmtpHostElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLSmtpHostElementEventMap>(type: K, listener: (this: HTMLSmtpHostElement, ev: SmtpHostCustomEvent<HTMLSmtpHostElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLSmtpHostElement: {
         prototype: HTMLSmtpHostElement;
         new (): HTMLSmtpHostElement;
     };
+    interface HTMLSmtpHostConfigurationElementEventMap {
+        "updateHost": IHostUpdate;
+    }
     interface HTMLSmtpHostConfigurationElement extends Components.SmtpHostConfiguration, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLSmtpHostConfigurationElementEventMap>(type: K, listener: (this: HTMLSmtpHostConfigurationElement, ev: SmtpHostConfigurationCustomEvent<HTMLSmtpHostConfigurationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLSmtpHostConfigurationElementEventMap>(type: K, listener: (this: HTMLSmtpHostConfigurationElement, ev: SmtpHostConfigurationCustomEvent<HTMLSmtpHostConfigurationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLSmtpHostConfigurationElement: {
         prototype: HTMLSmtpHostConfigurationElement;

@@ -77,7 +77,8 @@ namespace SMTP.Impostor
             if (hostSettings.Start)
                 Delegates.Retry(
                     () => host.Start(),
-                    _logger);
+                    _logger
+                );
 
             return host;
         }

@@ -33,7 +33,8 @@ export class SMTPHostComponent {
   @Method()
   async searchMessages(
     criteria: Partial<ISearchHostMessagesCriteria> = {},
-    debounce: number = 0) {
+    debounce: number = 50
+  ) {
 
     this.messagesSearchCriteria = {
       ...this.messagesSearchCriteria,
@@ -87,22 +88,21 @@ export class SMTPHostComponent {
         />
       </div>
       <ul class="messages-list">
-        {this.value.messages && this.value.messages
-          .map(message => <li class="message" data-id={message.id}
-            onDblClick={() => this.openHostMessage.emit({ id: this.value.id, messageId: message.id })}>
-            <div class="message-from">{message.from}</div>
-            <div class="message-date" >
-              {new Date(message.date).toLocaleString()}
-              <button class="delete-message danger" type="button"
-                onClick={() => this.deleteHostMessage.emit({
-                  id: this.value.id,
-                  messageId: message.id
-                })}>
-                <app-icon type="close"></app-icon>
-              </button>
-            </div>
-            <div class="message-subject">{message.subject}</div>
-          </li>)}
+        {this.value.messages?.map(message => <li class="message" data-id={message.id}
+          onDblClick={() => this.openHostMessage.emit({ id: this.value.id, messageId: message.id })}>
+          <div class="message-from">{message.from}</div>
+          <div class="message-date" >
+            {new Date(message.date).toLocaleString()}
+            <button class="delete-message danger" type="button"
+              onClick={() => this.deleteHostMessage.emit({
+                id: this.value.id,
+                messageId: message.id
+              })}>
+              <app-icon type="close"></app-icon>
+            </button>
+          </div>
+          <div class="message-subject">{message.subject}</div>
+        </li>)}
       </ul>
     </Fragment>;
   }

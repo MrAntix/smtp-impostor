@@ -30,15 +30,15 @@ namespace SMTP.Impostor.Sockets
         public SMTPImpostorHost(
             ILogger<SMTPImpostorHost> logger,
             SMTPImpostorHostSettings settings,
-            ISMTPImpostorMessagesStore messages)
+            ISMTPImpostorMessagesStore messages
+            )
         {
             _logger = logger ?? NullLogger<SMTPImpostorHost>.Instance;
             _events = new Subject<ISMTPImpostorEvent>();
 
-            Settings = settings ??
-                throw new ArgumentNullException(nameof(settings));
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             Messages = messages;
-            _messagesSubscription = Messages.Events.Subscribe(e => _events.OnNext(e));
+            _messagesSubscription = Messages.Events.Subscribe(_events.OnNext);
 
             StoppedEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStatus.Stopped);
             StartedEvent = new SMTPImpostorHostStateChangeEvent(settings.Id, SMTPImpostorHostStatus.Started);
@@ -54,7 +54,7 @@ namespace SMTP.Impostor.Sockets
         void RaiseStateChange(SMTPImpostorHostStateChangeEvent e)
         {
             State = e.Data;
-            if (_events != null) _events.OnNext(e);
+            _events?.OnNext(e);
         }
 
         void ISMTPImpostorHost.Start()
@@ -73,22 +73,27 @@ namespace SMTP.Impostor.Sockets
                         Settings.Port);
                     _listener.Start();
                     _listenerStarted = true;
+                    RaiseStateChange(StartedEvent);
 
                     do
                     {
-                        var client = await _listener.AcceptTcpClientAsync();
+                        using var client = await _listener.AcceptTcpClientAsync();
                         RaiseStateChange(ReceivingEvent);
 
                         try
                         {
-                            RaiseStateChange(ReceivingEvent);
+                            var handler = new SocketHandler(
+                               SocketWrapper.Wrap(client.Client)
+                               );
 
-                            using var handler = new SocketHandler(SocketWrapper.Wrap(client.Client));
-
-                            var message = await handler.HandleAsync();
-                            _events.OnNext(
-                                new SMTPImpostorMessageReceivedEvent(Settings, message)
+                            while (client.Connected)
+                            {
+                                await handler.HandleAsync(
+                                    message => _events.OnNext(
+                                        new SMTPImpostorMessageReceivedEvent(Settings, message)
+                                    )
                                 );
+                            };
 
                             RaiseStateChange(StartedEvent);
                         }
@@ -97,10 +102,7 @@ namespace SMTP.Impostor.Sockets
                             _logger.LogError(ex, $"host {Settings.Name}");
                             RaiseStateChange(ErroredEvent);
                         }
-                        finally
-                        {
-                            client.Dispose();
-                        }
+
                     } while (_listenerStarted);
                 }
                 catch (ObjectDisposedException) { }

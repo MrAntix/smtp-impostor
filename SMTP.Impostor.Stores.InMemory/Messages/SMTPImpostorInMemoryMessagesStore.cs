@@ -72,6 +72,11 @@ namespace SMTP.Impostor.Stores.InMemory.Messages
                 );
         }
 
+        Task LaunchMessageAsync (string messageId)
+        {
+            throw new NotImplementedException();
+        }
+
         Task PutAsync(SMTPImpostorMessage message)
         {
             _messages.Add(message);
@@ -102,6 +107,9 @@ namespace SMTP.Impostor.Stores.InMemory.Messages
         int ISMTPImpostorMessagesStore.Count => _messages.Count;
         async Task<SMTPImpostorMessageStoreSearchResult> ISMTPImpostorMessagesStore
             .SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria) => await SearchAsync(criteria);
+
+        async Task ISMTPImpostorMessagesStore
+            .LaunchAsync(string messageId) => await LaunchMessageAsync(messageId);
 
         async Task<SMTPImpostorMessage> ISMTPImpostorMessagesStore
             .GetAsync(string messageId) => await GetMessageAsync(messageId);

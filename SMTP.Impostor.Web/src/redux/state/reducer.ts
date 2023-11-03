@@ -14,13 +14,14 @@ export default (state = getInitialState(), action: ActionTypes): IWorkerState =>
     case Types.WORKER_STATE:
       return {
         ...action.model,
-        openHostId: state.openHostId
+        openHostId: state.openHostId ?? action.model.hosts?.at(0)?.id
       };
 
     case Types.HOST_STATE:
       return updateHost(state,
         action.model.id,
-        () => action.model);
+        () => action.model
+      );
 
     case Types.TOGGLE_HOST_CONFIGURATION:
       return updateHost(state,
@@ -49,7 +50,7 @@ export default (state = getInitialState(), action: ActionTypes): IWorkerState =>
         action.model.hostId,
         host => ({
           messagesCount: host.messagesCount - 1,
-          messages: host.messages.filter(m => m.id != action.model.messageId)
+          messages: host.messages?.filter(m => m && m.id != action.model.messageId) ?? []
         }));
   }
 };

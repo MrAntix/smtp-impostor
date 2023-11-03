@@ -34,7 +34,7 @@
       <ColumnDefinition Width="100"/>
       <ColumnDefinition Width="50"/>
       <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="35"/>
+      <ColumnDefinition Width="41"/>
       <ColumnDefinition Width="100"/>
     </Grid.ColumnDefinitions>
 
@@ -56,12 +56,14 @@
 
     <Label Style="{StaticResource Control}" Grid.Column="0" Grid.Row="3">Body</Label>
     <CheckBox x:Name="IsHTMLControl" Style="{StaticResource CheckBox}"
+              IsChecked="True"
               Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="3">Is HTML</CheckBox>
     <TextBox Style="{StaticResource Control}"
              Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="4" x:Name="BodyControl"
              TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible"
-             xml:space="preserve">Some content
-... and some more content</TextBox>
+             xml:space="preserve"><![CDATA[<p>Some content</p>
+<p>... and some <i>more</i> content</p>]]>
+    </TextBox>
 
     <Label x:Name="Status" Style="{StaticResource Control}" Grid.Column="0" Grid.ColumnSpan="6" Grid.Row="10"
            HorizontalContentAlignment="Right" Content="Ready."/>
@@ -69,7 +71,7 @@
     <Label Style="{StaticResource Control}" Grid.Column="3" Grid.Row="5" Content="x" HorizontalContentAlignment="Right" />
     <TextBox x:Name="SendCountControl" Style="{StaticResource Control}"
                  Grid.Column="3" Grid.Row="6" Grid.RowSpan="1"
-                 Text="1" HorizontalContentAlignment="Right" />
+                 Text="1" MaxLength="4" HorizontalContentAlignment="Right" />
     <Button Style="{StaticResource Button}" Grid.Column="4" Grid.Row="5" Grid.RowSpan="2" x:Name="SendButton"
             Content="Send" Click="SendButton_Click" />
 

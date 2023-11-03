@@ -8,7 +8,8 @@ namespace SMTP.Impostor.Sockets
     {
         public SMTPImpostorHostStateChangeEvent(
             Guid hostId,
-            SMTPImpostorHostStatus state) : base(hostId, state)
+            SMTPImpostorHostStatus state
+            ) : base(hostId, state)
         { }
     }
 }

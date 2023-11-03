@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using SMTP.Impostor.Hosts;
 using SMTP.Impostor.Messages;
 
 namespace SMTP.Impostor.Sockets
@@ -28,12 +29,14 @@ namespace SMTP.Impostor.Sockets
         public const string COMMAND_RSET = "RSET";
         public const string COMMAND_NOOP = "NOOP";
 
-        ISMTPImpostorSocket _socket;
+        readonly ISMTPImpostorSocket _socket;
+
+        Action<SMTPImpostorMessage> _onMessage;
         NetworkStream _networkStream;
         byte[] _readBuffer;
         string _terminator;
 
-        readonly TaskCompletionSource<SMTPImpostorMessage> _taskCompletion;
+        readonly TaskCompletionSource _taskCompletion;
         StringBuilder _data;
         MailAddress _from;
         List<MailAddress> _to;
@@ -41,25 +44,30 @@ namespace SMTP.Impostor.Sockets
         public SocketHandlerStates Status { get; set; }
         public IPAddress ClientAddress { get; set; }
         public string ClientId { get; set; }
+        public object HostEventTypes { get; private set; }
 
         public SocketHandler(
-            ISMTPImpostorSocket socket)
+            ISMTPImpostorSocket socket
+            )
         {
+            _taskCompletion = new TaskCompletionSource();
+
             _socket = socket;
-            _taskCompletion = new TaskCompletionSource<SMTPImpostorMessage>();
+            _networkStream = _socket.GetNetworkStream();
+
+            ClientAddress = socket.RemoteEndPoint.Address;
         }
 
-        public Task<SMTPImpostorMessage> HandleAsync()
+        public Task HandleAsync(Action<SMTPImpostorMessage> onMessage)
         {
-            ClientAddress = _socket.RemoteEndPoint.Address;
+            _onMessage = onMessage;
 
-            _networkStream = _socket.GetNetworkStream();
             Write(
                 ReplyCodes.Ready_220,
                 string.Format(Resources.Ready_220, ClientAddress));
 
             Status = SocketHandlerStates.Connected;
-            //Host.RaiseEvent(HostEventTypes.SessionConnected, this);
+            //_raiseHostEvent(SocketHandlerStates.SessionConnected, this);
 
             _readBuffer = new byte[SessionReadBufferSize];
 
@@ -96,7 +104,7 @@ namespace SMTP.Impostor.Sockets
             }
             catch (Exception)
             {
-                Dispose();
+                _socket.Dispose();
             }
         }
 
@@ -129,7 +137,7 @@ namespace SMTP.Impostor.Sockets
             }
             catch (Exception)
             {
-                Dispose();
+                _socket.Dispose();
             }
         }
 
@@ -172,7 +180,7 @@ namespace SMTP.Impostor.Sockets
                     Write(ReplyCodes.Completed_250);
                     Status = SocketHandlerStates.Identified;
 
-                    _taskCompletion.SetResult(message);
+                    _onMessage(message);
 
                     return;
                 }
@@ -185,7 +193,7 @@ namespace SMTP.Impostor.Sockets
 
                 if (command.Equals(COMMAND_QUIT))
                 {
-                    Dispose();
+                    _taskCompletion.SetResult();
                 }
                 else if (command.Equals(COMMAND_EHLO)
                          || command.Equals(COMMAND_HELO))
@@ -276,27 +284,6 @@ namespace SMTP.Impostor.Sockets
                     // next read
                     StartRead(terminator);
                 }
-            }
-        }
-
-        /// <summary>
-        ///   <para>Dispose</para>
-        /// </summary>
-        public void Dispose()
-        {
-            try
-            {
-                if (_socket != null)
-                {
-                    _networkStream.Dispose();
-                    _socket.Dispose();
-                }
-                //Host.RaiseEvent(HostEventTypes.SessionDisconnected, this);
-            }
-            finally
-            {
-                _networkStream = null;
-                _socket = null;
             }
         }
     }

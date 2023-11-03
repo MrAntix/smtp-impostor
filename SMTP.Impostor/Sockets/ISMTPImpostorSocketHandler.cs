@@ -1,12 +1,11 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using SMTP.Impostor.Messages;
 
 namespace SMTP.Impostor.Sockets
 {
-    public interface ISMTPImpostorSocketHandler :
-        IDisposable
+    public interface ISMTPImpostorSocketHandler
     {
-        Task<SMTPImpostorMessage> HandleAsync();
+        Task HandleAsync(Action<SMTPImpostorMessage> onMessage);
     }
 }

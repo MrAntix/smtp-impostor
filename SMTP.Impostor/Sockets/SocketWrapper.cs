@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -10,8 +10,7 @@ namespace SMTP.Impostor.Sockets
     {
         readonly Socket _socket;
 
-        SocketWrapper(
-            Socket socket)
+        SocketWrapper(Socket socket)
         {
             _socket = socket;
         }
