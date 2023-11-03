@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v7
+      uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 7.0.x
     - name: Build with dotnet

@@ -10,6 +10,7 @@
     <Platforms>AnyCPU;x64;x86</Platforms>
     <AssemblyName>SMTP.Impostor.Worker</AssemblyName>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <EnableWindowsTargeting>True</EnableWindowsTargeting>
   </PropertyGroup>
 
   <ItemGroup>
