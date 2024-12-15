@@ -6,7 +6,7 @@ Fake SMTP server for developers - Catches emails sent via SMTP an puts them in a
 
 ## in development, but works now
 
-worker written in c# [dotnet core 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), the ui (wip) will need [npm](https://nodejs.org) to build
+worker written in c# [dotnet core 9](https://dot.net), the ui (wip) will need [npm](https://nodejs.org) to build
 
 ### available scripts ```/.deploy```
 

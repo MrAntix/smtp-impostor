@@ -91,7 +91,7 @@ namespace SMTP.Impostor.Worker
 
             var notification = new ToastNotification(doc);
             notification.Tag = START_NOTIFICATION_ID;
-            notification.ExpiresOnReboot = true;
+            //notification.ExpiresOnReboot = true;
             notification.ExpirationTime = DateTimeOffset.Now.AddMinutes(1);
 
             notification.Activated += async (_, o) =>
