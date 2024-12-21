@@ -78,6 +78,8 @@ export class SMTPHostComponent {
       this.searchMessages();
     }
 
+    const messages = this.value.messages.filter(m => !!m);
+
     return <Fragment>
       <div class="messages-toolbar">
         <app-input clear-button icon-type="search"
@@ -88,7 +90,7 @@ export class SMTPHostComponent {
         />
       </div>
       <ul class="messages-list">
-        {this.value.messages?.map(message => <li class="message" data-id={message.id}
+        {messages?.map(message => <li class="message" data-id={message.id}
           onDblClick={() => this.openHostMessage.emit({ id: this.value.id, messageId: message.id })}>
           <div class="message-from">{message.from}</div>
           <div class="message-date" >

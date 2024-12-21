@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
 using SMTP.Impostor.Hosts;
+using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {

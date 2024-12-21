@@ -1,6 +1,6 @@
-using System;
 using Microsoft.Extensions.Logging;
 using SMTP.Impostor.Messages;
+using System;
 
 namespace SMTP.Impostor.Stores.FileSystem.Messages
 {

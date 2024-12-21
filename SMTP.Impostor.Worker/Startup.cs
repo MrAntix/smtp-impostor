@@ -24,11 +24,6 @@ namespace SMTP.Impostor.Worker
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "www";
-            });
-
             services
                 .AddSMTPImpostor(Settings.Impostor)
                 .AddSMTPImpostorFileSystemMessagesStore()
@@ -45,14 +40,7 @@ namespace SMTP.Impostor.Worker
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
-
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-            app.UseRouting();
-
-            app.UseSMTPImpostorHub()
-                .UseSpa(_ => { });
+            app.UseSMTPImpostorHub();
         }
     }
 }

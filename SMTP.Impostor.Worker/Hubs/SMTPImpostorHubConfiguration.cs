@@ -1,17 +1,15 @@
-using System.Linq;
-using System.Text;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using SMTP.Impostor.Worker.Actions;
+using System.Linq;
 
 namespace SMTP.Impostor.Worker.Hubs
 {
     public static class SMTPImpostorHubConfiguration
     {
         const string HUB_PATH = "/hub";
-        const string DOWNLOAD_PATH = "/download";
 
         public static IServiceCollection AddSMTPImpostorHub(
             this IServiceCollection services)
@@ -19,6 +17,7 @@ namespace SMTP.Impostor.Worker.Hubs
             services.AddSingleton<SMTPImpostorHubService>();
             services.AddSingleton<IActionExecutor, ActionExecutor>();
             services.TryAddSingleton<SMTPImpostorSerialization>();
+
             foreach (var actionType in typeof(ActionExecutor)
                 .Assembly.GetTypes()
                 .Where(t =>
@@ -37,6 +36,7 @@ namespace SMTP.Impostor.Worker.Hubs
         {
             var hub = app.ApplicationServices.GetRequiredService<SMTPImpostorHubService>();
             var impostor = app.ApplicationServices.GetRequiredService<SMTPImpostor>();
+            var logger = app.ApplicationServices.GetRequiredService<ILogger<SMTPImpostor>>();
 
             app.UseWebSockets()
                 .Map(HUB_PATH, hubApp =>
@@ -53,20 +53,8 @@ namespace SMTP.Impostor.Worker.Hubs
                         await hub.ConnectAsync(SMTPImpostorHubClient.Wrap(webSocket));
 
                     });
-                })
-                .Map(DOWNLOAD_PATH, downloadApp =>
-                {
-                    downloadApp.Run(async (context) =>
-                    {
-                        var host = impostor.Hosts.Values.First();
-                        var message = await host.Messages.GetAsync("2945dd3c-873b-4900-8ebd-b9360d2760c6");
 
-                        context.Response.ContentType = "application/eml";
-                        context.Response.Headers.Add("Content-Disposition", "inline; filename=\"message.txt\"");
-                        await context.Response.Body.WriteAsync(
-                            Encoding.UTF8.GetBytes(message.Content)
-                            );
-                    });
+                    logger.LogWarning("SMTP Impostor Worker is Started {Hub}", hubApp);
                 });
 
             return app;

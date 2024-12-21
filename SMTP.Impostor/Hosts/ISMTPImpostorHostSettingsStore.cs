@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using SMTP.Impostor.Hosts;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
-using SMTP.Impostor.Hosts;
 
 namespace SMTP.Impostor
 {

@@ -1,7 +1,7 @@
-﻿using System;
 using SMTP.Impostor.Events;
 using SMTP.Impostor.Messages;
 using SMTP.Impostor.Sockets;
+using System;
 
 namespace SMTP.Impostor.Hosts
 {

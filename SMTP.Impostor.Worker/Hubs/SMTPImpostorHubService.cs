@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using SMTP.Impostor.Worker.Actions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -6,8 +8,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using SMTP.Impostor.Worker.Actions;
 
 namespace SMTP.Impostor.Worker.Hubs
 {

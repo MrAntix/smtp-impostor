@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using SMTP.Impostor.Messages;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -5,8 +7,6 @@ using System.Net.Mail;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using SMTP.Impostor.Hosts;
-using SMTP.Impostor.Messages;
 
 namespace SMTP.Impostor.Sockets
 {
@@ -30,261 +30,202 @@ namespace SMTP.Impostor.Sockets
         public const string COMMAND_NOOP = "NOOP";
 
         readonly ISMTPImpostorSocket _socket;
+        readonly ILogger _logger;
+        readonly NetworkStream _networkStream;
 
         Action<SMTPImpostorMessage> _onMessage;
-        NetworkStream _networkStream;
-        byte[] _readBuffer;
-        string _terminator;
-
-        readonly TaskCompletionSource _taskCompletion;
-        StringBuilder _data;
-        MailAddress _from;
-        List<MailAddress> _to;
 
         public SocketHandlerStates Status { get; set; }
         public IPAddress ClientAddress { get; set; }
         public string ClientId { get; set; }
-        public object HostEventTypes { get; private set; }
 
         public SocketHandler(
-            ISMTPImpostorSocket socket
+            ISMTPImpostorSocket socket,
+            ILogger logger
             )
         {
-            _taskCompletion = new TaskCompletionSource();
-
             _socket = socket;
+            _logger = logger;
             _networkStream = _socket.GetNetworkStream();
 
             ClientAddress = socket.RemoteEndPoint.Address;
         }
 
-        public Task HandleAsync(Action<SMTPImpostorMessage> onMessage)
+        public async Task HandleAsync(Action<SMTPImpostorMessage> onMessage)
         {
             _onMessage = onMessage;
 
-            Write(
-                ReplyCodes.Ready_220,
-                string.Format(Resources.Ready_220, ClientAddress));
+            await WriteAsync(
+                            ReplyCodes.Ready_220,
+                            string.Format(Resources.Ready_220, ClientAddress));
 
             Status = SocketHandlerStates.Connected;
             //_raiseHostEvent(SocketHandlerStates.SessionConnected, this);
 
-            _readBuffer = new byte[SessionReadBufferSize];
-
-            StartRead(SMTPImpostorMessage.LINE_TERMINATOR);
-
-            return _taskCompletion.Task;
-        }
-
-        /// <summary>
-        ///   <para>Set up a read to a terminator</para>
-        /// </summary>
-        /// <param name = "terminator"></param>
-        void StartRead(string terminator)
-        {
-            _terminator = terminator;
-            _data = new StringBuilder();
-
-            ContinueRead();
-        }
-
-        /// <summary>
-        ///   <para>Sets up an async read</para>
-        /// </summary>
-        void ContinueRead()
-        {
-            if (_networkStream == null) return;
-
-            try
-            {
-                _networkStream.BeginRead(
-                    _readBuffer, 0, _readBuffer.Length,
-                    ReadCallback,
-                    this);
-            }
-            catch (Exception)
-            {
-                _socket.Dispose();
-            }
+            await ReadAsync();
         }
 
         /// <summary>
         ///   <para>Read the data</para>
         /// </summary>
-        /// <param name = "result"></param>
+        /// <param name="result"></param>
         //[DebuggerStepThrough]
-        void ReadCallback(IAsyncResult result)
+        async Task ReadAsync()
         {
-            try
+            var terminator = SMTPImpostorMessage.LINE_TERMINATOR;
+            var readBuffer = new byte[SessionReadBufferSize];
+            var dataBuffer = new StringBuilder();
+
+            MailAddress from = null;
+            List<MailAddress> recipients = null;
+
+            while (_networkStream.CanWrite == true)
             {
-                var readData = Encoding.UTF8.GetString(
-                    _readBuffer,
-                    0, _networkStream.EndRead(result));
-                _data.Append(readData);
+                var read = await _networkStream
+                    .ReadAsync(readBuffer, 0, readBuffer.Length);
+
+                if (read == 0) continue;
+
+                var readData = Encoding.UTF8
+                    .GetString(readBuffer, 0, read);
+
+                dataBuffer.Append(readData);
 
                 // check for terminator
-                if (_data.EndsWith(_terminator))
+                if (!dataBuffer.EndsWith(terminator)) continue;
+
+                // process data received not including the terminator
+                var data = dataBuffer.ToString(0, dataBuffer.Length - terminator.Length);
+                dataBuffer.Clear();
+
+                if (Status == SocketHandlerStates.Data)
                 {
-                    // process data received not including the terminator
-                    Process(
-                        _data.ToString(0, _data.Length - _terminator.Length));
+                    var message = SMTPImpostorMessage.Parse(data);
+                    // _logger.LogInformation("Session.Process Data: => {0}", data);
+
+                    await WriteAsync(ReplyCodes.Completed_250);
+                    Status = SocketHandlerStates.Identified;
+
+                    _onMessage(message);
+
+                    terminator = SMTPImpostorMessage.LINE_TERMINATOR;
+                    continue;
                 }
-                else if (_networkStream != null)
+
+                // command expected
+                var command = data.Length < 4
+                            ? string.Empty
+                            : data[..4].ToUpper();
+
+                _logger.LogInformation("Session.Process Command: => {Command}", command);
+
+                switch (command)
                 {
-                    // read some more data
-                    ContinueRead();
+                    case COMMAND_QUIT:
+                        _networkStream.Close();
+                        return;
+
+                    case COMMAND_EHLO:
+                    case COMMAND_HELO:
+                        ClientId = data.Substring(4).Trim();
+                        // _logger.LogInformation("Session.Process ClientId: => {0}", ClientId);
+
+                        await WriteAsync(ReplyCodes.Completed_250, string.Format(Resources.Hello_250, ClientId));
+
+                        Status = SocketHandlerStates.Identified;
+                        //Host.RaiseEvent(HostEventTypes.SessionIdentified, this);
+                        continue;
+
+                    case COMMAND_NOOP:
+                        await WriteAsync(ReplyCodes.Completed_250, string.Format(Resources.Hello_250, ClientId));
+                        continue;
+
+                    case COMMAND_RSET:
+                        await WriteAsync(ReplyCodes.Completed_250, string.Format(Resources.Hello_250, ClientId));
+
+                        Status = SocketHandlerStates.Identified;
+                        continue;
                 }
-            }
-            catch (Exception)
-            {
-                _socket.Dispose();
+
+                if (Status < SocketHandlerStates.Identified)
+                {
+                    // commands beyond her need minimum of Identified state
+                    await WriteAsync(ReplyCodes.CommandSequenceError_503, Resources.ExpectedHELO_503);
+                    _networkStream.Close();
+                    return;
+                }
+
+                switch (command)
+                {
+                    case COMMAND_MAIL:
+                        // store the from address, in case its not in the header
+                        from = data.Tail(":").ToMailAddress();
+                        recipients = null;
+
+                        // _logger.LogInformation("Session.Process From: => {0}", _from);
+
+                        Status = SocketHandlerStates.Mail;
+                        await WriteAsync(ReplyCodes.Completed_250);
+
+                        continue;
+
+                    case COMMAND_RCPT:
+
+                        if (Status != SocketHandlerStates.Mail
+                            && Status != SocketHandlerStates.Recipient)
+                        {
+                            await WriteAsync(ReplyCodes.CommandSequenceError_503);
+                        }
+                        else
+                        {
+                            if (recipients == null) recipients = new List<MailAddress>();
+                            var recipient = data.Tail(":").ToMailAddress();
+                            recipients.Add(recipient);
+
+                            // _logger.LogInformation("Session.Process To: => {0}", to);
+
+                            Status = SocketHandlerStates.Recipient;
+                            await WriteAsync(ReplyCodes.Completed_250);
+                        }
+
+                        continue;
+                    case COMMAND_DATA:
+
+                        // request data
+                        Status = SocketHandlerStates.Data;
+                        await WriteAsync(ReplyCodes.StartInput_354);
+
+                        terminator = SMTPImpostorMessage.DATA_TERMINATOR;
+
+                        continue;
+                    default:
+
+                        await WriteAsync(ReplyCodes.CommandNotImplemented_502);
+
+                        _networkStream.Close();
+                        return;
+                }
             }
         }
 
-        void Write(string data)
+        async Task WriteAsync(string data)
         {
             // _logger.LogInformation("Session.Write: => {0}", data);
 
             data += SMTPImpostorMessage.LINE_TERMINATOR;
 
             var bytes = Encoding.UTF8.GetBytes(data);
-            _networkStream.Write(bytes, 0, bytes.Length);
+            await _networkStream.WriteAsync(bytes, 0, bytes.Length);
         }
 
-        void Write(ReplyCodes code, string description)
+        async Task WriteAsync(ReplyCodes code, string description)
         {
-            Write(String.Format("{0:D} {1}", code, description));
+            await WriteAsync(string.Format("{0:D} {1}", code, description));
         }
 
-        void Write(ReplyCodes code)
+        async Task WriteAsync(ReplyCodes code)
         {
-            Write(code, Resources.Text[code]);
-        }
-
-        /// <summary>
-        ///   <para>Process the current data read</para>
-        /// </summary>
-        void Process(string data)
-        {
-            var terminator = SMTPImpostorMessage.LINE_TERMINATOR;
-            try
-            {
-                if (Status == SocketHandlerStates.Data)
-                {
-                    var content = _data.ToString(0, _data.Length - _terminator.Length);
-                    _data.Clear();
-
-                    var message = SMTPImpostorMessage.Parse(content);
-                    // _logger.LogInformation("Session.Process Data: => {0}", data);
-
-                    Write(ReplyCodes.Completed_250);
-                    Status = SocketHandlerStates.Identified;
-
-                    _onMessage(message);
-
-                    return;
-                }
-
-                // command expected
-                var command = data.Length < 4
-                                  ? string.Empty
-                                  : data.Substring(0, 4).ToUpper();
-                // _logger.LogInformation("Session.Process Command: => {0}", command);
-
-                if (command.Equals(COMMAND_QUIT))
-                {
-                    _taskCompletion.SetResult();
-                }
-                else if (command.Equals(COMMAND_EHLO)
-                         || command.Equals(COMMAND_HELO))
-                {
-                    ClientId = data.Substring(4).Trim();
-                    // _logger.LogInformation("Session.Process ClientId: => {0}", ClientId);
-
-                    Write(ReplyCodes.Completed_250, String.Format(Resources.Hello_250, ClientId));
-
-                    Status = SocketHandlerStates.Identified;
-                    //Host.RaiseEvent(HostEventTypes.SessionIdentified, this);
-                }
-                else if (command.Equals(COMMAND_NOOP))
-                {
-                    Write(ReplyCodes.Completed_250, String.Format(Resources.Hello_250, ClientId));
-                }
-                else if (command.Equals(COMMAND_RSET))
-                {
-                    Write(ReplyCodes.Completed_250, String.Format(Resources.Hello_250, ClientId));
-
-                    _from = null;
-                    _to = null;
-
-                    Status = SocketHandlerStates.Identified;
-                    //Host.RaiseEvent(HostEventTypes.SessionIdentified, this);
-                }
-                else if (Status < SocketHandlerStates.Identified)
-                {
-                    Write(ReplyCodes.CommandSequenceError_503, Resources.ExpectedHELO_503);
-                }
-                else if (command.Equals(COMMAND_MAIL))
-                {
-                    if (Status != SocketHandlerStates.Identified)
-                    {
-                        Write(ReplyCodes.CommandSequenceError_503);
-                    }
-                    else
-                    {
-                        // store the from address, in case its not in the header
-                        _from = data.Tail(":").ToMailAddress();
-                        // _logger.LogInformation("Session.Process From: => {0}", _from);
-
-                        Status = SocketHandlerStates.Mail;
-                        Write(ReplyCodes.Completed_250);
-                    }
-                }
-                else if (command.Equals(COMMAND_RCPT))
-                {
-                    if (Status != SocketHandlerStates.Mail
-                        && Status != SocketHandlerStates.Recipient)
-                    {
-                        Write(ReplyCodes.CommandSequenceError_503);
-                    }
-                    else
-                    {
-                        if (_to == null) _to = new List<MailAddress>();
-                        var to = data.Tail(":").ToMailAddress();
-                        _to.Add(to);
-                        // _logger.LogInformation("Session.Process To: => {0}", to);
-
-                        Status = SocketHandlerStates.Recipient;
-                        Write(ReplyCodes.Completed_250);
-                    }
-                }
-                else if (command.Equals(COMMAND_DATA))
-                {
-                    // request data
-                    Status = SocketHandlerStates.Data;
-                    Write(ReplyCodes.StartInput_354);
-
-                    terminator = SMTPImpostorMessage.DATA_TERMINATOR;
-                }
-                else
-                {
-                    Write(ReplyCodes.CommandNotImplemented_502);
-                }
-            }
-            catch (SMTPImpostorInvalidMailAddressException ex)
-            {
-                Write(
-                    ReplyCodes.ParameterError_501,
-                    string.Format("Invalid Address '{0}'", ex.Address));
-            }
-            finally
-            {
-                if (_networkStream != null)
-                {
-                    // next read
-                    StartRead(terminator);
-                }
-            }
+            await WriteAsync(code, Resources.Text[code]);
         }
     }
 }

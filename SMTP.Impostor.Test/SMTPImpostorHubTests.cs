@@ -1,13 +1,13 @@
-﻿using System;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SMTP.Impostor.Worker.Hubs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SMTP.Impostor.Worker.Hubs;
 
 namespace SMTP.Impostor.Test
 {

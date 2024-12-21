@@ -37,16 +37,19 @@ namespace SMTP.Impostor.Worker.Actions.State
         {
             if (source == null) return null;
 
-            return new SMTPImpostorHostSettings(
-                source.Settings.Id,
-                update.IP ?? source.Settings.IP, update.Port ?? source.Settings.Port,
-                update.Name ?? source.Settings.Name,
-                source.Settings.StoreType,
-                source.State == SMTPImpostorHostStatus.Started,
-                new SMTPImpostorMessagesStoreSettings(
-                    update.MaxMessages ?? source.Settings.Store.MaxMessages
-                    )
-                );
+            return new()
+            {
+                Id = source.Settings.Id,
+                IP = update.IP ?? source.Settings.IP,
+                Port = update.Port ?? source.Settings.Port,
+                Name = update.Name ?? source.Settings.ToString(),
+                StoreType = source.Settings.StoreType,
+                Start = source.State == SMTPImpostorHostStatus.Started,
+                Store = new()
+                {
+                    MaxMessages = update.MaxMessages ?? source.Settings.Store.MaxMessages
+                }
+            };
         }
 
         public static IImmutableList<HostMessageInfo> Map(

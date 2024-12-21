@@ -1,9 +1,9 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace SMTP.Impostor.Worker.Actions
 {
@@ -29,8 +29,8 @@ namespace SMTP.Impostor.Worker.Actions
         async Task<object> IActionExecutor.ExecuteAsync(
             string actionName, string data)
         {
-            if (actionName is null)            
-                throw new ArgumentNullException(nameof(actionName));            
+            if (actionName is null)
+                throw new ArgumentNullException(nameof(actionName));
 
             if (!_actions.ContainsKey(actionName))
                 throw new InvalidOperationException(actionName);

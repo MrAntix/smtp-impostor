@@ -72,7 +72,7 @@ namespace SMTP.Impostor.Stores.InMemory.Messages
                 );
         }
 
-        Task LaunchMessageAsync (string messageId)
+        Task LaunchMessageAsync(string messageId)
         {
             throw new NotImplementedException();
         }

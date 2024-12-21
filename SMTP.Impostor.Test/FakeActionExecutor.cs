@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using SMTP.Impostor.Worker.Actions;
+using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Test
 {

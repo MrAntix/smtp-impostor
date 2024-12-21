@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Reactive.Subjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using SMTP.Impostor.Events;
 using SMTP.Impostor.Hosts;
 using SMTP.Impostor.Messages;
 using SMTP.Impostor.Sockets;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Reactive.Subjects;
 
 namespace SMTP.Impostor
 {

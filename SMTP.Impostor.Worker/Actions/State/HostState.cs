@@ -1,5 +1,5 @@
-using System;
 using SMTP.Impostor.Sockets;
+using System;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {

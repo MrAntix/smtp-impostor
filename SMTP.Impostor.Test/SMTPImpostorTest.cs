@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Mail;
-using System.Net.Mime;
-using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SMTP.Impostor.Hosts;
-using SMTP.Impostor.Messages;
 using SMTP.Impostor.Stores.InMemory.Messages;
 
 namespace SMTP.Impostor.Test

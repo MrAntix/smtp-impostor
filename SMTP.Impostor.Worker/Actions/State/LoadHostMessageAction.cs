@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {
-    public class LoadHostMessageAction:
+    public class LoadHostMessageAction :
         VoidActionBase<HostMessageIdentity>
     {
         public static string Name { get; } = GetName(typeof(DeleteHostMessageAction));

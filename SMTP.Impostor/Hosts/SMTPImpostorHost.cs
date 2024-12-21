@@ -1,13 +1,13 @@
-using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Reactive.Subjects;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using SMTP.Impostor.Events;
 using SMTP.Impostor.Hosts;
 using SMTP.Impostor.Messages;
+using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Reactive.Subjects;
+using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Sockets
 {
@@ -83,7 +83,8 @@ namespace SMTP.Impostor.Sockets
                         try
                         {
                             var handler = new SocketHandler(
-                               SocketWrapper.Wrap(client.Client)
+                               SocketWrapper.Wrap(client.Client),
+                               _logger
                                );
 
                             while (client.Connected)
@@ -108,12 +109,18 @@ namespace SMTP.Impostor.Sockets
                 catch (ObjectDisposedException) { }
                 catch (SocketException ex)
                 {
-                    if (ex.SocketErrorCode != SocketError.Interrupted)
+                    switch (ex.SocketErrorCode)
                     {
-                        _logger.LogError(ex, $"host {Settings.Name}");
+                        case SocketError.OperationAborted:
+                        case SocketError.Interrupted:
+                            break;
+                        default:
 
-                        This.Stop();
-                        RaiseStateChange(ErroredEvent);
+                            _logger.LogError(ex, $"host {Settings.Name}");
+
+                            This.Stop();
+                            RaiseStateChange(ErroredEvent);
+                            break;
                     }
                 }
             });

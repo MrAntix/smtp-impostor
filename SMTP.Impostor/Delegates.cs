@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SMTP.Impostor
@@ -9,11 +10,11 @@ namespace SMTP.Impostor
         public static void Retry(
             Action action,
             ILogger logger,
-            int times = 5)
+            int times = 5
+            )
         {
-            while (times > 0)
+            for (var time = 1; time <= times; time++)
             {
-                times--;
                 try
                 {
                     action();
@@ -21,20 +22,21 @@ namespace SMTP.Impostor
                 }
                 catch (Exception ex)
                 {
-                    if (times == 0) throw;
-                    logger.LogError(ex, $"failed, {times} retrys left");
+                    if (time == times) throw;
+                    logger.LogError(ex, "failed, {Time} / {Times}", time, times);
                 }
 
-                Task.Delay(50).GetAwaiter().GetResult();
+                Task.Delay(100 * time).GetAwaiter().GetResult();
             }
         }
 
         public static async Task RetryAsync(
-            Func<Task> action,
+            Func<Task> action, CancellationToken cancel,
             ILogger logger,
-            int times = 5)
+            int times = 5
+            )
         {
-            while (times > 0)
+            for (var time = 1; time <= times; time++)
             {
                 times--;
                 try
@@ -44,11 +46,12 @@ namespace SMTP.Impostor
                 }
                 catch (Exception ex)
                 {
-                    if (times == 0) throw;
-                    logger.LogError(ex, $"failed, {times} retrys left");
+                    if (time == times) throw;
+                    logger.LogError(ex, "failed, {Time} / {Times}", time, times);
                 }
 
-                await Task.Delay(50);
+                await Task.Delay(50, cancel);
+                if (cancel.IsCancellationRequested) return;
             }
 
             throw new Exception("Retry exception");

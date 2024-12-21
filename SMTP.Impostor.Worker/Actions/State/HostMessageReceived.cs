@@ -14,5 +14,5 @@ namespace SMTP.Impostor.Worker.Actions.State
 
         public Guid HostId { get; }
         public HostMessageInfo Message { get; }
-     }
+    }
 }

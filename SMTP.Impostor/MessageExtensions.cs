@@ -1,10 +1,10 @@
+using SMTP.Impostor.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
-using SMTP.Impostor.Messages;
 
 namespace SMTP.Impostor
 {

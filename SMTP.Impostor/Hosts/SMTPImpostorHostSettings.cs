@@ -5,37 +5,22 @@ using System.Collections.Immutable;
 namespace SMTP.Impostor.Hosts
 {
     [Serializable]
-    public class SMTPImpostorHostSettings :
+    public record SMTPImpostorHostSettings :
         IEquatable<SMTPImpostorHostSettings>
     {
-        public SMTPImpostorHostSettings(
-            Guid? id = null,
-            string ip = null, int? port = 25,
-            string name = null,
-            string storeType = null,
-            bool start = false,
-            SMTPImpostorMessagesStoreSettings store = null)
-        {
-            Id = id ?? Guid.NewGuid();
-            IP = ip ?? "127.0.0.1";
-            Port = port ?? 25;
-            StoreType = storeType;
-            Name = string.IsNullOrWhiteSpace(name) ? $"{IP}:{Port}" : name;
-            Start = start;
-            Store = store ?? SMTPImpostorMessagesStoreSettings.Default;
-        }
+        public static ImmutableList<SMTPImpostorHostSettings> Default = [new()];
 
-        public Guid Id { get; }
-        public string IP { get; }
-        public int Port { get; }
-        public string StoreType { get; }
-        public string Name { get; }
-        public bool Start { get; }
-        public SMTPImpostorMessagesStoreSettings Store { get; }
+        public Guid Id { get; init; } = Guid.NewGuid();
+        public string IP { get; init; } = "127.0.0.1";
+        public int Port { get; init; } = 25;
+        public string StoreType { get; init; }
+        public string Name { get; init; }
+        public bool Start { get; init; }
+        public SMTPImpostorMessagesStoreSettings Store { get; init; } = SMTPImpostorMessagesStoreSettings.Default;
 
         public override string ToString()
         {
-            return Name;
+            return Name ?? $"{IP}:{Port}";
         }
 
         bool IEquatable<SMTPImpostorHostSettings>
@@ -45,10 +30,5 @@ namespace SMTP.Impostor.Hosts
                 && string.Equals(IP, other.IP, StringComparison.InvariantCultureIgnoreCase)
                 && Port == other.Port;
         }
-
-        public static IImmutableList<SMTPImpostorHostSettings> Default
-            = new[]{
-                new SMTPImpostorHostSettings()
-                }.ToImmutableList();
     }
 }

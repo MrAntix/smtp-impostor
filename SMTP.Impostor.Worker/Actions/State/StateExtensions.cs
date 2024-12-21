@@ -1,6 +1,6 @@
+using SMTP.Impostor.Hosts;
 using System.Collections.Immutable;
 using System.Linq;
-using SMTP.Impostor.Hosts;
 
 namespace SMTP.Impostor.Worker.Actions.State
 {
@@ -17,15 +17,19 @@ namespace SMTP.Impostor.Worker.Actions.State
         {
             if (source is null) return null;
 
-            return new SMTPImpostorHostSettings(
-                source.Id,
-                source.IP, source.Port,
-                source.Name,
-                source.StoreType,
-                source.State == Sockets.SMTPImpostorHostStatus.Started,
-                new Messages.SMTPImpostorMessagesStoreSettings(
-                    source.MaxMessages
-                    ));
+            return new()
+            {
+                Id = source.Id,
+                IP = source.IP,
+                Port = source.Port,
+                Name = source.Name,
+                StoreType = source.StoreType,
+                Start = source.State == Sockets.SMTPImpostorHostStatus.Started,
+                Store = new()
+                {
+                    MaxMessages = source.MaxMessages
+                }
+            };
         }
     }
 }

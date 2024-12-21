@@ -1,24 +1,23 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using System.Text.Json;
 
 namespace SMTP.Impostor
 {
     public class SMTPImpostorSerialization
     {
-        readonly JsonSerializerSettings _settings =
-            new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
+        readonly JsonSerializerOptions _options = new()
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
 
         public string Serialize(object value)
         {
-            return JsonConvert.SerializeObject(value, _settings);
+            return JsonSerializer.Serialize(value, _options);
         }
 
         public T Deserialize<T>(string value)
         {
-            return JsonConvert.DeserializeObject<T>(value);
+            return JsonSerializer.Deserialize<T>(value, _options);
         }
     }
 }

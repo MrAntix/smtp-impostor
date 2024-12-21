@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SMTP.Impostor.Worker.Actions;
+using System;
+using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Test
 {

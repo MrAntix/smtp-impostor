@@ -66,6 +66,7 @@ namespace SMTP.Impostor.Worker
 
             if (Mutex.TryOpenExisting(MUTEX_NAME, out var __))
             {
+                _logger.LogWarning("Service is already running, shutting down");
                 await StopAsync(CancellationToken.None);
                 return;
             }
@@ -79,7 +80,7 @@ namespace SMTP.Impostor.Worker
                     if (e is SMTPImpostorStoppedEvent)
                     {
                         await _hub.SendAsync(new WorkerState(null, null));
-                        await StopAsync(CancellationToken.None);                        
+                        await StopAsync(CancellationToken.None);
                     }
                     else if (e is SMTPImpostorMessageReceivedEvent mre)
                     {

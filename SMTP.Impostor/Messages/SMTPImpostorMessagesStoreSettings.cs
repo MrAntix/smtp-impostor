@@ -1,16 +1,9 @@
 namespace SMTP.Impostor.Messages
 {
-    public class SMTPImpostorMessagesStoreSettings
+    public record SMTPImpostorMessagesStoreSettings
     {
-        public SMTPImpostorMessagesStoreSettings(
-            int? maxMessages = 0)
-        {
-            MaxMessages = maxMessages.GetValueOrDefault();
-        }
+        public static readonly SMTPImpostorMessagesStoreSettings Default = new();
 
-        public int MaxMessages { get; }
-
-        public static readonly SMTPImpostorMessagesStoreSettings Default
-            = new SMTPImpostorMessagesStoreSettings();
+        public int MaxMessages { get; init; } = 0;
     }
 }

@@ -1,9 +1,14 @@
 param($serviceName, $dist)
+# Load the required assembly
+Add-Type -AssemblyName System.DirectoryServices.AccountManagement
 
 $exePath = Resolve-Path "$dist\SMTP.Impostor.Worker.exe"
 
-$cred = Get-Credential -Message "Log on user for SMTP Impostor Service"
-$username = ($cred.Domain + "\" + $cred.UserName).TrimStart("\");
+$cred = Get-Credential
+
+# Extract the username
+$username = $cred.UserName
+
 "Setting access for '$username'"
 
 $acl = Get-Acl $exePath
