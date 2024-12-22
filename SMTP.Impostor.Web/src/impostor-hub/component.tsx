@@ -107,7 +107,7 @@ export class ImpostorHubComponent {
   render() {
     return <div title={hubStatusDisplay(this.status)} class={`status status-${this.status}`}>
       <span class="buttons">
-        <button title="stopstart worker"
+        <button title="stop/start worker"
           onClick={() => {
             if (this.status === HubStatus.disconnected)
               this.startupWorker.emit();
