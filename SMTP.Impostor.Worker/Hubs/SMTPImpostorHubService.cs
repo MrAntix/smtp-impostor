@@ -79,8 +79,9 @@ namespace SMTP.Impostor.Worker.Hubs
                         }
                     }
                     catch (WebSocketException ex)
+                        when (ex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
                     {
-                        _logger.LogError(ex, "ListenAsync");
+                        _logger.LogDebug(ex, "ListenAsync");
                     }
                 }
             }
