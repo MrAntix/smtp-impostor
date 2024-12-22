@@ -8,30 +8,27 @@
 
 .status {
   position: relative;
-  left: 3em;
-  bottom: .5em;
+  display: flex;
+
 }
 
-.status .icon {
+.status button {
   position: relative;
+
+  width: 3em;
+  height: 2em;
+}
+
+.status button .toggle {
+  transform: translateX(-50%);
+  transition: .1s ease;
   display: inline-block;
-  width: var(--host-worker-status-size);
-  height: var(--host-worker-status-size);
-  overflow: hidden;
-  text-indent: 1000px;
-  border-radius: 50%;
-  background-color: var(--host-lowlight-more);
+  width: 100%;
+  height: 100%;
+  background-color: var(--host-background-color);
 }
 
-.status.status-1 .icon {
-  background-color: var(--host-warning-color);
-}
-
-.status.status-2 .icon {
+.status.status-2 button .toggle {
+  transform: translateX(+50%);
   background-color: var(--host-success-color);
-  cursor: pointer;
-}
-
-.status.status-3 .icon {
-  background-color: var(--host-error-color);
 }

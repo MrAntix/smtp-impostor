@@ -152,7 +152,7 @@ export class AppRoot {
                     onOpenHostMessage={e => this.loadHostMessage(e.detail.id, e.detail.messageId)}
                   />
                   <div class="host-actions">
-                    <button class="toggle-readonly" type="button"
+                    <button title="open host" class="toggle-readonly" type="button"
                       onClick={() => this.openHost(this.state.worker.openHostId === host.id ? null : host.id)}>
                       <app-icon type="triangle" scale={.65} rotate={this.state.worker.openHostId === host.id ? 0 : 180} />
                     </button>
@@ -160,7 +160,7 @@ export class AppRoot {
                     {this.state.worker.openHostId === host.id &&
                       <app-popup position="left" shift="left"
                         isOpen={host.showConfiguration}>
-                        <button
+                        <button title="remove host"
                           class="remove-host"
                           onClick={() => this.toggleHostConfiguration(host.id, true)}
                         >
@@ -190,7 +190,7 @@ export class AppRoot {
               ))}
             </ul>
             <div class="hosts-actions">
-              <button class="add-host primary" onClick={() => {
+              <button title="add a host" class="add-host primary" onClick={() => {
                 this.newHostId = newId();
                 this.addHost({ id: this.newHostId });
               }}>

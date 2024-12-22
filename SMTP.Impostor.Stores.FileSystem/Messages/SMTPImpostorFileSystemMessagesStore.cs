@@ -21,9 +21,9 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         readonly SMTPImpostorFileSystemMessagesStoreSettings _settings;
 
         readonly Subject<ISMTPImpostorMessageEvent> _events;
+        readonly KeyedTaskQueue.Handler _tasks = new();
+
         readonly List<SMTPImpostorMessageInfo> _index;
-        readonly object _indexLock = new();
-        KeyedTaskQueue _tasks = new();
 
         FileSystemWatcher _watcher;
 
@@ -146,10 +146,17 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
             if (File.Exists(file))
             {
-                var content = await File.ReadAllTextAsync(file);
+                try
+                {
+                    var content = await File.ReadAllTextAsync(file);
 
-                return SMTPImpostorMessage
-                    .Parse(content, messageId);
+                    return SMTPImpostorMessage
+                        .Parse(content, messageId);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Could not load message id {messageId}", messageId);
+                }
             }
 
             return null;
@@ -236,8 +243,8 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
 
                             var content = await File.ReadAllTextAsync(fi.FullName);
 
-                            var message = SMTPImpostorMessage.TryParseInfo(content, messageId);
-                            lock (_indexLock) _index.Add(message);
+                            var message = SMTPImpostorMessage.ParseInfo(content, messageId);
+                            _index.Add(message);
                         }
                         catch (Exception ex)
                         {
@@ -249,18 +256,18 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                 _watcher.Created += (sender, e) =>
                 {
                     var messageId = Path.GetFileNameWithoutExtension(e.FullPath);
-                    _tasks[messageId].Enqueue(async () =>
+                    _tasks.Enqueue(async () =>
                     {
                         var message = await TryLoadFileAsync(messageId);
-                        if (message != null)
+                        if (message is not null)
                         {
                             _index.Insert(0, message);
                             if (_index.Count > _settings.General.MaxMessages)
                             {
                                 var last = _index.Last();
-                                await DeleteFileAsync(last.Id);
-
                                 _index.Remove(last);
+
+                                await DeleteFileAsync(last.Id);
                             }
                         }
 
@@ -270,9 +277,9 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
                 _watcher.Deleted += (sender, e) =>
                 {
                     var messageId = Path.GetFileNameWithoutExtension(e.FullPath);
-                    _tasks[messageId].Enqueue(() =>
+                    _tasks.Enqueue(() =>
                     {
-                        var message = _index.FirstOrDefault(m => m.Id == messageId);
+                        var message = _index.FirstOrDefault(m => m?.Id == messageId);
                         if (message is not null) _index.Remove(message);
 
                         _events.OnNext(new SMTPImpostorMessageRemovedEvent(hostId, messageId));
@@ -286,23 +293,23 @@ namespace SMTP.Impostor.Stores.FileSystem.Messages
         int ISMTPImpostorMessagesStore.Count => _index.Count;
         Task<SMTPImpostorMessageStoreSearchResult> ISMTPImpostorMessagesStore
             .SearchAsync(SMTPImpostorMessageStoreSearchCriteria criteria) =>
-            _tasks["SEARCH"].EnqueueAsync(() => SearchAsync(criteria));
+            _tasks.EnqueueAsync(() => SearchAsync(criteria));
 
         Task<SMTPImpostorMessage> ISMTPImpostorMessagesStore
             .GetAsync(string messageId) =>
-            _tasks[messageId].EnqueueAsync(() => TryLoadFileAsync(messageId));
+            _tasks.EnqueueAsync(() => TryLoadFileAsync(messageId));
 
         Task ISMTPImpostorMessagesStore
             .LaunchAsync(string messageId) =>
-            _tasks[messageId].EnqueueAsync(() => LaunchAsync(messageId));
+            _tasks.EnqueueAsync(() => LaunchAsync(messageId));
 
         Task ISMTPImpostorMessagesStore
             .PutAsync(SMTPImpostorMessage message) =>
-            _tasks[message.Id].EnqueueAsync(() => SaveFileAsync(message));
+            _tasks.EnqueueAsync(() => SaveFileAsync(message));
 
         Task ISMTPImpostorMessagesStore
            .DeleteAsync(string messageId) =>
-           _tasks[messageId].EnqueueAsync(() => DeleteFileAsync(messageId));
+           _tasks.EnqueueAsync(() => DeleteFileAsync(messageId));
 
         bool _disposed = false;
 

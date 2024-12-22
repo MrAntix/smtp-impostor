@@ -58,7 +58,7 @@ export class SMTPHostComponent {
       <header>
         <div class="name" onDblClick={() => this.openHost.emit({ id: this.value.id })}>
           {this.value.name}
-          <small class="message-count">{this.value.messagesCount}</small>
+          <small class="message-count">{this.value.messages?.length}</small>
         </div>
         <div class="actions">
           <button class="toggle-state" type="button" onClick={() => this.toggleState()}>
@@ -95,7 +95,7 @@ export class SMTPHostComponent {
           <div class="message-from">{message.from}</div>
           <div class="message-date" >
             {new Date(message.date).toLocaleString()}
-            <button class="delete-message danger" type="button"
+            <button title="delete host" class="delete-message danger" type="button"
               onClick={() => this.deleteHostMessage.emit({
                 id: this.value.id,
                 messageId: message.id

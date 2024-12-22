@@ -1,17 +1,10 @@
-<!doctype html><html dir="ltr" lang="en"><head> <meta charset="utf-8"> <title>SMTP Impostor</title> <meta name="Description" content="Fake SMTP server for developers - Catches emails sent via SMTP an puts them in a temp directory so you don't send people emails by accident"> <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"> <meta name="theme-color" content="#16161d"> <meta name="mobile-web-app-capable" content="yes"> <meta http-equiv="x-ua-compatible" content="IE=Edge"> <script type="module" src="/build/app.esm.js"></script> <script nomodule="" src="/build/app.js"></script> <style>:root{--unit:12px;--padding:calc(var(--unit) / 2);--margin:1px;--border-width:var(--margin);--border:solid var(--border-width) var(--color);--border-radius:2px;--color:#444;--background-color:#ddd;--input-color:#333;--input-background-color:var(--highlight);--input-background-color-focus:var(--highlight-more);--action-color:#ccc;--action-color-alt:#222;--primary-color:#369;--primary-color-alt:#eee;--success-color:#494;--success-color-alt:#eee;--warning-color:#c82;--warning-color-alt:#eee;--error-color:#c22;--error-color-alt:#eee;--lowlight:rgba(0, 0, 0, .05);--lowlight-more:rgba(0, 0, 0, .25);--highlight:rgba(255, 255, 255, .25);--highlight-more:rgba(255, 255, 255, .5);--icon-size:.7em;--icon-color:currentColor;--icon-outline-size:.0075em;--icon-outline-color:var(--icon-color, currentColor)}:disabled{filter:brightness(1.2) contrast(.5)}@media (prefers-color-scheme: dark){:root{--color:#ddd;--background-color:#333;--input-color:#eee;--highlight:rgba(0, 0, 0, .2);--highlight-more:rgba(0, 0, 0, .4);--lowlight:rgba(255, 255, 255, .05);--lowlight-more:rgba(255, 255, 255, .1);--action-color:#222;--action-color-alt:#eee}}html,body{margin:0;padding:0}body{background-color:var(--background-color);color:var(--color);font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"}:root{--border-width:0}</style> <link rel="apple-touch-icon" href="/assets/icon-512x512-maskable.png"> <link rel="icon" type="image/png" href="/assets/icon-96x96.png"> <link rel="manifest" href="/manifest.json"> </head> <body> <app-root></app-root> <script data-build="2024-12-21T18:06:02">
+<!doctype html><html dir="ltr" lang="en"><head> <meta charset="utf-8"> <title>SMTP Impostor</title> <meta name="Description" content="Fake SMTP server for developers - Catches emails sent via SMTP an puts them in a temp directory so you don't send people emails by accident"> <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"> <meta name="theme-color" content="#16161d"> <meta name="mobile-web-app-capable" content="yes"> <meta http-equiv="x-ua-compatible" content="IE=Edge"> <script type="module" src="/build/app.esm.js"></script> <script nomodule="" src="/build/app.js"></script> <link href="/build/app.css" rel="stylesheet"> <link rel="apple-touch-icon" href="/assets/icon-512x512-maskable.png"> <link rel="icon" type="image/png" href="/assets/icon-96x96.png"> <link rel="manifest" href="/manifest.json"> </head> <body> <app-root></app-root> <script>
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-  window.addEventListener('load', function() {
-  navigator.serviceWorker.register('/sw.js')
-    .then(function(reg) {
-    reg.onupdatefound = function() {
-      var installingWorker = reg.installing;
-      installingWorker.onstatechange = function() {
-      if (installingWorker.state === 'installed') {
-        window.dispatchEvent(new Event('swUpdate'))
-      }
-      }
-    }
-    })
-    .catch(function(err) { console.error('service worker error', err) });
+  // auto-unregister service worker during dev mode
+  navigator.serviceWorker.getRegistration().then(function(registration) {
+  if (registration) {
+    registration.unregister().then(function() { location.reload(true) });
+  }
   });
-}</script></body></html>
+}
+</script></body></html>

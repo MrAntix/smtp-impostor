@@ -82,8 +82,11 @@ main {
 }
 
 .hosts-actions {
+  display: flex;
   align-self: flex-end;
+  align-items: center;
   padding: var(--host-padding);
+  min-height: 3rem;
 }
 
 pre {
@@ -94,7 +97,13 @@ pre {
 }
 
 impostor-hub {
-  height: 1.25em;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: var(--host-padding);
+  padding-left: 3.75em;
+  align-items: center;
+  height: 3em;
 }
 
 .buttons app-popup {

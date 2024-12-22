@@ -42,9 +42,6 @@ namespace SMTP.Impostor.Messages
 
         public static SMTPImpostorMessage Parse(string content, string messageId = null)
         {
-            if (content == null)
-                return null;
-
             var headers = GetHeaders(content);
 
             return new SMTPImpostorMessage(
@@ -58,7 +55,7 @@ namespace SMTP.Impostor.Messages
                 content);
         }
 
-        public static SMTPImpostorMessageInfo TryParseInfo(string content, string messageId = null)
+        public static SMTPImpostorMessageInfo ParseInfo(string content, string messageId = null)
         {
             var headers = GetHeaders(content);
 
