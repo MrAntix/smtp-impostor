@@ -1,5 +1,6 @@
 using Microsoft.Toolkit.Uwp.Notifications;
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,6 +60,8 @@ namespace SMTP.Impostor.Worker
             ToastNotifier notifier,
             ISMTPImpostorWorkerSettings settings)
         {
+            var assembly = Assembly.GetEntryAssembly().GetName();
+
             var content = new ToastContent
             {
                 Actions = new ToastActionsCustom
@@ -75,7 +78,7 @@ namespace SMTP.Impostor.Worker
                         Children = {
                             new AdaptiveText
                             {
-                                Text = "Worker is running"
+                                Text = $"{assembly.Name} v{assembly.Version.ToString(3)} is running"
                             },
                             new AdaptiveText
                             {

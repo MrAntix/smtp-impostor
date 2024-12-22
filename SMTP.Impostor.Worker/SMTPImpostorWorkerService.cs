@@ -48,6 +48,13 @@ namespace SMTP.Impostor.Worker
 
         protected override async Task ExecuteAsync(CancellationToken _)
         {
+            if (Mutex.TryOpenExisting(MUTEX_NAME, out var __))
+            {
+                _logger.LogWarning("Service is already running, shutting down");
+                await StopAsync(CancellationToken.None);
+                return;
+            }
+
             if (Environment.UserInteractive)
             {
                 if (UWPHelper.IsUwp())
@@ -62,13 +69,6 @@ namespace SMTP.Impostor.Worker
                         _logger.LogError(ex, "Error sending UWP start notification");
                     }
                 }
-            }
-
-            if (Mutex.TryOpenExisting(MUTEX_NAME, out var __))
-            {
-                _logger.LogWarning("Service is already running, shutting down");
-                await StopAsync(CancellationToken.None);
-                return;
             }
 
             _mutex = new Mutex(false, MUTEX_NAME);

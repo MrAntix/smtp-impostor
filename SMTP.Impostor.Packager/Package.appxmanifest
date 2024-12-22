@@ -10,7 +10,7 @@
   <Identity
     Name="AntixSoftwareLimited.SMTPImpostor"
     Publisher="CN=Antix Software Limited"
-    Version="3.0.6.0" />
+    Version="3.0.7.0" />
 
   <Properties>
     <DisplayName>SMTP Impostor</DisplayName>
