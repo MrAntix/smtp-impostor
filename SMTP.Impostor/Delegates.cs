@@ -7,6 +7,31 @@ namespace SMTP.Impostor
 {
     public static class Delegates
     {
+        public static Action Throttle(Action action, int delay = 2000)
+        {
+            var waiting = false;
+
+            return () =>
+            {
+                if (waiting) return;
+                waiting = true;
+
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Task.Delay(delay);
+
+                        action();
+                    }
+                    finally
+                    {
+                        waiting = false;
+                    }
+                });
+            };
+        }
+
         public static void Retry(
             Action action,
             ILogger logger,
