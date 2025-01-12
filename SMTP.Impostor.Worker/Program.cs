@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.EventLog;
 using System;
 
 namespace SMTP.Impostor.Worker
@@ -31,7 +32,10 @@ namespace SMTP.Impostor.Worker
                 {
                     logging.ClearProviders();
                     logging.AddConsole();
-                    logging.AddEventLog();
+                    logging.AddEventLog(new EventLogSettings()
+                    {
+                        SourceName = typeof(Program).Namespace
+                    });
                 })
                 .UseWindowsService();
     }
