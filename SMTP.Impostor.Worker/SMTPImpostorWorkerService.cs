@@ -8,6 +8,7 @@ using SMTP.Impostor.Worker.Actions.State;
 using SMTP.Impostor.Worker.Hubs;
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Notifications;
@@ -74,7 +75,7 @@ namespace SMTP.Impostor.Worker
             _mutex = new Mutex(false, MUTEX_NAME);
             _impostorEvents = _impostor.Events.Subscribe(async e =>
             {
-                _logger.LogInformation($"{e.GetType().Name}");
+                _logger.LogDebug("{Type}: {event}", e.GetType().Name, Defer.Serialize(e));
                 try
                 {
                     if (e is SMTPImpostorStoppedEvent)
@@ -134,10 +135,12 @@ namespace SMTP.Impostor.Worker
 
             var settings = await _hostsSettings.LoadAsync();
             if (settings != null)
-                foreach (var hostSetttings in settings)
+                foreach (var hostSettings in settings)
                 {
-                    _impostor.AddHost(hostSetttings);
+                    _impostor.AddHost(hostSettings);
                 }
+
+            _logger.LogInformation("SMTP Impostor Service is running");
         }
 
         public override Task StopAsync(CancellationToken _)

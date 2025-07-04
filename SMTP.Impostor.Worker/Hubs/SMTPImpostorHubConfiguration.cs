@@ -54,7 +54,7 @@ namespace SMTP.Impostor.Worker.Hubs
 
                     });
 
-                    logger.LogWarning("SMTP Impostor Worker is Started {Hub}", hubApp);
+                    logger.LogInformation("SMTP Impostor Worker Hub is Started");
                 });
 
             return app;

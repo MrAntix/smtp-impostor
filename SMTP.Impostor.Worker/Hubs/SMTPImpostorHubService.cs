@@ -145,7 +145,7 @@ namespace SMTP.Impostor.Worker.Hubs
             });
         }
 
-        object CreateMessageFrom(object model)
+        SMTPImpostorHubMessage CreateMessageFrom(object model)
         {
             return new SMTPImpostorHubMessage(
                 model.GetType().Name,

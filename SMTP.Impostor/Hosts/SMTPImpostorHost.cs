@@ -73,38 +73,40 @@ namespace SMTP.Impostor.Sockets
                         Settings.Port);
                     _listener.Start();
                     _listenerStarted = true;
+
                     RaiseStateChange(StartedEvent);
 
                     do
                     {
+
                         using var client = await _listener.AcceptTcpClientAsync();
                         RaiseStateChange(ReceivingEvent);
 
-                        try
-                        {
-                            var handler = new SocketHandler(
-                               SocketWrapper.Wrap(client.Client),
-                               _logger
-                               );
+                        var handler = new SocketHandler(
+                           SocketWrapper.Wrap(client.Client),
+                           _logger
+                           );
 
-                            while (client.Connected)
+                        while (client.Connected)
+                        {
+                            try
                             {
                                 await handler.HandleAsync(
                                     message => _events.OnNext(
                                         new SMTPImpostorMessageReceivedEvent(Settings, message)
                                     )
                                 );
-                            };
-
-                            RaiseStateChange(StartedEvent);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, $"host {Settings.Name}");
-                            RaiseStateChange(ErroredEvent);
-                        }
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, $"host {Settings.Name}");
+                                RaiseStateChange(ErroredEvent);
+                            }
+                        };
 
                     } while (_listenerStarted);
+
+                    RaiseStateChange(StoppedEvent);
                 }
                 catch (ObjectDisposedException) { }
                 catch (SocketException ex)

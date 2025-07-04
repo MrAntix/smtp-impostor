@@ -31,11 +31,12 @@ namespace SMTP.Impostor.Worker
                 .ConfigureLogging((context, logging) =>
                 {
                     logging.ClearProviders();
-                    logging.AddConsole();
+                    logging.AddDebug();
                     logging.AddEventLog(new EventLogSettings()
                     {
                         SourceName = typeof(Program).Namespace
                     });
+                    logging.AddConfiguration(context.Configuration.GetSection("Logging"));
                 })
                 .UseWindowsService();
     }

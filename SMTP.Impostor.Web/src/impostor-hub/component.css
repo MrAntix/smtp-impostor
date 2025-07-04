@@ -28,6 +28,11 @@
   background-color: var(--host-background-color);
 }
 
+.status.status-1 button .toggle {
+  transform: translateX(+25%);
+  background-color: var(--host-warning-color);
+}
+
 .status.status-2 button .toggle {
   transform: translateX(+50%);
   background-color: var(--host-success-color);

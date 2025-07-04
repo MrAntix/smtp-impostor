@@ -67,7 +67,7 @@ namespace SMTP.Impostor.Worker
                 Actions = new ToastActionsCustom
                 {
                     Buttons = {
-                        new ToastButtonDismiss(),
+                        new ToastButtonDismiss("OK"),
                         new ToastButton("Open UI", OPEN_UI_ACTION)
                     }
                 },

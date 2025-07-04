@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Logging;
 using SMTP.Impostor.Messages;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SMTP.Impostor.Sockets
@@ -31,13 +33,12 @@ namespace SMTP.Impostor.Sockets
 
         readonly ISMTPImpostorSocket _socket;
         readonly ILogger _logger;
-        readonly NetworkStream _networkStream;
 
         Action<SMTPImpostorMessage> _onMessage;
 
-        public SocketHandlerStates Status { get; set; }
-        public IPAddress ClientAddress { get; set; }
-        public string ClientId { get; set; }
+        public SocketHandlerStates Status { get; private set; }
+        public IPAddress ClientAddress { get; private set; }
+        public string ClientId { get; private set; }
 
         public SocketHandler(
             ISMTPImpostorSocket socket,
@@ -46,7 +47,6 @@ namespace SMTP.Impostor.Sockets
         {
             _socket = socket;
             _logger = logger;
-            _networkStream = _socket.GetNetworkStream();
 
             ClientAddress = socket.RemoteEndPoint.Address;
         }
@@ -55,14 +55,21 @@ namespace SMTP.Impostor.Sockets
         {
             _onMessage = onMessage;
 
+            using var networkStream = _socket.GetNetworkStream();
+
             await WriteAsync(
-                            ReplyCodes.Ready_220,
-                            string.Format(Resources.Ready_220, ClientAddress));
+                networkStream,
+                ReplyCodes.Ready_220,
+                string.Format(Resources.Ready_220, ClientAddress)
+            );
 
             Status = SocketHandlerStates.Connected;
-            //_raiseHostEvent(SocketHandlerStates.SessionConnected, this);
 
-            await ReadAsync();
+            await ReadAsync(networkStream);
+
+            Status = SocketHandlerStates.Disconnected;
+
+            _logger.LogDebug("Message Handled");
         }
 
         /// <summary>
@@ -70,24 +77,33 @@ namespace SMTP.Impostor.Sockets
         /// </summary>
         /// <param name="result"></param>
         //[DebuggerStepThrough]
-        async Task ReadAsync()
+        async Task ReadAsync(NetworkStream networkStream)
         {
             var terminator = SMTPImpostorMessage.LINE_TERMINATOR;
-            var readBuffer = new byte[SessionReadBufferSize];
+            var readBuffer = ArrayPool<byte>.Shared.Rent(SessionReadBufferSize); 
             var dataBuffer = new StringBuilder();
 
             MailAddress from = null;
             List<MailAddress> recipients = null;
 
-            while (_networkStream.CanWrite == true)
-            {
-                var read = await _networkStream
-                    .ReadAsync(readBuffer, 0, readBuffer.Length);
 
-                if (read == 0) continue;
+            while (networkStream.CanRead)
+            {
+                using var cancelSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+                var memory = readBuffer.AsMemory();
+                var read = await networkStream.ReadAsync(memory, cancelSource.Token);
+
+                cancelSource.Dispose();
+
+                if (read == 0)
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
 
                 var readData = Encoding.UTF8
-                    .GetString(readBuffer, 0, read);
+                    .GetString(memory.Span.Slice(0, read));
 
                 dataBuffer.Append(readData);
 
@@ -101,15 +117,15 @@ namespace SMTP.Impostor.Sockets
                 if (Status == SocketHandlerStates.Data)
                 {
                     var message = SMTPImpostorMessage.Parse(data);
-                    // _logger.LogInformation("Session.Process Data: => {0}", data);
+                    _logger.LogDebug("Session.Process Data: => {Data}", data);
 
-                    await WriteAsync(ReplyCodes.Completed_250);
+                    await WriteAsync(networkStream, ReplyCodes.Completed_250);
                     Status = SocketHandlerStates.Identified;
+                    terminator = SMTPImpostorMessage.LINE_TERMINATOR;
 
                     _onMessage(message);
 
-                    terminator = SMTPImpostorMessage.LINE_TERMINATOR;
-                    continue;
+                    return;
                 }
 
                 // command expected
@@ -117,31 +133,30 @@ namespace SMTP.Impostor.Sockets
                             ? string.Empty
                             : data[..4].ToUpper();
 
-                _logger.LogInformation("Session.Process Command: => {Command}", command);
+                _logger.LogDebug("Session.Process Command: => {Command}", command);
 
                 switch (command)
                 {
                     case COMMAND_QUIT:
-                        _networkStream.Close();
+                        networkStream.Close();
                         return;
 
                     case COMMAND_EHLO:
                     case COMMAND_HELO:
                         ClientId = data.Substring(4).Trim();
-                        // _logger.LogInformation("Session.Process ClientId: => {0}", ClientId);
+                        _logger.LogDebug("Session.Process ClientId: => {ClientId}", ClientId);
 
-                        await WriteAsync(ReplyCodes.Completed_250, string.Format(Resources.Hello_250, ClientId));
+                        await WriteAsync(networkStream, ReplyCodes.Completed_250, string.Format(Resources.Hello_250, ClientId));
 
                         Status = SocketHandlerStates.Identified;
-                        //Host.RaiseEvent(HostEventTypes.SessionIdentified, this);
                         continue;
 
                     case COMMAND_NOOP:
-                        await WriteAsync(ReplyCodes.Completed_250, string.Format(Resources.Hello_250, ClientId));
+                        await WriteAsync(networkStream, ReplyCodes.Completed_250, string.Format(Resources.Hello_250, ClientId));
                         continue;
 
                     case COMMAND_RSET:
-                        await WriteAsync(ReplyCodes.Completed_250, string.Format(Resources.Hello_250, ClientId));
+                        await WriteAsync(networkStream, ReplyCodes.Completed_250, string.Format(Resources.Hello_250, ClientId));
 
                         Status = SocketHandlerStates.Identified;
                         continue;
@@ -150,8 +165,8 @@ namespace SMTP.Impostor.Sockets
                 if (Status < SocketHandlerStates.Identified)
                 {
                     // commands beyond her need minimum of Identified state
-                    await WriteAsync(ReplyCodes.CommandSequenceError_503, Resources.ExpectedHELO_503);
-                    _networkStream.Close();
+                    await WriteAsync(networkStream, ReplyCodes.CommandSequenceError_503, Resources.ExpectedHELO_503);
+                    networkStream.Close();
                     return;
                 }
 
@@ -162,10 +177,10 @@ namespace SMTP.Impostor.Sockets
                         from = data.Tail(":").ToMailAddress();
                         recipients = null;
 
-                        // _logger.LogInformation("Session.Process From: => {0}", _from);
+                        _logger.LogDebug("Session.Process From: => {From}", from);
 
                         Status = SocketHandlerStates.Mail;
-                        await WriteAsync(ReplyCodes.Completed_250);
+                        await WriteAsync(networkStream, ReplyCodes.Completed_250);
 
                         continue;
 
@@ -174,7 +189,7 @@ namespace SMTP.Impostor.Sockets
                         if (Status != SocketHandlerStates.Mail
                             && Status != SocketHandlerStates.Recipient)
                         {
-                            await WriteAsync(ReplyCodes.CommandSequenceError_503);
+                            await WriteAsync(networkStream, ReplyCodes.CommandSequenceError_503);
                         }
                         else
                         {
@@ -182,10 +197,10 @@ namespace SMTP.Impostor.Sockets
                             var recipient = data.Tail(":").ToMailAddress();
                             recipients.Add(recipient);
 
-                            // _logger.LogInformation("Session.Process To: => {0}", to);
+                            _logger.LogDebug("Session.Process To: => {To}", recipient);
 
                             Status = SocketHandlerStates.Recipient;
-                            await WriteAsync(ReplyCodes.Completed_250);
+                            await WriteAsync(networkStream, ReplyCodes.Completed_250);
                         }
 
                         continue;
@@ -193,39 +208,40 @@ namespace SMTP.Impostor.Sockets
 
                         // request data
                         Status = SocketHandlerStates.Data;
-                        await WriteAsync(ReplyCodes.StartInput_354);
+                        await WriteAsync(networkStream, ReplyCodes.StartInput_354);
 
                         terminator = SMTPImpostorMessage.DATA_TERMINATOR;
 
                         continue;
                     default:
 
-                        await WriteAsync(ReplyCodes.CommandNotImplemented_502);
+                        await WriteAsync(networkStream, ReplyCodes.CommandNotImplemented_502);
 
-                        _networkStream.Close();
+                        networkStream.Close();
                         return;
                 }
             }
         }
 
-        async Task WriteAsync(string data)
+        async Task WriteAsync(NetworkStream networkStream, string data)
         {
-            // _logger.LogInformation("Session.Write: => {0}", data);
+            _logger.LogDebug("Session.Write: => {Data}", data);
 
             data += SMTPImpostorMessage.LINE_TERMINATOR;
 
             var bytes = Encoding.UTF8.GetBytes(data);
-            await _networkStream.WriteAsync(bytes, 0, bytes.Length);
+            await networkStream.WriteAsync(bytes, 0, bytes.Length);
         }
 
-        async Task WriteAsync(ReplyCodes code, string description)
+        async Task WriteAsync(NetworkStream networkStream, ReplyCodes code, string description)
         {
-            await WriteAsync(string.Format("{0:D} {1}", code, description));
+            await WriteAsync(networkStream, $"{code:D} {description}");
         }
 
-        async Task WriteAsync(ReplyCodes code)
+        async Task WriteAsync(NetworkStream networkStream, ReplyCodes code)
         {
-            await WriteAsync(code, Resources.Text[code]);
+            await WriteAsync(networkStream, code, Resources.Text[code]);
         }
+
     }
 }
